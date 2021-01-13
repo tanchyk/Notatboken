@@ -5,14 +5,12 @@ import {
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
-    Unique,
     UpdateDateColumn
 } from "typeorm";
 import {Length} from "class-validator";
 import {User} from "./User";
 
 @Entity()
-@Unique([])
 export class Note extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -21,7 +19,7 @@ export class Note extends BaseEntity {
     @Length(1, 40)
     title!: string;
 
-    @Column()
+    @Column({nullable: true})
     @Length(1, 400)
     body: string;
 

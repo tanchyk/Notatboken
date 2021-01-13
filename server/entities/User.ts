@@ -12,7 +12,7 @@ import { Length } from "class-validator";
 import {Note} from "./Note";
 
 @Entity()
-@Unique(["username"])
+@Unique(["username", "email"])
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
