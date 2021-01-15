@@ -1,6 +1,9 @@
 import React from 'react';
 import {Box, Button, Heading, Image, Input, InputGroup, InputRightElement, Link, Stack} from "@chakra-ui/react";
-import {ExternalLinkIcon} from '@chakra-ui/icons'
+import {ExternalLinkIcon} from '@chakra-ui/icons';
+import {
+    Link as LinkPage
+} from "react-router-dom";
 
 // interface InputData {
 //     username: string,
@@ -72,8 +75,10 @@ const LoginPage: React.FC<{}> = () => {
                         >
                             Login
                         </Button>
-                        <Link color="blue.500" href="#">
-                            Home
+                        <Link color="blue.500" href="/">
+                            <LinkPage to="/">
+                                Home
+                            </LinkPage>
                         </Link>
                     </Stack>
                 </Stack>

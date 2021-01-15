@@ -1,8 +1,9 @@
 import React from 'react';
-import LoginPage from "./pages/LoginPage";
 import {ChakraProvider, extendTheme} from "@chakra-ui/react";
+import {BrowserRouter, Route} from "react-router-dom";
+import {MainPage} from "./pages/MainPage";
+import LoginPage from "./pages/LoginPage";
 
-// @ts-ignore
 const theme = extendTheme({
     styles: {
         global: {
@@ -12,9 +13,6 @@ const theme = extendTheme({
                 color: "gray.600",
                 lineHeight: "tall",
             },
-            a: {
-                color: "#FAF089"
-            },
             button: {
                 backgroundColor: "black"
             }
@@ -23,10 +21,31 @@ const theme = extendTheme({
 })
 
 const App: React.FC<{}> = () => {
+    const isAuth = false;
+    let routes;
+
+    if (isAuth) {
+        routes = (
+            <>
+                <Route exact path="/notes"/>
+                <Route exact path="/profile"/>
+            </>
+        );
+    } else {
+        routes = (
+            <>
+                <Route exact path="/" component={MainPage}/>
+                <Route exact path="/login" component={LoginPage}/>
+            </>
+        );
+    }
+
     return (
-        <ChakraProvider theme={theme}>
-            <LoginPage/>
-        </ChakraProvider>
+        <BrowserRouter>
+            <ChakraProvider theme={theme}>
+                {routes}
+            </ChakraProvider>
+        </BrowserRouter>
     );
 }
 

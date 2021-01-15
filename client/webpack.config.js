@@ -71,9 +71,11 @@ module.exports = {
 
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
+        stats: 'errors-only',
+        open: true,
+        port: 4020,
         compress: true,
-        port: 4200,
-        hot: isDev
+        historyApiFallback: true
     },
     devtool: isDev ? 'source-map' : 'eval',
 
