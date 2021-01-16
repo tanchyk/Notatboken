@@ -86,6 +86,7 @@ class AuthController {
 
         const userRepository = getRepository(User);
         try {
+            console.log(user)
             await userRepository.save(user);
         } catch (e) {
             res.status(409).send({message: 'Email is already in use'});

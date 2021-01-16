@@ -25,11 +25,11 @@ export class Note extends BaseEntity {
 
     @Column()
     @CreateDateColumn()
-    createdAt = Date;
+    createdAt: Date;
 
     @Column()
     @UpdateDateColumn()
-    updatedAt = Date;
+    updatedAt: Date;
 
     @ManyToOne(() => User, user => user.notes)
     user: User;

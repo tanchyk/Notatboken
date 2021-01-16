@@ -30,11 +30,11 @@ export class User extends BaseEntity {
 
     @Column()
     @CreateDateColumn()
-    createdAt = Date;
+    createdAt: Date;
 
     @Column()
     @UpdateDateColumn()
-    updatedAt = Date;
+    updatedAt: Date;
 
     @OneToMany(() => Note, note => note.user)
     notes: Note[];

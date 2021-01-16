@@ -6,15 +6,7 @@ import {Response, Request} from 'express';
 // import {User} from "../entities/User";
 
 class UserController {
-    static allUsers = async (req: Request, res: Response) => {
-
-    }
-
     static singleUser = async (req: Request, res: Response) => {
-
-    }
-
-    static newUser = async (req: Request, res: Response) => {
 
     }
 
