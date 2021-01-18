@@ -4,7 +4,8 @@ import {LoginData, UserAuth, UserSliceType} from "../utils/types";
 const initialState = {
     user: {
         userId: null,
-        token: null
+        username: null,
+        email: null
     },
     status: 'idle',
     error: null,
@@ -13,7 +14,7 @@ const initialState = {
 export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
     'user/fetchUser',
     async (loginData) => {
-        const response = await fetch('http://localhost:5000/users/login', {
+        const response = await fetch('/users/login', {
             method: 'POST',
             body: JSON.stringify(loginData),
             headers: {
@@ -45,8 +46,8 @@ const userSlice = createSlice({
     }
 });
 
-export const userData = (state: {user: UserAuth}) => state.user;
-export const userStatus = (state: {status: string}) => state.status;
+export const userData = (state: {user: UserSliceType}) => state.user.user;
+export const userStatus = (state: {user: UserSliceType}) => state.user.status;
 export const userError = (state: {error: string}) => state.error;
 
 export default userSlice.reducer;

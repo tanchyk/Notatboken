@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box, Button, Heading, Image, Input, InputGroup, InputRightElement, Link, Stack} from "@chakra-ui/react";
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import {
@@ -6,9 +6,10 @@ import {
 } from "react-router-dom";
 import {LoginData} from "../utils/types";
 import {useDispatch, useSelector} from "react-redux";
-import store ,{AppDispatch} from "../store/store";
-import {fetchUser, userStatus} from "../store/userSlice";
+import {AppDispatch} from "../store/store";
+import {fetchUser, userData, userStatus} from "../store/userSlice";
 import {history} from '../App';
+import {useLogin} from "../utils/login.hook";
 
 const LoginPage: React.FC<{}> = () => {
     const [inputData, setInputData] = useState<LoginData>({
@@ -16,13 +17,17 @@ const LoginPage: React.FC<{}> = () => {
         password: ''
     });
     const dispatch = useDispatch<AppDispatch>();
+    const {login} = useLogin();
 
+    const user = useSelector(userData);
     const status = useSelector(userStatus);
-    // const error = useSelector(userError);
 
-    if(status == 'succeeded') {
-        history.push('/');
-    }
+    useEffect(() => {
+        if(status === 'succeeded') {
+            login(user.userId);
+            history.push('/');
+        }
+    }, [status]);
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputData({...inputData, [event.target.id]: event.target.value});
@@ -47,7 +52,6 @@ const LoginPage: React.FC<{}> = () => {
         }
 
         await dispatch(fetchUser(inputData));
-        console.log(store.getState())
     }
 
     const [show, setShow] = React.useState(false);

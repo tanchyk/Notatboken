@@ -75,7 +75,12 @@ module.exports = {
         open: true,
         port: 4020,
         compress: true,
-        historyApiFallback: true
+        historyApiFallback: true,
+        proxy: {
+            "*": {
+                target: "http://localhost:5000"
+            }
+        }
     },
     devtool: isDev ? 'source-map' : 'eval',
 

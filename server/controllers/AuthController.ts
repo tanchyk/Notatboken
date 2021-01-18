@@ -42,9 +42,11 @@ class AuthController {
             {expiresIn: '1h'}
         )
 
+        res.cookie('token', token, { httpOnly: true });
         return res.status(200).json({
-            token,
-            userId: user.id
+            userId: user.id,
+            username: user.username,
+            email: user.email
         });
     }
 
@@ -101,9 +103,11 @@ class AuthController {
             {expiresIn: '1h'}
         )
 
+        res.cookie('token', token, { httpOnly: true });
         return res.status(200).json({
-            token,
-            userId: user.id
+            userId: user.id,
+            username: user.username,
+            email: user.email
         });
     }
 }

@@ -4,6 +4,7 @@ import {BrowserRouter, Route, Router} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
 import { createBrowserHistory } from 'history';
+import Notes from "./pages/NotesPage";
 
 export const history = createBrowserHistory();
 
@@ -24,13 +25,13 @@ const theme = extendTheme({
 })
 
 const App: React.FC<{}> = () => {
-    const isAuth = false;
+    const isAuth = !!localStorage.getItem('userId');
     let routes;
 
     if (isAuth) {
         routes = (
             <Router history={history}>
-                <Route exact path="/notes"/>
+                <Route exact path="/" component={Notes}/>
                 <Route exact path="/profile"/>
             </Router>
         );

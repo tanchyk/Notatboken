@@ -5,6 +5,7 @@ import express, {Errback, Request, Response, NextFunction, Application} from 'ex
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from "helmet";
+import cookieParser from 'cookie-parser';
 
 import usersRouter from "./routes/usersRouter";
 import notesRouter from "./routes/notesRouter";
@@ -31,6 +32,7 @@ createConnection({
     app.use(cors());
     app.use(express.urlencoded({extended: false}))
     app.use(bodyParser.json());
+    app.use(cookieParser());
     app.use(errorHandler);
 
     app.use('/users', usersRouter);
