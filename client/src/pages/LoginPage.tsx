@@ -1,25 +1,57 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Box, Button, Heading, Image, Input, InputGroup, InputRightElement, Link, Stack} from "@chakra-ui/react";
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import {
     Link as LinkPage
 } from "react-router-dom";
-
-// interface InputData {
-//     username: string,
-//     email: string,
-//     password: string
-// }
+import {LoginData} from "../utils/types";
+import {useDispatch, useSelector} from "react-redux";
+import store ,{AppDispatch} from "../store/store";
+import {fetchUser, userStatus} from "../store/userSlice";
+import {history} from '../App';
 
 const LoginPage: React.FC<{}> = () => {
-    // const [inputData, setInputData] = useState<InputData>({
-    //     username: '',
-    //     email: '',
-    //     password: ''
-    // });
+    const [inputData, setInputData] = useState<LoginData>({
+        usernameOrEmail: '',
+        password: ''
+    });
+    const dispatch = useDispatch<AppDispatch>();
 
-    const [show, setShow] = React.useState(false)
-    const handleClick = () => setShow(!show)
+    const status = useSelector(userStatus);
+    // const error = useSelector(userError);
+
+    if(status == 'succeeded') {
+        history.push('/');
+    }
+
+    const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setInputData({...inputData, [event.target.id]: event.target.value});
+    }
+
+    const loginHandler = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if(inputData.usernameOrEmail.includes('@')) {
+            const testEmail = /\S+@\S+\.\S+/;
+            if(!testEmail.test(inputData.usernameOrEmail)) {
+                return;
+            }
+        } else {
+            const testUsername = /\w/;
+            if(!testUsername.test(inputData.usernameOrEmail)) {
+                return;
+            }
+        }
+
+        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
+        if(!testPassword.test(inputData.password)) {
+            return;
+        }
+
+        await dispatch(fetchUser(inputData));
+        console.log(store.getState())
+    }
+
+    const [show, setShow] = React.useState(false);
+    const handleClick = () => setShow(!show);
 
     return (
         <Stack
@@ -53,12 +85,19 @@ const LoginPage: React.FC<{}> = () => {
                         Login
                     </Heading>
 
-                    <Input variant="outline" placeholder={"Email or Username"}/>
+                    <Input
+                        variant="outline"
+                        placeholder="Email or Username"
+                        id="usernameOrEmail"
+                        onChange={changeHandler}
+                    />
                     <InputGroup size="md">
                         <Input
+                            id="password"
                             pr="4.5rem"
                             type={show ? "text" : "password"}
                             placeholder="Enter password"
+                            onChange={changeHandler}
                         />
                         <InputRightElement width="4.5rem">
                             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -69,9 +108,9 @@ const LoginPage: React.FC<{}> = () => {
                     <Stack spacing={5} direction="row" alignItems="center">
                         <Button
                             width="120px"
-                            // isLoading={isSubmitting}
                             type="submit"
                             variantColor={'teal'}
+                            onClick={loginHandler}
                         >
                             Login
                         </Button>

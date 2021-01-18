@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 class AuthController {
     static login = async (req: Request, res: Response) => {
         const {usernameOrEmail, password} = req.body;
+        console.log({usernameOrEmail, password});
         if (!(usernameOrEmail && password)) {
             return res.status(400).send();
         }
