@@ -119,7 +119,9 @@ module.exports = {
                             '@babel/preset-env'
                         ],
                         plugins: [
-                            '@babel/plugin-proposal-class-properties'
+                            '@babel/plugin-proposal-class-properties',
+                            '@babel/plugin-proposal-logical-assignment-operators',
+                            '@babel/plugin-proposal-optional-chaining'
                         ]
                     }
                 }
@@ -135,7 +137,9 @@ module.exports = {
                             '@babel/preset-typescript'
                         ],
                         plugins: [
-                            '@babel/plugin-proposal-class-properties'
+                            '@babel/plugin-proposal-class-properties',
+                            '@babel/plugin-proposal-logical-assignment-operators',
+                            '@babel/plugin-proposal-optional-chaining'
                         ]
                     }
                 }
@@ -152,7 +156,9 @@ module.exports = {
                             '@babel/preset-react'
                         ],
                         plugins: [
-                            '@babel/plugin-proposal-class-properties'
+                            '@babel/plugin-proposal-class-properties',
+                            '@babel/plugin-proposal-logical-assignment-operators',
+                            '@babel/plugin-proposal-optional-chaining'
                         ]
                     }
                 }

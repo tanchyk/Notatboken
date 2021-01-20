@@ -14,5 +14,9 @@ export interface LoginData {
 export interface UserSliceType {
     user: UserAuth,
     status: string,
-    error: SerializedError | null | string
+    error: SerializedError | null | ErrorFromServer
+}
+
+export interface ErrorFromServer extends Object {
+    message: string
 }

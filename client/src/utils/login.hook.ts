@@ -4,9 +4,11 @@ const storageName: string = 'userId';
 
 export const useLogin = () => {
     const login= useCallback((id: number | null) => {
-        localStorage.setItem(storageName, JSON.stringify({
-            userId: id
-        }))
+        if(id) {
+            localStorage.setItem(storageName, JSON.stringify({
+                userId: id
+            }))
+        }
     }, []);
 
     const logout = useCallback(() => {

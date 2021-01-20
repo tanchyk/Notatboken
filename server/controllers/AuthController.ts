@@ -56,19 +56,19 @@ class AuthController {
 
         //Testing the input of a user
         const testEmail = /\S+@\S+\.\S+/;
-        if(!testEmail.test(email)) {
+        if(!testEmail.test(email) || email < 8 || email >= 254) {
             res.status(400).send({message: 'Invalid Email'});
             return;
         }
 
         const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
-        if(!testPassword.test(password)) {
+        if(!testPassword.test(password) || password > 64) {
             res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
             return;
         }
 
         const testUsername = /\w/;
-        if(!testUsername.test(username)) {
+        if(!testUsername.test(username) || username < 3 || username > 64) {
             res.status(400).send({message: 'Invalid Username'});
             return;
         }

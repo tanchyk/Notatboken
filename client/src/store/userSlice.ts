@@ -36,8 +36,13 @@ const userSlice = createSlice({
             state.status = 'loading';
         })
         builder.addCase(fetchUser.fulfilled, (state, { payload }) => {
-            state.status = 'succeeded';
-            state.user = payload;
+            if("message" in payload) {
+                state.status = 'failed';
+                state.error = payload;
+            } else {
+                state.status = 'succeeded';
+                state.user = payload;
+            }
         })
         builder.addCase(fetchUser.rejected, (state, { error}) => {
             state.status = 'failed';
@@ -48,6 +53,6 @@ const userSlice = createSlice({
 
 export const userData = (state: {user: UserSliceType}) => state.user.user;
 export const userStatus = (state: {user: UserSliceType}) => state.user.status;
-export const userError = (state: {error: string}) => state.error;
+export const userError = (state: {user: UserSliceType}) => state.user.error;
 
 export default userSlice.reducer;
