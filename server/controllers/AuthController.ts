@@ -38,11 +38,14 @@ class AuthController {
 
         const token = jwt.sign(
             {userId: user.id},
-            `${process.env.postgresPassword}`,
-            {expiresIn: '1h'}
+            `${process.env.redis}`,
+            {
+                expiresIn: '24h',
+                algorithm: "HS256"
+            }
         )
 
-        res.cookie('token', token, { httpOnly: true });
+        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         return res.status(200).json({
             userId: user.id,
             username: user.username,
@@ -99,16 +102,25 @@ class AuthController {
         //If everything is fine, send 200 response
         const token = jwt.sign(
             {userId: user.id},
-            `${process.env.postgresPassword}`,
-            {expiresIn: '1h'}
+            `${process.env.redis}`,
+            {
+                expiresIn: '24h',
+                algorithm: "HS256"
+            }
         )
 
-        res.cookie('token', token, { httpOnly: true });
+        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         return res.status(200).json({
             userId: user.id,
             username: user.username,
             email: user.email
         });
+    }
+
+    //Logout
+    static logout = async (req: Request, res: Response) => {
+        await res.clearCookie('token');
+        return res.redirect('/');
     }
 }
 

@@ -4,13 +4,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../store/store";
 import {createUser, userData, userError, userStatus} from "../store/userSlice";
 import {history} from '../App';
-import {useLogin} from "../utils/login.hook";
 import {AuthForm} from "../components/AuthForm";
 
 //Page component
 const RegisterPage: React.FC<{}> = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const {login} = useLogin();
 
     const user = useSelector(userData);
     const status = useSelector(userStatus);
@@ -19,8 +17,7 @@ const RegisterPage: React.FC<{}> = () => {
 
     useEffect(() => {
         if(status === 'succeeded') {
-            login(user.userId);
-            history.push('/');
+            history.push('/notes');
         } else  if(status === 'failed' && errorMessage) {
             message = errorMessage.message;
         }
