@@ -64,18 +64,18 @@ module.exports = {
 
     output: {
         filename: fileName('js'),
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
     },
 
     optimization: optimization(),
 
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
-        stats: 'errors-only',
-        open: true,
         port: 4020,
-        compress: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+            index:'/'
+        },
         proxy: {
             "*": {
                 target: "http://localhost:5000"

@@ -21,19 +21,19 @@ class AuthController {
             try {
                 user = await userRepository.findOneOrFail({where: {email: usernameOrEmail}});
             } catch (e) {
-                return res.status(401).send({message: 'Wrong data'});
+                return res.status(401).send({message: 'Incorrect username/email or password'});
             }
         } else {
             try {
                 user = await userRepository.findOneOrFail({where: {username: usernameOrEmail}});
             } catch (e) {
-                return res.status(401).send({message: 'Wrong data'});
+                return res.status(401).send({message: 'Incorrect username/email or password'});
             }
         }
 
         //Checking password
         if(! await argon2.verify(user.password, password)) {
-            return res.status(401).send({message: 'Wrong data'});
+            return res.status(401).send({message: 'Incorrect username/email or password'});
         }
 
         const token = jwt.sign(

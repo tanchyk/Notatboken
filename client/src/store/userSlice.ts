@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {LoginData, UserAuth, UserSliceType} from "../utils/types";
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {LoginData, RegisterData, UserAuth, UserSliceType} from "../utils/types";
 
 const initialState = {
     user: {
@@ -11,6 +11,7 @@ const initialState = {
     error: null,
 } as UserSliceType;
 
+//Async reducers
 export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
     'user/fetchUser',
     async (loginData) => {
@@ -25,6 +26,41 @@ export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
     }
 );
 
+export const createUser = createAsyncThunk<UserAuth, RegisterData>(
+    'user/createUser',
+    async (registerData) => {
+        const response = await fetch('/users/register', {
+            method: 'PUT',
+            body: JSON.stringify(registerData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return (await response.json()) as UserAuth;
+    }
+);
+
+//Extra Reducers
+const fetchUserPending = (state: UserSliceType, {}) => {
+    state.status = 'loading';
+}
+
+const fetchUserFulfilled = (state: UserSliceType, { payload }) => {
+    if("message" in payload) {
+        state.status = 'failed';
+        state.error = payload;
+    } else {
+        state.status = 'succeeded';
+        state.user = payload;
+    }
+}
+
+const fetchUserRejected = (state: UserSliceType, { error }) => {
+    state.status = 'failed';
+    state.error = error;
+}
+
+//User Slice
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -32,22 +68,12 @@ const userSlice = createSlice({
 
     },
     extraReducers: builder => {
-        builder.addCase(fetchUser.pending, (state, {}) => {
-            state.status = 'loading';
-        })
-        builder.addCase(fetchUser.fulfilled, (state, { payload }) => {
-            if("message" in payload) {
-                state.status = 'failed';
-                state.error = payload;
-            } else {
-                state.status = 'succeeded';
-                state.user = payload;
-            }
-        })
-        builder.addCase(fetchUser.rejected, (state, { error}) => {
-            state.status = 'failed';
-            state.error = error;
-        })
+        builder.addCase(fetchUser.pending, fetchUserPending)
+        builder.addCase(fetchUser.fulfilled, fetchUserFulfilled)
+        builder.addCase(fetchUser.rejected, fetchUserRejected)
+        builder.addCase(createUser.pending, fetchUserPending)
+        builder.addCase(createUser.fulfilled, fetchUserFulfilled)
+        builder.addCase(createUser.rejected, fetchUserRejected)
     }
 });
 

@@ -1,10 +1,11 @@
 import React from 'react';
 import {ChakraProvider, extendTheme} from "@chakra-ui/react";
-import {BrowserRouter, Route, Router} from "react-router-dom";
+import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
 import { createBrowserHistory } from 'history';
 import Notes from "./pages/NotesPage";
+import RegisterPage from "./pages/RegisterPage";
 
 export const history = createBrowserHistory();
 
@@ -30,24 +31,29 @@ const App: React.FC<{}> = () => {
 
     if (isAuth) {
         routes = (
-            <Router history={history}>
+            <Switch>
                 <Route exact path="/" component={Notes}/>
                 <Route exact path="/profile"/>
-            </Router>
+                <Redirect to="/"/>
+            </Switch>
         );
     } else {
         routes = (
-            <Router history={history}>
+            <Switch>
                 <Route exact path="/" component={MainPage}/>
                 <Route exact path="/login" component={LoginPage}/>
-            </Router>
+                <Route exact path="/register" component={RegisterPage}/>
+                <Redirect to="/"/>
+            </Switch>
         );
     }
 
     return (
-        <BrowserRouter >
+        <BrowserRouter>
             <ChakraProvider theme={theme}>
-                {routes}
+                <Router history={history}>
+                    {routes}
+                </Router>
             </ChakraProvider>
         </BrowserRouter>
     );

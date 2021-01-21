@@ -25,13 +25,15 @@ const NavBar: React.FC<NavbarProps> = ({}) => {
                         Login
                     </Button>
                 </LinkPage>
-                <Button
-                    width="100px"
-                    type="submit"
-                    variantColor={'teal'}
-                >
-                    Register
-                </Button>
+                <LinkPage to="/register">
+                    <Button
+                        width="100px"
+                        type="submit"
+                        variantColor={'teal'}
+                    >
+                        Register
+                    </Button>
+                </LinkPage>
             </>
         );
     } else {
