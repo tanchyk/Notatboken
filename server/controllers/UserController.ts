@@ -1,8 +1,6 @@
 import {Response, Request, NextFunction} from 'express';
 import {getRepository} from "typeorm";
 import {User} from "../entities/User";
-// import { validate } from "class-validator";
-// import argon2 from 'argon2';
 
 class UserController {
     static singleUser = async (req: Request, res: Response, next: NextFunction) => {

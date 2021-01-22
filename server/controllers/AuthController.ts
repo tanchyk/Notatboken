@@ -1,7 +1,6 @@
 import {Response, Request} from 'express';
 import {User} from "../entities/User";
 import argon2 from "argon2";
-import {validate} from "class-validator";
 import {getRepository} from "typeorm";
 import jwt from 'jsonwebtoken';
 
@@ -60,20 +59,17 @@ class AuthController {
         //Testing the input of a user
         const testEmail = /\S+@\S+\.\S+/;
         if(!testEmail.test(email) || email < 8 || email >= 254) {
-            res.status(400).send({message: 'Invalid Email'});
-            return;
+            return res.status(400).send({message: 'Invalid Email'});
         }
 
         const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
         if(!testPassword.test(password) || password > 64) {
-            res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
-            return;
+            return res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
         }
 
         const testUsername = /\w/;
         if(!testUsername.test(username) || username < 3 || username > 64) {
-            res.status(400).send({message: 'Invalid Username'});
-            return;
+            return res.status(400).send({message: 'Invalid Username'});
         }
 
         //Creating User
@@ -83,20 +79,27 @@ class AuthController {
         user.email = email;
         user.password = hashedPassword;
 
-        //Validate if the parameters are ok
-        const errors = await validate(user);
-        if (errors.length > 0) {
-            res.status(400).send(errors);
-            return;
+        const userRepository = getRepository(User);
+
+        const checkExisting: User | undefined = await userRepository.findOne({
+            where : [{
+                username : username,
+            }, {
+                email : email,
+            }]
+        });
+
+        if(checkExisting!.username === username) {
+            return res.status(409).send({message: 'Username is already taken'});
+        } else if(checkExisting!.email === email) {
+            return res.status(409).send({message: 'Email is already taken'});
         }
 
-        const userRepository = getRepository(User);
         try {
             console.log(user)
             await userRepository.save(user);
         } catch (e) {
-            res.status(409).send({message: 'Email is already in use'});
-            return;
+            return res.status(409).send({message: 'Email is already in use'});;
         }
 
         //If everything is fine, send 200 response

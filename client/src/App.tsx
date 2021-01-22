@@ -8,7 +8,9 @@ import Notes from "./pages/NotesPage";
 import RegisterPage from "./pages/RegisterPage";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "./store/store";
-import {userData, userError, userStatus} from "./store/userSlice";
+import {loadUser, userData} from "./store/userSlice";
+import {fetchToken} from "./store/csrfSlice";
+import NavBar from "./components/Navbar";
 
 export const history = createBrowserHistory();
 
@@ -29,23 +31,21 @@ const theme = extendTheme({
 })
 
 const App: React.FC<{}> = () => {
-    const isAuth = localStorage.getItem('userId');
-
     const dispatch = useDispatch<AppDispatch>();
 
     const user = useSelector(userData);
 
     useEffect(() => {
-        // if(!!isAuth && !user) {
-        //     dispatch()
-        // }
-    }, [user])
+        dispatch(fetchToken());
+        dispatch(loadUser());
+    }, []);
 
     let routes;
 
-    if (!!isAuth) {
+    if (!!user.userId) {
         routes = (
             <Switch>
+                <NavBar />
                 <Route exact path="/notes" component={Notes}/>
                 <Route exact path="/profile"/>
                 <Redirect to="/notes"/>

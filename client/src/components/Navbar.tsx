@@ -3,16 +3,35 @@ import {
     Link as LinkPage
 } from "react-router-dom";
 import {Box, Button, Flex, Heading, Image, Stack} from "@chakra-ui/react";
+import {useDispatch, useSelector} from "react-redux";
+import {logoutUser, userData} from "../store/userSlice";
+import {AppDispatch} from "../store/store";
+import {history} from '../App';
 
-interface NavbarProps {
-
-}
-
-const NavBar: React.FC<NavbarProps> = ({}) => {
-    const isAuth = false;
+const NavBar: React.FC<{}> = ({}) => {
+    const dispatch = useDispatch<AppDispatch>();
+    const user = useSelector(userData);
     let body;
 
-    if (!isAuth) {
+    const logoutHandler = () => {
+        dispatch(logoutUser());
+        history.push('/');
+    }
+
+    if (!!user.userId) {
+        body = (
+            <>
+                <Button
+                    width="100px"
+                    type="submit"
+                    variantColor={'teal'}
+                    onClick={logoutHandler}
+                >
+                    Log out
+                </Button>
+            </>
+        );
+    } else {
         body = (
             <>
                 <LinkPage to="/login">
@@ -35,16 +54,6 @@ const NavBar: React.FC<NavbarProps> = ({}) => {
                     </Button>
                 </LinkPage>
             </>
-        );
-    } else {
-        body = (
-            <Flex>
-                <Button
-                    variant="link" color="white"
-                >
-                    Log out
-                </Button>
-            </Flex>
         );
     }
 

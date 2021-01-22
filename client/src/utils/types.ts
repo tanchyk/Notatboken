@@ -20,9 +20,14 @@ export interface RegisterData {
 export interface UserSliceType {
     user: UserAuth,
     status: string,
-    error: SerializedError | null | ErrorFromServer
+    error: ErrorFromServer
+}
+
+export interface CsrfSliceType {
+    csrfToken: string | null
 }
 
 export interface ErrorFromServer extends Object {
-    message: string
+    type: 'login' | 'register' | null,
+    message: string | SerializedError | null
 }

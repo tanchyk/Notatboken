@@ -1,4 +1,4 @@
-import React, {ReactElement, useState} from "react";
+import React, {ReactElement, useEffect, useState} from "react";
 import {LoginData, RegisterData} from "../utils/types";
 import {Field, Form, Formik} from "formik";
 import {
@@ -15,6 +15,11 @@ import {
 } from "@chakra-ui/react";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {userData, userError, userStatus} from "../store/userSlice";
+import store from "../store/store";
+import {history} from "../App";
+import {SerializedError} from "@reduxjs/toolkit";
 
 //Validation functions
 
@@ -58,14 +63,27 @@ const validatePassword = (value: string) => {
 //Page props
 interface AuthFormProps {
     action: string,
-    actionHandler: (values: any) => Promise<void>,
-    message: string | null
+    actionHandler: (values: any) => Promise<void>
 }
 
 //Auth form
-export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler, message}) => {
+export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
+
+    const user = useSelector(userData);
+    const status = useSelector(userStatus);
+    const errorMessage = useSelector(userError);
+    let message: string | null | SerializedError = null;
+
+    useEffect(() => {
+        console.log(store.getState());
+        if(status === 'succeeded') {
+            history.push('/notes');
+        } else  if(status === 'failed' && errorMessage.message && errorMessage.type === action) {
+            message = errorMessage.message;
+        }
+    }, [user, errorMessage]);
 
     let initialState = {};
     let authForm: ReactElement;

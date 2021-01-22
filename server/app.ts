@@ -1,10 +1,11 @@
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import express, {Errback, Request, Response, NextFunction, Application} from 'express';
+import express, {Errback, Request, Response, Application, NextFunction} from 'express';
 
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from "helmet";
+import csurf from 'csurf';
 import cookieParser from 'cookie-parser';
 
 import usersRouter from "./routes/usersRouter";
@@ -14,7 +15,7 @@ import {Note} from "./entities/Note";
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
-    res.status(500).json({error: err});
+    return res.status(500).json({error: err});
 }
 
 createConnection({
@@ -30,10 +31,19 @@ createConnection({
 
     app.use(helmet());
     app.use(cors());
-    app.use(express.urlencoded({extended: false}))
+    app.use(express.urlencoded({
+        extended: false
+    }));
     app.use(bodyParser.json());
     app.use(cookieParser());
+    app.use(csurf({
+        cookie: true
+    }));
     app.use(errorHandler);
+
+    app.get('/csrf-token', (req: Request, res: Response) => {
+        res.json({ csrfToken: req.csrfToken() });
+    });
 
     app.use('/users', usersRouter);
     app.use('/posts', notesRouter);
