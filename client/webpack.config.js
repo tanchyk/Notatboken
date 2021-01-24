@@ -71,12 +71,18 @@ module.exports = {
     optimization: optimization(),
 
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        watchContentBase: true,
+        progress: true,
+        hot: true,
+        contentBase: path.resolve(__dirname, 'dist'),
         port: 4020,
-        historyApiFallback: {
-            index:'/'
-        },
+        historyApiFallback: true,
+        open: true,
         proxy: {
+            "/": {
+                target: "http://localhost:5000"
+            },
             "*": {
                 target: "http://localhost:5000"
             }

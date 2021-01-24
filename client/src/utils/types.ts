@@ -1,4 +1,5 @@
 import {SerializedError} from "@reduxjs/toolkit";
+import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
 
 export interface UserAuth {
     userId: number | null,
@@ -30,4 +31,16 @@ export interface CsrfSliceType {
 export interface ErrorFromServer extends Object {
     type: 'login' | 'register' | null,
     message: string | SerializedError | null
+}
+
+export interface FieldProps<V = any> {
+    field: FieldInputProps<V>;
+    form: FormikProps<V>;
+    meta: FieldMetaProps<V>;
+}
+
+export interface BasicUser {
+    name: string | null,
+    email: string | null,
+    username: string | null
 }

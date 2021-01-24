@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {ChakraProvider, extendTheme} from "@chakra-ui/react";
-import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
+import {BrowserRouter, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
 import { createBrowserHistory } from 'history';
@@ -11,6 +11,7 @@ import {AppDispatch} from "./store/store";
 import {loadUser, userData} from "./store/userSlice";
 import {fetchToken} from "./store/csrfSlice";
 import NavBar from "./components/Navbar";
+import {ProfilePage} from "./pages/ProfilePage";
 
 export const history = createBrowserHistory();
 
@@ -38,18 +39,20 @@ const App: React.FC<{}> = () => {
     useEffect(() => {
         dispatch(fetchToken());
         dispatch(loadUser());
-    }, []);
+    }, [dispatch]);
 
     let routes;
 
     if (!!user.userId) {
         routes = (
-            <Switch>
+            <>
                 <NavBar />
-                <Route exact path="/notes" component={Notes}/>
-                <Route exact path="/profile"/>
-                <Redirect to="/notes"/>
-            </Switch>
+                <Switch>
+                    <Route exact path="/" component={Notes}/>
+                    <Route exact path="/notes" component={Notes}/>
+                    <Route exact path="/profile" component={ProfilePage}/>
+                </Switch>
+            </>
         );
     } else {
         routes = (
@@ -57,13 +60,12 @@ const App: React.FC<{}> = () => {
                 <Route exact path="/" component={MainPage}/>
                 <Route exact path="/login" component={LoginPage}/>
                 <Route exact path="/register" component={RegisterPage}/>
-                <Redirect to="/"/>
             </Switch>
         );
     }
 
     return (
-        <BrowserRouter>
+        <BrowserRouter basename='/'>
             <ChakraProvider theme={theme}>
                 <Router history={history}>
                     {routes}

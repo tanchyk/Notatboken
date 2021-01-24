@@ -1,5 +1,5 @@
 import React, {ReactElement, useEffect, useState} from "react";
-import {LoginData, RegisterData} from "../utils/types";
+import {LoginData, RegisterData, FieldProps} from "../utils/types";
 import {Field, Form, Formik} from "formik";
 import {
     Box, Button,
@@ -20,45 +20,7 @@ import {userData, userError, userStatus} from "../store/userSlice";
 import store from "../store/store";
 import {history} from "../App";
 import {SerializedError} from "@reduxjs/toolkit";
-
-//Validation functions
-
-const validateUsernameOrEmail = (value: string) => {
-    let error;
-    if (value.includes('@')) {
-        error = validateEmail(value);
-    } else {
-        error = validateUsername(value);
-    }
-    return error;
-}
-
-const validateUsername = (value: string) => {
-    let error;
-    const testUsername = /\w/;
-    if (!testUsername.test(value) || value.length < 3 || value.length > 64) {
-        error = "Please, enter a valid Username";
-    }
-    return error;
-}
-
-const validateEmail = (value: string) => {
-    let error;
-    const testEmail = /\S+@\S+\.\S+/;
-    if (!testEmail.test(value) || value.length < 8 || value.length > 264) {
-        error = "Please, enter a valid Email";
-    }
-    return error;
-}
-
-const validatePassword = (value: string) => {
-    let error;
-    const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
-    if (!testPassword.test(value)) {
-        error = "Please, enter a valid Password";
-    }
-    return error
-}
+import {validateEmail, validatePassword, validateUsername, validateUsernameOrEmail} from "../utils/validationFunctions";
 
 //Page props
 interface AuthFormProps {
@@ -93,7 +55,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
 
         authForm = (
             <Field name="usernameOrEmail" validate={validateUsernameOrEmail}>
-                {({field, form}) => {
+                {({field, form}: FieldProps) => {
                     if (message) {
                         return (
                             <FormControl
@@ -110,7 +72,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                     } else {
                         return (
                             <FormControl
-                                isInvalid={form.errors.usernameOrEmail && form.touched.usernameOrEmail}>
+                                isInvalid={!!form.errors.usernameOrEmail && !!form.touched.usernameOrEmail}>
                                 <Input
                                     {...field}
                                     variant="outline"
@@ -130,7 +92,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
         authForm = (
             <Stack spacing={5}>
                 <Field name="username" validate={validateUsername}>
-                    {({field, form}) => {
+                    {({field, form}: FieldProps) => {
                         if (message) {
                             return (
                                 <FormControl
@@ -147,7 +109,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                         } else {
                             return (
                                 <FormControl
-                                    isInvalid={form.errors.username && form.touched.username}>
+                                    isInvalid={!!form.errors.username && !!form.touched.username}>
                                     <Input
                                         {...field}
                                         variant="outline"
@@ -161,9 +123,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                     }}
                 </Field>
                 <Field name="email" validate={validateEmail}>
-                    {({field, form}) => (
+                    {({field, form}: FieldProps) => (
                         <FormControl
-                            isInvalid={form.errors.email && form.touched.email}>
+                            isInvalid={!!form.errors.email && !!form.touched.email}>
                             <Input
                                 {...field}
                                 variant="outline"
@@ -186,7 +148,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                 await actionHandler(values);
             }}
         >
-            {(props) => (
+            {() => (
                 <Form>
                     <Stack
                         maxW={["100%", "90%", "70%", "50%"]}
@@ -224,8 +186,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                                 {authForm}
                                 <InputGroup size="md">
                                     <Field name="password" validate={validatePassword}>
-                                        {({field, form}) => (
-                                            <FormControl isInvalid={form.errors.password && form.touched.password}>
+                                        {({field, form}: FieldProps) => (
+                                            <FormControl isInvalid={!!form.errors.password && !!form.touched.password}>
                                                 <Input
                                                     {...field}
                                                     id="password"
@@ -248,7 +210,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                                     <Button
                                         width="120px"
                                         type="submit"
-                                        variantColor={'teal'}
+                                        variantсolor='teal'
                                     >
                                         {action === 'login' ? 'Login' : 'Sign up'}
                                     </Button>

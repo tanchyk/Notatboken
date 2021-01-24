@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../store/userSlice";
 import {AppDispatch} from "../store/store";
 import {history} from '../App';
+import {Wrapper} from "../utils/Wrapper";
 
 const NavBar: React.FC<{}> = ({}) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -21,10 +22,20 @@ const NavBar: React.FC<{}> = ({}) => {
     if (!!user.userId) {
         body = (
             <>
+                <LinkPage to="/profile">
+                    <Button
+                        width="100px"
+                        type="submit"
+                        variantсolor='teal'
+                        mr={3}
+                    >
+                        Profile
+                    </Button>
+                </LinkPage>
                 <Button
                     width="100px"
                     type="submit"
-                    variantColor={'teal'}
+                    variantсolor={'teal'}
                     onClick={logoutHandler}
                 >
                     Log out
@@ -38,7 +49,7 @@ const NavBar: React.FC<{}> = ({}) => {
                     <Button
                         width="100px"
                         type="submit"
-                        variantColor={'teal'}
+                        variantсolor='teal'
                         mr={3}
                     >
                         Login
@@ -48,7 +59,7 @@ const NavBar: React.FC<{}> = ({}) => {
                     <Button
                         width="100px"
                         type="submit"
-                        variantColor={'teal'}
+                        variantсolor='teal'
                     >
                         Register
                     </Button>
@@ -58,22 +69,24 @@ const NavBar: React.FC<{}> = ({}) => {
     }
 
     return (
-        <Flex bg="#fff" p={3} justifyContent="center">
-            <Flex direction="row" justifyContent="space-between" width={["100%", "90%", "80%", "70%"]}>
+        <Flex bg="#fff" p={3} justifyContent="center" borderBottom="1px">
+            <Wrapper variant='regular'>
                 <Stack direction="row" spacing={3} alignItems="center">
                     <Box boxSize="40px" direction="row">
                         <Image
                             src="https://www.flaticon.com/svg/vstatic/svg/2921/2921222.svg?token=exp=1610654508~hmac=6503d46057215c9340a5269d8515aa57"
                         />
                     </Box>
-                    <Heading as="h1" size="lg">
-                        Notatboken
-                    </Heading>
+                    <LinkPage to="/">
+                        <Heading as="h1" size="lg">
+                            Notatboken
+                        </Heading>
+                    </LinkPage>
                 </Stack>
                 <Box>
                     {body}
                 </Box>
-            </Flex>
+            </Wrapper>
         </Flex>
     );
 }
