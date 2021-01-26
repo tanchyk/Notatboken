@@ -5,14 +5,15 @@ import UserController from "../controllers/UserController";
 
 const usersRouter = express.Router();
 
+//Auth routes
 usersRouter.put('/register', AuthController.register);
-
 usersRouter.post('/login', AuthController.login);
-
 usersRouter.post('/logout', authenticationJwt, AuthController.logout);
 
+//User operations
 usersRouter.get('/single-user', authenticationJwt, getUserId, UserController.singleUser);
-
+usersRouter.put('/update-user', authenticationJwt, getUserId, UserController.editUser);
+usersRouter.post('/change-password', authenticationJwt, getUserId, UserController.changeUserPassword);
 usersRouter.delete('/delete-user', authenticationJwt, getUserId, UserController.deleteUser);
 
 export default  usersRouter;

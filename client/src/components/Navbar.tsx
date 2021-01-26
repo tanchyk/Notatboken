@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../store/userSlice";
 import {AppDispatch} from "../store/store";
 import {history} from '../App';
-import {Wrapper} from "../utils/Wrapper";
+import {Wrapper} from "./additional/Wrapper";
 
 const NavBar: React.FC<{}> = ({}) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -24,18 +24,17 @@ const NavBar: React.FC<{}> = ({}) => {
             <>
                 <LinkPage to="/profile">
                     <Button
-                        width="100px"
-                        type="submit"
-                        variantсolor='teal'
-                        mr={3}
+                        width="80px"
+                        variant="ghost"
+                        mr={2}
                     >
                         Profile
                     </Button>
                 </LinkPage>
                 <Button
-                    width="100px"
+                    width="80px"
                     type="submit"
-                    variantсolor={'teal'}
+                    variant="outline"
                     onClick={logoutHandler}
                 >
                     Log out
@@ -47,21 +46,20 @@ const NavBar: React.FC<{}> = ({}) => {
             <>
                 <LinkPage to="/login">
                     <Button
-                        width="100px"
-                        type="submit"
-                        variantсolor='teal'
-                        mr={3}
+                        width="80px"
+                        variant="ghost"
+                        mr={2}
                     >
-                        Login
+                        Log in
                     </Button>
                 </LinkPage>
                 <LinkPage to="/register">
                     <Button
-                        width="100px"
+                        width="80px"
                         type="submit"
-                        variantсolor='teal'
+                        variant="outline"
                     >
-                        Register
+                        Sign up
                     </Button>
                 </LinkPage>
             </>
@@ -72,9 +70,9 @@ const NavBar: React.FC<{}> = ({}) => {
         <Flex bg="#fff" p={3} justifyContent="center" borderBottom="1px">
             <Wrapper variant='regular'>
                 <Stack direction="row" spacing={3} alignItems="center">
-                    <Box boxSize="40px" direction="row">
+                    <Box boxSize="36px" direction="row">
                         <Image
-                            src="https://www.flaticon.com/svg/vstatic/svg/2921/2921222.svg?token=exp=1610654508~hmac=6503d46057215c9340a5269d8515aa57"
+                            src="https://i.pinimg.com/564x/fb/ef/08/fbef08c391667ee0b09437a4ed96eb11.jpg"
                         />
                     </Box>
                     <LinkPage to="/">

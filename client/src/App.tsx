@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {ChakraProvider, extendTheme} from "@chakra-ui/react";
+import {ChakraProvider} from "@chakra-ui/react";
 import {BrowserRouter, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
@@ -12,24 +12,9 @@ import {loadUser, userData} from "./store/userSlice";
 import {fetchToken} from "./store/csrfSlice";
 import NavBar from "./components/Navbar";
 import {ProfilePage} from "./pages/ProfilePage";
+import {theme} from "./utils/theme";
 
 export const history = createBrowserHistory();
-
-const theme = extendTheme({
-    styles: {
-        global: {
-            "html, body": {
-                fontSize: "sm",
-                backgroundColor: "#f7f7f7",
-                color: "gray.600",
-                lineHeight: "tall",
-            },
-            button: {
-                backgroundColor: "black"
-            }
-        },
-    },
-})
 
 const App: React.FC<{}> = () => {
     const dispatch = useDispatch<AppDispatch>();

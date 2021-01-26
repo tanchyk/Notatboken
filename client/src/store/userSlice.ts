@@ -1,9 +1,10 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {CsrfSliceType, LoginData, RegisterData, UserAuth, UserSliceType} from "../utils/types";
+import {BasicUser, CsrfSliceType, LoginData, RegisterData, UserAuth, UserSliceType} from "../utils/types";
 
 const initialState = {
     user: {
         userId: null,
+        name: null,
         username: null,
         email: null
     },
@@ -71,9 +72,36 @@ export const logoutUser = createAsyncThunk<void, void>(
     }
 )
 
+export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
+    'user/updateUser',
+    async (updateData, {getState}) => {
+        const {csrfToken} = getState() as {csrfToken: CsrfSliceType}
+        const response = await fetch('/users/update-user', {
+            method: 'PUT',
+            body: JSON.stringify(updateData),
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': `${csrfToken.csrfToken}`
+            }
+        });
+        return (await response.json()) as UserAuth;
+    }
+)
+
 //Extra Reducers
 const fetchUserPending = (state: UserSliceType, {}) => {
     state.status = 'loading';
+}
+
+const fetchUserFulfilled = (state: UserSliceType, { payload }: { payload: UserAuth }) => {
+    if("message" in payload) {
+        state.status = 'failed';
+        state.error.message = payload['message'];
+        state.error.type = 'register';
+    } else {
+        state.status = 'succeeded';
+        state.user = payload;
+    }
 }
 
 const fetchUserRejected = (state: UserSliceType, {}) => {
@@ -89,29 +117,11 @@ const userSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(fetchUser.pending, fetchUserPending)
-        builder.addCase(fetchUser.fulfilled, (state: UserSliceType, { payload }) => {
-            if("message" in payload) {
-                state.status = 'failed';
-                state.error.message = payload['message'];
-                state.error.type = 'login';
-            } else {
-                state.status = 'succeeded';
-                state.user = payload;
-            }
-        })
+        builder.addCase(fetchUser.fulfilled, fetchUserFulfilled)
         builder.addCase(fetchUser.rejected, fetchUserRejected)
 
         builder.addCase(createUser.pending, fetchUserPending)
-        builder.addCase(createUser.fulfilled, (state: UserSliceType, { payload }) => {
-            if("message" in payload) {
-                state.status = 'failed';
-                state.error.message = payload['message'];
-                state.error.type = 'register';
-            } else {
-                state.status = 'succeeded';
-                state.user = payload;
-            }
-        })
+        builder.addCase(createUser.fulfilled,  fetchUserFulfilled)
         builder.addCase(createUser.rejected, fetchUserRejected)
 
         builder.addCase(loadUser.pending, fetchUserPending)
@@ -124,6 +134,7 @@ const userSlice = createSlice({
         builder.addCase(logoutUser.fulfilled, (state: UserSliceType, {}) => {
             state.user = {
                 userId: null,
+                name: null,
                 username: null,
                 email: null
             };
@@ -133,6 +144,10 @@ const userSlice = createSlice({
             };
             state.status = 'idle';
         })
+
+        builder.addCase(updateUser.pending, fetchUserPending)
+        builder.addCase(updateUser.fulfilled,  fetchUserFulfilled)
+        builder.addCase(updateUser.rejected, fetchUserRejected)
     }
 });
 

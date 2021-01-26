@@ -1,51 +1,47 @@
 import React from "react";
-import {Stack, Heading, Text, Input, Box, Button, FormControl, FormErrorMessage} from "@chakra-ui/react";
+import {
+    Text,
+    Input,
+    Box,
+    Button,
+    FormControl,
+    FormErrorMessage
+} from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../utils/types";
 import {validateEmail, validateUsername} from "../utils/validationFunctions";
-import {useSelector} from "react-redux";
-import {userData} from "../store/userSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {updateUser, userData} from "../store/userSlice";
+import {AppDispatch} from "../store/store";
+import {ProfileWrapper} from "./additional/ProfileWrapper";
 
 const validateName = (value: string) => {
     let error;
-    const checkName = /^(?:[-A-Z]+ )+[-A-Z]+$/;
-    if (!checkName.test(value)) {
+    const checkName = /^[a-zA-Z].*[\s\.]*$/g;
+    if (!checkName.test(value) || value.length < 5) {
         error = 'Please, enter a full name and surname';
     }
     return error;
 }
 
 export const BasicInformation: React.FC<{}> = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const user = useSelector(userData);
 
     return (
         <Formik
             initialValues={{
-                name: "",
+                name: user.name,
                 email: user.email,
                 username: user.username
             } as BasicUser}
             onSubmit={async (values) => {
-                console.log(values)
+                await dispatch(updateUser(values));
             }}
         >
             {() => (
                 <Form>
-                    <Stack
-
-                        borderWidth="1px"
-                        borderLeftWidth="4px"
-                        borderRadius="lg"
-                        overflow="hidden"
-                        padding={8}
-                        paddingLeft={10}
-                        backgroundColor="#fff"
-                        marginTop={["0px", "0px", "30px", "30px"]}
-                        spacing={6}
-                    >
-                        <Heading size="lg">
-                            Basic Information
-                        </Heading>
+                    <ProfileWrapper variant='Basic Information'>
                         <Box>
                             <Text fontSize="lg" marginBottom={3} fontWeight="bold">Name</Text>
                             <Field name="name" validate={validateName}>
@@ -95,14 +91,13 @@ export const BasicInformation: React.FC<{}> = () => {
                             </Field>
                         </Box>
                         <Button
-                            width="140px"
+                            width="120px"
                             type="submit"
                             variantсolor='teal'
-                            size="lg"
                         >
                             Update Profile
                         </Button>
-                    </Stack>
+                    </ProfileWrapper>
                 </Form>
             )}
         </Formik>

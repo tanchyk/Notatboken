@@ -3,6 +3,7 @@ import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
 
 export interface UserAuth {
     userId: number | null,
+    name: string | null,
     username: string | null,
     email: string | null
 }
@@ -40,7 +41,13 @@ export interface FieldProps<V = any> {
 }
 
 export interface BasicUser {
-    name: string | null,
-    email: string | null,
-    username: string | null
+    name: string | null;
+    email: string | null;
+    username: string | null;
+}
+
+export interface Passwords {
+    newPassword: string;
+    confirmPassword: string;
+    oldPassword: string;
 }

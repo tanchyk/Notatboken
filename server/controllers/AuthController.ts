@@ -47,6 +47,7 @@ class AuthController {
         res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         return res.status(200).json({
             userId: user.id,
+            name: user.name,
             username: user.username,
             email: user.email
         });
@@ -58,17 +59,17 @@ class AuthController {
 
         //Testing the input of a user
         const testEmail = /\S+@\S+\.\S+/;
-        if(!testEmail.test(email) || email < 8 || email >= 254) {
+        if(!testEmail.test(email) || email.length < 8 || email.length >= 254) {
             return res.status(400).send({message: 'Invalid Email'});
         }
 
         const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
-        if(!testPassword.test(password) || password > 64) {
+        if(!testPassword.test(password) || password.length > 100) {
             return res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
         }
 
         const testUsername = /\w/;
-        if(!testUsername.test(username) || username < 3 || username > 64) {
+        if(!testUsername.test(username) || username.length < 3 || username.length > 64) {
             return res.status(400).send({message: 'Invalid Username'});
         }
 
@@ -115,6 +116,7 @@ class AuthController {
         res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         return res.status(200).json({
             userId: user.id,
+            name: user.name,
             username: user.username,
             email: user.email
         });

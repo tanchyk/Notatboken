@@ -11,7 +11,7 @@ import {
     InputGroup,
     InputRightElement,
     Link,
-    Stack
+    Stack, useStyleConfig
 } from "@chakra-ui/react";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
@@ -30,20 +30,23 @@ interface AuthFormProps {
 
 //Auth form
 export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
+    const styleStack = useStyleConfig("Stack");
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
+
+    //Data
+    const [message, setMessage] = useState<string | null | SerializedError>(null);
 
     const user = useSelector(userData);
     const status = useSelector(userStatus);
     const errorMessage = useSelector(userError);
-    let message: string | null | SerializedError = null;
 
     useEffect(() => {
         console.log(store.getState());
         if(status === 'succeeded') {
             history.push('/notes');
         } else  if(status === 'failed' && errorMessage.message && errorMessage.type === action) {
-            message = errorMessage.message;
+            setMessage(errorMessage.message);
         }
     }, [user, errorMessage]);
 
@@ -151,12 +154,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
             {() => (
                 <Form>
                     <Stack
+                        sx={styleStack}
+                        borderLeftWidth="4px"
                         maxW={["100%", "90%", "70%", "50%"]}
-                        borderWidth="1px"
-                        borderRadius="lg"
-                        overflow="hidden"
                         padding="20px"
-                        backgroundColor="#fff"
                         margin="auto"
                         marginTop={["10px", "20px", "40px", "100px"]}
                     >
