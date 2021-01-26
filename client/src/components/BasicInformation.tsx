@@ -1,11 +1,9 @@
 import React from "react";
 import {
     Text,
-    Input,
     Box,
     Button,
-    FormControl,
-    FormErrorMessage
+    useToast
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../utils/types";
@@ -13,7 +11,8 @@ import {validateEmail, validateUsername} from "../utils/validationFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {updateUser, userData} from "../store/userSlice";
 import {AppDispatch} from "../store/store";
-import {ProfileWrapper} from "./additional/ProfileWrapper";
+import {ProfileWrapper} from "./wrappers/ProfileWrapper";
+import {UserInput} from "./inputs/UserInput";
 
 const validateName = (value: string) => {
     let error;
@@ -25,6 +24,8 @@ const validateName = (value: string) => {
 }
 
 export const BasicInformation: React.FC<{}> = () => {
+    const toast = useToast();
+
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector(userData);
 
@@ -37,6 +38,15 @@ export const BasicInformation: React.FC<{}> = () => {
             } as BasicUser}
             onSubmit={async (values) => {
                 await dispatch(updateUser(values));
+
+                return toast({
+                    position: 'bottom',
+                    title: "Account updated.",
+                    description: "We've updated your account for you.",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                })
             }}
         >
             {() => (
@@ -46,15 +56,12 @@ export const BasicInformation: React.FC<{}> = () => {
                             <Text fontSize="lg" marginBottom={3} fontWeight="bold">Name</Text>
                             <Field name="name" validate={validateName}>
                                 {({field, form}: FieldProps) => (
-                                    <FormControl isInvalid={!!form.errors.name && !!form.touched.name}>
-                                        <Input
-                                            {...field}
-                                            variant="outline"
-                                            placeholder={field.value}
-                                            size="lg"
-                                        />
-                                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-                                    </FormControl>
+                                    <UserInput
+                                        size="lg"
+                                        name="name"
+                                        field={field}
+                                        form={form}
+                                    />
                                 )}
                             </Field>
                         </Box>
@@ -62,15 +69,12 @@ export const BasicInformation: React.FC<{}> = () => {
                             <Text fontSize="lg" marginBottom={3} fontWeight="bold">Email</Text>
                             <Field name="email" validate={validateEmail}>
                                 {({field, form}: FieldProps) => (
-                                    <FormControl isInvalid={!!form.errors.email && !!form.touched.email}>
-                                        <Input
-                                            {...field}
-                                            variant="outline"
-                                            placeholder={field.value}
-                                            size="lg"
-                                        />
-                                        <FormErrorMessage>{form.errors.email}</FormErrorMessage>
-                                    </FormControl>
+                                    <UserInput
+                                        size="lg"
+                                        name="email"
+                                        field={field}
+                                        form={form}
+                                    />
                                 )}
                             </Field>
                         </Box>
@@ -78,15 +82,12 @@ export const BasicInformation: React.FC<{}> = () => {
                             <Text fontSize="lg" marginBottom={3} fontWeight="bold">Username</Text>
                             <Field name="username" validate={validateUsername}>
                                 {({field, form}: FieldProps) => (
-                                    <FormControl isInvalid={!!form.errors.username && !!form.touched.password}>
-                                        <Input
-                                            {...field}
-                                            variant="outline"
-                                            placeholder={field.value}
-                                            size="lg"
-                                        />
-                                        <FormErrorMessage>{form.errors.username}</FormErrorMessage>
-                                    </FormControl>
+                                    <UserInput
+                                        size="lg"
+                                        name="username"
+                                        field={field}
+                                        form={form}
+                                    />
                                 )}
                             </Field>
                         </Box>

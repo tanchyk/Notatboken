@@ -1,6 +1,6 @@
 import React from "react";
 import {Flex, Stack, Text, Box, useStyleConfig} from "@chakra-ui/react";
-import {Wrapper} from "../components/additional/Wrapper";
+import {Wrapper} from "../components/wrappers/Wrapper";
 import {ChangePassword} from "../components/ChangePassword";
 
 export const ProfilePage: React.FC<{}> = ({}) => {

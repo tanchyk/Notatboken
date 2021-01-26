@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../store/userSlice";
 import {AppDispatch} from "../store/store";
 import {history} from '../App';
-import {Wrapper} from "./additional/Wrapper";
+import {Wrapper} from "./wrappers/Wrapper";
 
 const NavBar: React.FC<{}> = ({}) => {
     const dispatch = useDispatch<AppDispatch>();

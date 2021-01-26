@@ -90,14 +90,13 @@ class AuthController {
             }]
         });
 
-        if(checkExisting!.username === username) {
+        if(checkExisting && checkExisting!.username === username) {
             return res.status(409).send({message: 'Username is already taken'});
-        } else if(checkExisting!.email === email) {
+        } else if(checkExisting && checkExisting!.email === email) {
             return res.status(409).send({message: 'Email is already taken'});
         }
 
         try {
-            console.log(user)
             await userRepository.save(user);
         } catch (e) {
             return res.status(409).send({message: 'Email is already in use'});;

@@ -30,7 +30,7 @@ export interface CsrfSliceType {
 }
 
 export interface ErrorFromServer extends Object {
-    type: 'login' | 'register' | null,
+    type: 'login' | 'register' | 'update' | null,
     message: string | SerializedError | null
 }
 

@@ -97,7 +97,7 @@ const fetchUserFulfilled = (state: UserSliceType, { payload }: { payload: UserAu
     if("message" in payload) {
         state.status = 'failed';
         state.error.message = payload['message'];
-        state.error.type = 'register';
+        state.error.type = 'update';
     } else {
         state.status = 'succeeded';
         state.user = payload;
@@ -117,11 +117,29 @@ const userSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(fetchUser.pending, fetchUserPending)
-        builder.addCase(fetchUser.fulfilled, fetchUserFulfilled)
+        builder.addCase(fetchUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
+            if ("message" in payload) {
+                state.status = 'failed';
+                state.error.message = payload['message'];
+                state.error.type = 'login';
+            } else {
+                state.status = 'succeeded';
+                state.user = payload;
+            }
+        })
         builder.addCase(fetchUser.rejected, fetchUserRejected)
 
         builder.addCase(createUser.pending, fetchUserPending)
-        builder.addCase(createUser.fulfilled,  fetchUserFulfilled)
+        builder.addCase(createUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
+            if ("message" in payload) {
+                state.status = 'failed';
+                state.error.message = payload['message'];
+                state.error.type = 'register';
+            } else {
+                state.status = 'succeeded';
+                state.user = payload;
+            }
+        })
         builder.addCase(createUser.rejected, fetchUserRejected)
 
         builder.addCase(loadUser.pending, fetchUserPending)

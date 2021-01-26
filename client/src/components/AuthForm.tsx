@@ -3,13 +3,8 @@ import {LoginData, RegisterData, FieldProps} from "../utils/types";
 import {Field, Form, Formik} from "formik";
 import {
     Box, Button,
-    FormControl,
-    FormErrorMessage,
     Heading,
     Image,
-    Input,
-    InputGroup,
-    InputRightElement,
     Link,
     Stack, useStyleConfig
 } from "@chakra-ui/react";
@@ -17,10 +12,11 @@ import {ExternalLinkIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {userData, userError, userStatus} from "../store/userSlice";
-import store from "../store/store";
 import {history} from "../App";
 import {SerializedError} from "@reduxjs/toolkit";
 import {validateEmail, validatePassword, validateUsername, validateUsernameOrEmail} from "../utils/validationFunctions";
+import {PasswordInput} from "./inputs/PasswordInput";
+import {UserInput} from "./inputs/UserInput";
 
 //Page props
 interface AuthFormProps {
@@ -31,8 +27,6 @@ interface AuthFormProps {
 //Auth form
 export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
     const styleStack = useStyleConfig("Stack");
-    const [show, setShow] = useState(false);
-    const handleClick = () => setShow(!show);
 
     //Data
     const [message, setMessage] = useState<string | null | SerializedError>(null);
@@ -42,10 +36,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
     const errorMessage = useSelector(userError);
 
     useEffect(() => {
-        console.log(store.getState());
         if(status === 'succeeded') {
             history.push('/notes');
-        } else  if(status === 'failed' && errorMessage.message && errorMessage.type === action) {
+        } else if(status === 'failed' && errorMessage.type === action) {
             setMessage(errorMessage.message);
         }
     }, [user, errorMessage]);
@@ -58,35 +51,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
 
         authForm = (
             <Field name="usernameOrEmail" validate={validateUsernameOrEmail}>
-                {({field, form}: FieldProps) => {
-                    if (message) {
-                        return (
-                            <FormControl
-                                isInvalid={!!message}>
-                                <Input
-                                    {...field}
-                                    variant="outline"
-                                    placeholder="Email or Username"
-                                    id="usernameOrEmail"
-                                />
-                                <FormErrorMessage>{message}</FormErrorMessage>
-                            </FormControl>
-                        )
-                    } else {
-                        return (
-                            <FormControl
-                                isInvalid={!!form.errors.usernameOrEmail && !!form.touched.usernameOrEmail}>
-                                <Input
-                                    {...field}
-                                    variant="outline"
-                                    placeholder="Email or Username"
-                                    id="usernameOrEmail"
-                                />
-                                <FormErrorMessage>{form.errors.usernameOrEmail}</FormErrorMessage>
-                            </FormControl>
-                        )
-                    }
-                }}
+                {({field, form}: FieldProps) => (
+                    <UserInput
+                        size="md"
+                        name="usernameOrEmail"
+                        placeholder="Email or Username"
+                        message={message}
+                        field={field}
+                        form={form}
+                    />
+                )}
             </Field>
         )
     } else if(action === 'register') {
@@ -95,50 +69,27 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
         authForm = (
             <Stack spacing={5}>
                 <Field name="username" validate={validateUsername}>
-                    {({field, form}: FieldProps) => {
-                        if (message) {
-                            return (
-                                <FormControl
-                                    isInvalid={!!message}>
-                                    <Input
-                                        {...field}
-                                        variant="outline"
-                                        placeholder="Enter username"
-                                        id="username"
-                                    />
-                                    <FormErrorMessage>{message}</FormErrorMessage>
-                                </FormControl>
-                            )
-                        } else {
-                            return (
-                                <FormControl
-                                    isInvalid={!!form.errors.username && !!form.touched.username}>
-                                    <Input
-                                        {...field}
-                                        variant="outline"
-                                        placeholder="Enter username"
-                                        id="username"
-                                    />
-                                    <FormErrorMessage>{form.errors.username}</FormErrorMessage>
-                                </FormControl>
-                            )
-                        }
-                    }}
+                    {({field, form}: FieldProps) => (
+                        <UserInput
+                            size="md"
+                            name="username"
+                            placeholder="Enter username"
+                            message={message}
+                            field={field}
+                            form={form}
+                        />
+                    )}
                 </Field>
                 <Field name="email" validate={validateEmail}>
                     {({field, form}: FieldProps) => (
-                        <FormControl
-                            isInvalid={!!form.errors.email && !!form.touched.email}>
-                            <Input
-                                {...field}
-                                variant="outline"
-                                placeholder="Enter email"
-                                id="email"
-                            />
-                            <FormErrorMessage>{form.errors.email}</FormErrorMessage>
-                        </FormControl>
-                    )
-                    }
+                        <UserInput
+                            size="md"
+                            name="email"
+                            placeholder="Enter email"
+                            field={field}
+                            form={form}
+                        />
+                    )}
                 </Field>
             </Stack>
         );
@@ -185,28 +136,17 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                                     {action === 'login' ? 'Login' : 'Sign up'}
                                 </Heading>
                                 {authForm}
-                                <InputGroup size="md">
-                                    <Field name="password" validate={validatePassword}>
-                                        {({field, form}: FieldProps) => (
-                                            <FormControl isInvalid={!!form.errors.password && !!form.touched.password}>
-                                                <Input
-                                                    {...field}
-                                                    id="password"
-                                                    name="password"
-                                                    pr="4.5rem"
-                                                    type={show ? "text" : "password"}
-                                                    placeholder="Enter password"
-                                                />
-                                                <FormErrorMessage>{form.errors.password}</FormErrorMessage>
-                                            </FormControl>
-                                        )}
-                                    </Field>
-                                    <InputRightElement width="4.5rem">
-                                        <Button h="1.75rem" size="sm" onClick={handleClick}>
-                                            {show ? "Hide" : "Show"}
-                                        </Button>
-                                    </InputRightElement>
-                                </InputGroup>
+                                <Field name="password" validate={validatePassword}>
+                                    {({field, form}: FieldProps) => (
+                                        <PasswordInput
+                                            size="md"
+                                            name="password"
+                                            placeholder="Enter password"
+                                            field={field}
+                                            form={form}
+                                        />
+                                    )}
+                                </Field>
                                 <Stack spacing={5} direction="row" alignItems="center">
                                     <Button
                                         width="120px"
