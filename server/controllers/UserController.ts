@@ -114,16 +114,29 @@ class UserController {
 
     static deleteUser = async (req: Request, res: Response, next: NextFunction) => {
         const userId = res.locals.userId;
+        const {password} = req.body
 
+        //Try to find user on database
         const userRepository = getRepository(User);
+        let user: User;
+        try {
+            user = await userRepository.findOneOrFail({where: {id: userId}});
+        } catch (err) {
+            return res.status(404).send({message: "User not found"});
+        }
+
+        //Checking password
+        if(! await argon2.verify(user.password, password)) {
+            return res.status(401).send({message: 'Incorrect password'});
+        }
 
         try {
-            await userRepository.delete(userId);
+            await userRepository.delete({id: userId});
+            await res.clearCookie('token');
         } catch (err) {
             next(err);
         }
-
-        return res.status(201).send({message: 'User is deleted'});
+        return res.status(204).send();
     }
 }
 

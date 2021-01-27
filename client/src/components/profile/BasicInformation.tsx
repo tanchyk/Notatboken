@@ -6,13 +6,13 @@ import {
     useToast
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
-import {BasicUser, FieldProps} from "../utils/types";
-import {validateEmail, validateUsername} from "../utils/validationFunctions";
+import {BasicUser, FieldProps} from "../../utils/types";
+import {validateEmail, validateUsername} from "../../utils/validationFunctions";
 import {useDispatch, useSelector} from "react-redux";
-import {updateUser, userData} from "../store/userSlice";
-import {AppDispatch} from "../store/store";
-import {ProfileWrapper} from "./wrappers/ProfileWrapper";
-import {UserInput} from "./inputs/UserInput";
+import {updateUser, userData} from "../../store/userSlice";
+import {AppDispatch} from "../../store/store";
+import {ProfileWrapper} from "../wrappers/ProfileWrapper";
+import {UserInput} from "../inputs/UserInput";
 
 const validateName = (value: string) => {
     let error;

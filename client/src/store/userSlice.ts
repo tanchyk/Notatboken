@@ -1,5 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {BasicUser, CsrfSliceType, LoginData, RegisterData, UserAuth, UserSliceType} from "../utils/types";
+import {BasicUser, CsrfSliceType, ErrorDelete, LoginData, RegisterData, UserAuth, UserSliceType} from "../utils/types";
 
 const initialState = {
     user: {
@@ -75,7 +75,7 @@ export const logoutUser = createAsyncThunk<void, void>(
 export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
     'user/updateUser',
     async (updateData, {getState}) => {
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType}
+        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
         const response = await fetch('/users/update-user', {
             method: 'PUT',
             body: JSON.stringify(updateData),
@@ -85,6 +85,28 @@ export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
             }
         });
         return (await response.json()) as UserAuth;
+    }
+)
+
+export const deleteUser = createAsyncThunk<ErrorDelete, {password: string}>(
+    'user/deleteUser',
+    async (passwordData, {getState}) => {
+        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
+        const response = await fetch('/users/delete-user', {
+            method: 'DELETE',
+            body: JSON.stringify(passwordData),
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': `${csrfToken.csrfToken}`
+            }
+        }).then(response => {
+            if(response.status === 204) {
+                return {message: 'Deleted'};
+            } else {
+                return response.json()
+            }
+        });
+        return (response) as ErrorDelete;
     }
 )
 
@@ -108,6 +130,10 @@ const fetchUserRejected = (state: UserSliceType, {}) => {
     state.status = 'failed';
 }
 
+const fetchUserDataVoid = (state: UserSliceType, {}) => {
+   Object.assign(state, initialState);
+}
+
 //User Slice
 const userSlice = createSlice({
     name: 'user',
@@ -116,6 +142,7 @@ const userSlice = createSlice({
 
     },
     extraReducers: builder => {
+        //Fetch
         builder.addCase(fetchUser.pending, fetchUserPending)
         builder.addCase(fetchUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
             if ("message" in payload) {
@@ -129,6 +156,7 @@ const userSlice = createSlice({
         })
         builder.addCase(fetchUser.rejected, fetchUserRejected)
 
+        //Create
         builder.addCase(createUser.pending, fetchUserPending)
         builder.addCase(createUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
             if ("message" in payload) {
@@ -142,6 +170,7 @@ const userSlice = createSlice({
         })
         builder.addCase(createUser.rejected, fetchUserRejected)
 
+        //Load
         builder.addCase(loadUser.pending, fetchUserPending)
         builder.addCase(loadUser.fulfilled, (state: UserSliceType, { payload }) => {
             state.status = 'succeeded';
@@ -149,23 +178,27 @@ const userSlice = createSlice({
         })
         builder.addCase(loadUser.rejected, fetchUserRejected)
 
-        builder.addCase(logoutUser.fulfilled, (state: UserSliceType, {}) => {
-            state.user = {
-                userId: null,
-                name: null,
-                username: null,
-                email: null
-            };
-            state.error = {
-                type: null,
-                message: null
-            };
-            state.status = 'idle';
-        })
+        //Logout
+        builder.addCase(logoutUser.fulfilled, fetchUserDataVoid)
 
+        //Update
         builder.addCase(updateUser.pending, fetchUserPending)
-        builder.addCase(updateUser.fulfilled,  fetchUserFulfilled)
+        builder.addCase(updateUser.fulfilled, fetchUserFulfilled)
         builder.addCase(updateUser.rejected, fetchUserRejected)
+
+        //Delete
+        builder.addCase(deleteUser.pending, fetchUserPending)
+        builder.addCase(deleteUser.fulfilled, (state: UserSliceType, { payload} : {payload: ErrorDelete}) => {
+            if(payload.message === 'Deleted') {
+                state = Object.assign({}, initialState);
+                state.error.type = 'delete';
+            } else {
+                state.status = 'failed';
+                state.error.message = payload['message'];
+                state.error.type = 'delete';
+            }
+        })
+        builder.addCase(deleteUser.rejected, fetchUserRejected)
     }
 });
 

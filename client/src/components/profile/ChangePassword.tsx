@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import {FieldProps, Passwords} from "../utils/types";
+import {FieldProps, Passwords} from "../../utils/types";
 import {Field, Form, Formik} from "formik";
-import {ProfileWrapper} from "./wrappers/ProfileWrapper";
+import {ProfileWrapper} from "../wrappers/ProfileWrapper";
 import {
     Box,
     Text,
@@ -9,10 +9,10 @@ import {
     AlertIcon,
     Button,
 } from "@chakra-ui/react";
-import {validatePassword} from "../utils/validationFunctions";
+import {validatePassword} from "../../utils/validationFunctions";
 import {useSelector} from "react-redux";
-import {csrfData} from "../store/csrfSlice";
-import {PasswordInput} from "./inputs/PasswordInput";
+import {csrfData} from "../../store/csrfSlice";
+import {PasswordInput} from "../inputs/PasswordInput";
 
 export const ChangePassword: React.FC<{}> = () => {
     //Data

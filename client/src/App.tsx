@@ -8,7 +8,7 @@ import Notes from "./pages/NotesPage";
 import RegisterPage from "./pages/RegisterPage";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "./store/store";
-import {loadUser, userData} from "./store/userSlice";
+import {loadUser, userData, userError, userStatus} from "./store/userSlice";
 import {fetchToken} from "./store/csrfSlice";
 import NavBar from "./components/Navbar";
 import {ProfilePage} from "./pages/ProfilePage";
@@ -20,6 +20,14 @@ const App: React.FC<{}> = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const user = useSelector(userData);
+    const status = useSelector(userStatus);
+    const error = useSelector(userError);
+
+    useEffect(() => {
+        if(status === 'idle' && error.type === 'delete') {
+            history.push('/');
+        }
+    }, [status]);
 
     useEffect(() => {
         dispatch(fetchToken());
@@ -35,7 +43,7 @@ const App: React.FC<{}> = () => {
                 <Switch>
                     <Route exact path="/" component={Notes}/>
                     <Route exact path="/notes" component={Notes}/>
-                    <Route exact path="/profile" component={ProfilePage}/>
+                    <Route path="/profile" component={ProfilePage} />
                 </Switch>
             </>
         );
