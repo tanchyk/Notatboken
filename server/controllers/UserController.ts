@@ -44,18 +44,33 @@ class UserController {
 
         //Testing data
         const testEmail = /\S+@\S+\.\S+/;
-        if(!testEmail.test(email) || email.length < 8 || email.length >= 254) {
+        if(user.email !== email && (!testEmail.test(email) || email.length < 8 || email.length >= 254)) {
             return res.status(400).send({message: 'Invalid Email'});
         }
 
         const testUsername = /\w/;
-        if(!testUsername.test(username) || username.length < 3 || username.length > 64) {
+        if(user.username !== username && (!testUsername.test(username) || username.length < 3 || username.length > 64)) {
             return res.status(400).send({message: 'Invalid Username'});
         }
 
-        const testName = /^[a-zA-Z].*[\s\.]*$/g;
-        if (!testName.test(name) || name.length < 5) {
+        const testName = /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/i;
+        if (user.name !== name && (!testName.test(name) || name.length < 5)) {
             return res.status(400).send({message: 'Invalid Name'});
+        }
+
+        //Checking if data already in database
+        const checkExisting: User | undefined = await userRepository.findOne({
+            where : [{
+                username : username,
+            }, {
+                email : email,
+            }]
+        });
+
+        if(checkExisting && checkExisting!.username === username && checkExisting!.username !== user.username) {
+            return res.status(409).send({message: 'Username is already taken'});
+        } else if(checkExisting && checkExisting!.email === email && checkExisting!.email !== user.email) {
+            return res.status(409).send({message: 'Email is already taken'});
         }
 
         user.name = name;
@@ -68,8 +83,13 @@ class UserController {
         } catch (e) {
             return res.status(409).send({message: 'Username or Email is already in use'});
         }
-        //After all send a 204 (no content, but accepted) response
-        return res.status(204).send({message: 'User is updated'});
+
+        return res.status(200).send({
+            userId: user.id,
+            name: user.name,
+            username: user.username,
+            email: user.email
+        });
     }
 
     static changeUserPassword = async (req: Request, res: Response, next: NextFunction) => {

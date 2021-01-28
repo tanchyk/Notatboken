@@ -27,7 +27,7 @@ const App: React.FC<{}> = () => {
         if(status === 'idle' && error.type === 'delete') {
             history.push('/');
         }
-    }, [status]);
+    }, [error]);
 
     useEffect(() => {
         dispatch(fetchToken());

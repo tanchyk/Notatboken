@@ -7,6 +7,7 @@ interface ProfileWrapperProps {
 
 export const ProfileWrapper: React.FC<ProfileWrapperProps> = ({children, variant}) => {
     const styleStack = useStyleConfig("Stack");
+    styleStack.borderLeftWidth = "6px";
 
     return (
         <Stack

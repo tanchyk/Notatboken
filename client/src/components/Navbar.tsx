@@ -69,18 +69,18 @@ const NavBar: React.FC<{}> = ({}) => {
     return (
         <Flex bg="#fff" p={3} justifyContent="center" borderBottom="1px">
             <Wrapper variant='regular'>
-                <Stack direction="row" spacing={3} alignItems="center">
-                    <Box boxSize="36px" direction="row">
-                        <Image
-                            src="https://i.pinimg.com/564x/fb/ef/08/fbef08c391667ee0b09437a4ed96eb11.jpg"
-                        />
-                    </Box>
-                    <LinkPage to="/">
+                <LinkPage to="/">
+                    <Stack direction="row" spacing={3} alignItems="center">
+                        <Box boxSize="36px" direction="row">
+                            <Image
+                                src="https://i.pinimg.com/564x/fb/ef/08/fbef08c391667ee0b09437a4ed96eb11.jpg"
+                            />
+                        </Box>
                         <Heading as="h1" size="lg">
                             Notatboken
                         </Heading>
-                    </LinkPage>
-                </Stack>
+                    </Stack>
+                </LinkPage>
                 <Box>
                     {body}
                 </Box>

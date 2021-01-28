@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
     Text,
     Box,
@@ -9,14 +9,14 @@ import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../../utils/types";
 import {validateEmail, validateUsername} from "../../utils/validationFunctions";
 import {useDispatch, useSelector} from "react-redux";
-import {updateUser, userData} from "../../store/userSlice";
+import {errorNull, updateUser, userData, userError, userStatus} from "../../store/userSlice";
 import {AppDispatch} from "../../store/store";
 import {ProfileWrapper} from "../wrappers/ProfileWrapper";
 import {UserInput} from "../inputs/UserInput";
 
 const validateName = (value: string) => {
     let error;
-    const checkName = /^[a-zA-Z].*[\s\.]*$/g;
+    const checkName = /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/i;
     if (!checkName.test(value) || value.length < 5) {
         error = 'Please, enter a full name and surname';
     }
@@ -28,6 +28,30 @@ export const BasicInformation: React.FC<{}> = () => {
 
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector(userData);
+    const error = useSelector(userError);
+    const status = useSelector(userStatus);
+
+    useEffect(() => {
+        if (error.type === 'update') {
+            toast({
+                position: 'bottom',
+                title: "Account is not updated.",
+                description: error.message,
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            });
+        } else if (status === 'succeeded' && error.message === 'updated') {
+            toast({
+                position: 'bottom',
+                title: "Account updated.",
+                description: "We've updated your account for you.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            });
+        }
+    }, [status, error])
 
     return (
         <Formik
@@ -37,16 +61,19 @@ export const BasicInformation: React.FC<{}> = () => {
                 username: user.username
             } as BasicUser}
             onSubmit={async (values) => {
-                await dispatch(updateUser(values));
-
-                return toast({
-                    position: 'bottom',
-                    title: "Account updated.",
-                    description: "We've updated your account for you.",
-                    status: "success",
-                    duration: 9000,
-                    isClosable: true,
-                })
+                if(values.name === user.name && values.email === user.email && values.username === user.username) {
+                    toast({
+                        position: 'bottom',
+                        title: "Account is not updated.",
+                        description: "You have not changed a thing!",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                } else {
+                    await dispatch(updateUser(values));
+                    await dispatch(errorNull());
+                }
             }}
         >
             {() => (

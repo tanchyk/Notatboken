@@ -1,18 +1,18 @@
-import React, {useState} from "react";
-import {Flex, Stack, Text, Box, useStyleConfig} from "@chakra-ui/react";
+import React, { useState} from "react";
+import {Flex, Stack, Box, useStyleConfig} from "@chakra-ui/react";
 import {Wrapper} from "../components/wrappers/Wrapper";
 import {DeleteAccount} from "../components/profile/DeleteAccount";
 import {Link as LinkPage, Redirect, Route, Switch, useRouteMatch} from "react-router-dom";
 import {BasicInformation} from "../components/profile/BasicInformation";
 import {ChangePassword} from "../components/profile/ChangePassword";
+import {NavItem} from "../components/profile/NavItem";
 
 export const ProfilePage: React.FC<{}> = ({}) => {
-    const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete'>('basic');
     const styleStack = useStyleConfig("Stack");
     const match = useRouteMatch();
 
-    // @ts-ignore
-    const handleClick = (event: React.MouseEvent<HTMLParagraphElement>) => setClicked(event.target.id);
+    const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete'>('basic');
+    const handleClick = (event: React.MouseEvent<HTMLParagraphElement>) => setClicked(event.currentTarget.id as 'basic' | 'change-p' | 'delete');
 
     return (
         <Flex justifyContent="center">
@@ -20,41 +20,38 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                 <Stack
                     sx={styleStack}
                     w={["100%", "90%", "40%", "30%"]}
-                    padding={8}
-                    paddingLeft={10}
+                    paddingTop={8}
+                    paddingBottom={8}
                     marginTop={["0px", "0px", "30px", "30px"]}
                     spacing={8}
                     maxH="188.4px"
                 >
                     <LinkPage to={`${match.url}/basic-information`}>
-                        <Text
-                            fontSize="lg"
+                        <NavItem
                             id="basic"
-                            onClick={handleClick}
-                            fontWeight={clicked === 'basic' ? 'bold' : 'regular'}
+                            handleClick={handleClick}
+                            clicked={clicked}
                         >
                             Basic Information
-                        </Text>
+                        </NavItem>
                     </LinkPage>
                     <LinkPage to={`${match.url}/change-password`}>
-                        <Text
-                            fontSize="lg"
+                        <NavItem
                             id="change-p"
-                            onClick={handleClick}
-                            fontWeight={clicked === 'change-p' ? 'bold' : 'regular'}
+                            handleClick={handleClick}
+                            clicked={clicked}
                         >
                             Change Password
-                        </Text>
+                        </NavItem>
                     </LinkPage>
                     <LinkPage to={`${match.url}/delete-account`}>
-                        <Text
-                            fontSize="lg"
+                        <NavItem
                             id="delete"
-                            onClick={handleClick}
-                            fontWeight={clicked === 'delete' ? 'bold' : 'regular'}
+                            handleClick={handleClick}
+                            clicked={clicked}
                         >
                             Delete Account
-                        </Text>
+                        </NavItem>
                     </LinkPage>
                 </Stack>
                 <Box w={["100%", "90%", "55%", "66%"]}>

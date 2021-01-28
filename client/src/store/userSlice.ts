@@ -112,26 +112,11 @@ export const deleteUser = createAsyncThunk<ErrorDelete, {password: string}>(
 
 //Extra Reducers
 const fetchUserPending = (state: UserSliceType, {}) => {
-    state.status = 'loading';
-}
-
-const fetchUserFulfilled = (state: UserSliceType, { payload }: { payload: UserAuth }) => {
-    if("message" in payload) {
-        state.status = 'failed';
-        state.error.message = payload['message'];
-        state.error.type = 'update';
-    } else {
-        state.status = 'succeeded';
-        state.user = payload;
-    }
+    return Object.assign({}, state, {status: 'loading'});
 }
 
 const fetchUserRejected = (state: UserSliceType, {}) => {
-    state.status = 'failed';
-}
-
-const fetchUserDataVoid = (state: UserSliceType, {}) => {
-   Object.assign(state, initialState);
+    return Object.assign({}, state, {status: 'failed'});
 }
 
 //User Slice
@@ -139,19 +124,28 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-
+        errorNull: (state: UserSliceType) => {
+            state.error.message = null;
+            state.error.type = null;
+        }
     },
     extraReducers: builder => {
         //Fetch
         builder.addCase(fetchUser.pending, fetchUserPending)
         builder.addCase(fetchUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
             if ("message" in payload) {
-                state.status = 'failed';
-                state.error.message = payload['message'];
-                state.error.type = 'login';
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        message: payload['message'],
+                        type: 'login'
+                    }
+                });
             } else {
-                state.status = 'succeeded';
-                state.user = payload;
+                return Object.assign({}, state, {
+                    user: payload,
+                    status: 'succeeded'
+                });
             }
         })
         builder.addCase(fetchUser.rejected, fetchUserRejected)
@@ -160,12 +154,18 @@ const userSlice = createSlice({
         builder.addCase(createUser.pending, fetchUserPending)
         builder.addCase(createUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
             if ("message" in payload) {
-                state.status = 'failed';
-                state.error.message = payload['message'];
-                state.error.type = 'register';
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        message: payload['message'],
+                        type:'register'
+                    }
+                });
             } else {
-                state.status = 'succeeded';
-                state.user = payload;
+                return Object.assign({}, state, {
+                    user: payload,
+                    status: 'succeeded',
+                });
             }
         })
         builder.addCase(createUser.rejected, fetchUserRejected)
@@ -173,37 +173,66 @@ const userSlice = createSlice({
         //Load
         builder.addCase(loadUser.pending, fetchUserPending)
         builder.addCase(loadUser.fulfilled, (state: UserSliceType, { payload }) => {
-            state.status = 'succeeded';
-            state.user = payload;
+            return Object.assign({}, state, {
+                user: payload,
+                status: 'succeeded'
+            });
         })
         builder.addCase(loadUser.rejected, fetchUserRejected)
 
         //Logout
-        builder.addCase(logoutUser.fulfilled, fetchUserDataVoid)
+        builder.addCase(logoutUser.fulfilled, (state: UserSliceType, {}) => {
+            return Object.assign({}, state, initialState);
+        })
 
         //Update
         builder.addCase(updateUser.pending, fetchUserPending)
-        builder.addCase(updateUser.fulfilled, fetchUserFulfilled)
+        builder.addCase(updateUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
+            if("message" in payload) {
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        message: payload['message'],
+                        type: 'update'
+                    }
+                });
+            } else {
+                return Object.assign({}, state, {
+                    user: payload,
+                    status: 'succeeded',
+                    error: {
+                        message: 'updated',
+                        type: null
+                    }
+                });
+            }
+        })
         builder.addCase(updateUser.rejected, fetchUserRejected)
 
         //Delete
         builder.addCase(deleteUser.pending, fetchUserPending)
         builder.addCase(deleteUser.fulfilled, (state: UserSliceType, { payload} : {payload: ErrorDelete}) => {
             if(payload.message === 'Deleted') {
-                state = Object.assign({}, initialState);
-                state.error.type = 'delete';
+                return Object.assign({}, state, initialState, {error: {type: 'delete'}});
             } else {
-                state.status = 'failed';
-                state.error.message = payload['message'];
-                state.error.type = 'delete';
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        message: payload['message'],
+                        type: 'delete'
+                    }
+                });
             }
         })
         builder.addCase(deleteUser.rejected, fetchUserRejected)
     }
 });
 
+//Selectors
 export const userData = (state: {user: UserSliceType}) => state.user.user;
 export const userStatus = (state: {user: UserSliceType}) => state.user.status;
 export const userError = (state: {user: UserSliceType}) => state.user.error;
+
+export const {errorNull} = userSlice.actions;
 
 export default userSlice.reducer;
