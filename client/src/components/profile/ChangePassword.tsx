@@ -21,7 +21,7 @@ export const ChangePassword: React.FC<{}> = () => {
     const csrfToken = useSelector(csrfData);
 
     const changePasswordHandler = async (values: Passwords) => {
-        const response = await fetch('/users/change-password', {
+        const response = await fetch('/api/users/change-password', {
             method: 'POST',
             body: JSON.stringify({
                 newPassword: values.newPassword,

@@ -9,7 +9,7 @@ const initialState = {
 export const fetchToken = createAsyncThunk<CsrfSliceType, void>(
     'user/fetchToken',
     async () => {
-        const response = await fetch('/csrf-token', {
+        const response = await fetch('/api/csrf-token', {
             method: 'GET'
         });
         return (await response.json()) as CsrfSliceType;

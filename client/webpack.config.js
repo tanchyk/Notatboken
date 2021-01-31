@@ -1,174 +1,152 @@
-const path = require('path');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCssAssetPlugin = require('optimize-css-assets-webpack-plugin');
-const TerserWebpackPlugin = require('terser-webpack-plugin')
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const path = require('path')
+const HtmlWebPackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-const isDev = process.env.NODE_ENV === 'development';
+module.exports = function(env, argv) {
+    return {
+        mode: env.production ? 'production' : 'development',
 
-const optimization = () => {
-    const config = {
-        splitChunks: {
-            chunks: "all"
+        name: 'client',
+        entry: {
+            main: ["@babel/polyfill", './src/index.tsx']
+        },
+
+        output: {
+            path: path.join(__dirname, 'dist'),
+            publicPath: '/',
+            filename: '[name].js'
+        },
+
+        target: 'web',
+
+        devtool: env.production ? 'source-map' : 'eval',
+
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js']
+        },
+
+        optimization: env.production ? {
+            splitChunks: {
+                chunks: "all"
+            }
+        } : {
+            splitChunks: {
+                chunks: "all"
+            },
+            minimizer: [
+                new UglifyJsPlugin({
+                    cache: true,
+                    parallel: true
+                }),
+                new OptimizeCSSAssetsPlugin({})
+            ]
+        },
+
+        devServer: {
+            contentBase: path.resolve(__dirname, 'dist'),
+            port: 4020,
+            historyApiFallback: true,
+            open: true,
+            proxy: {
+                "/api": {
+                    target: "http://localhost:5000",
+                    pathRewrite: {'^/api' : ''}
+                }
+            }
+        },
+
+        plugins: [
+            new HtmlWebPackPlugin({
+                template: "./public/index.html",
+                minify: {
+                    collapseWhitespace: true
+                }
+            }),
+            new MiniCssExtractPlugin({
+                filename: '[name].css'
+            })
+        ],
+
+        module: {
+            rules: [
+                {
+                    test: /\.html$/,
+                    use: [
+                        {
+                            loader: 'html-loader',
+                            options: { minimize: env.production ? false : true }
+                        }
+                    ]
+                },
+                {
+                    test: /\.jpg$/,
+                    use: [{loader: 'url-loader'}]
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        env.production ? {} : {
+                            loader: MiniCssExtractPlugin.loader,
+                        }, 'css-loader'
+                    ]
+                },
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                '@babel/preset-env'
+                            ],
+                            plugins: [
+                                '@babel/plugin-proposal-class-properties',
+                                '@babel/plugin-proposal-logical-assignment-operators',
+                                '@babel/plugin-proposal-optional-chaining'
+                            ]
+                        }
+                    }
+                },
+                {
+                    test: /\.ts$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                '@babel/preset-env',
+                                '@babel/preset-typescript'
+                            ],
+                            plugins: [
+                                '@babel/plugin-proposal-class-properties',
+                                '@babel/plugin-proposal-logical-assignment-operators',
+                                '@babel/plugin-proposal-optional-chaining'
+                            ]
+                        }
+                    }
+                },
+                {
+                    test: /\.tsx$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                '@babel/preset-env',
+                                '@babel/preset-typescript',
+                                '@babel/preset-react'
+                            ],
+                            plugins: [
+                                '@babel/plugin-proposal-class-properties',
+                                '@babel/plugin-proposal-logical-assignment-operators',
+                                '@babel/plugin-proposal-optional-chaining'
+                            ]
+                        }
+                    }
+                }
+            ]
         }
-    }
-
-    if(!isDev) {
-        config.minimizer = [
-            new OptimizeCssAssetPlugin(),
-            new TerserWebpackPlugin()
-        ]
-    }
-
-    return config;
-}
-
-const fileName = ext => {
-    if(isDev) {
-        return `[name].${ext}`;
-    } else {
-        return `[name].[hash].${ext}`;
-    }
-}
-
-const plugins = () => {
-    const base = [
-        new HTMLWebpackPlugin({
-            template: "../public/index.html",
-            minify: {
-                collapseWhitespace: !isDev
-            }
-        }),
-        new CleanWebpackPlugin(),
-        new MiniCssExtractPlugin({
-            filename: fileName('css')
-        })
-    ];
-
-    if(!isDev) {
-        base.push(new BundleAnalyzerPlugin())
-    }
-
-    return base;
-}
-
-module.exports = {
-    context: path.resolve(__dirname, 'src'),
-    mode: "development",
-
-    entry: {
-        main: ['@babel/polyfill', './index.tsx']
-    },
-
-    output: {
-        filename: fileName('js'),
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
-    },
-
-    optimization: optimization(),
-
-    devServer: {
-        compress: true,
-        watchContentBase: true,
-        progress: true,
-        hot: true,
-        contentBase: path.resolve(__dirname, 'dist'),
-        port: 4020,
-        historyApiFallback: true,
-        open: true,
-        proxy: {
-            "/": {
-                target: "http://localhost:5000"
-            },
-            "*": {
-                target: "http://localhost:5000"
-            }
-        }
-    },
-    devtool: isDev ? 'source-map' : 'eval',
-
-    plugins: plugins(),
-
-    resolve: {
-        extensions: ['.ts', '.tsx', '.js']
-    },
-
-    module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {}
-                    }, 'css-loader'
-                ]
-            },
-            {
-                test: /\.(png|jpg|svg|gif)$/,
-                use: ['file-loader']
-            },
-            {
-                test: /\.(ttf|woff|woff2|eot)$/,
-                use: ['file-loader']
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env'
-                        ],
-                        plugins: [
-                            '@babel/plugin-proposal-class-properties',
-                            '@babel/plugin-proposal-logical-assignment-operators',
-                            '@babel/plugin-proposal-optional-chaining'
-                        ]
-                    }
-                }
-            },
-            {
-                test: /\.ts$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                            '@babel/preset-typescript'
-                        ],
-                        plugins: [
-                            '@babel/plugin-proposal-class-properties',
-                            '@babel/plugin-proposal-logical-assignment-operators',
-                            '@babel/plugin-proposal-optional-chaining'
-                        ]
-                    }
-                }
-            },
-            {
-                test: /\.tsx$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                            '@babel/preset-typescript',
-                            '@babel/preset-react'
-                        ],
-                        plugins: [
-                            '@babel/plugin-proposal-class-properties',
-                            '@babel/plugin-proposal-logical-assignment-operators',
-                            '@babel/plugin-proposal-optional-chaining'
-                        ]
-                    }
-                }
-            }
-        ]
     }
 }

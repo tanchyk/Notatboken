@@ -20,7 +20,7 @@ export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
     'user/fetchUser',
     async (loginData, {getState}) => {
         const {csrfToken} = getState() as {csrfToken: CsrfSliceType}
-        const response = await fetch('/users/login', {
+        const response = await fetch('/api/users/login', {
             method: 'POST',
             body: JSON.stringify(loginData),
             headers: {
@@ -36,7 +36,7 @@ export const createUser = createAsyncThunk<UserAuth, RegisterData>(
     'user/createUser',
     async (registerData, {getState}) => {
         const {csrfToken} = getState() as {csrfToken: CsrfSliceType}
-        const response = await fetch('/users/register', {
+        const response = await fetch('/api/users/register', {
             method: 'PUT',
             body: JSON.stringify(registerData),
             headers: {
@@ -51,7 +51,7 @@ export const createUser = createAsyncThunk<UserAuth, RegisterData>(
 export const loadUser = createAsyncThunk<UserAuth, void>(
     'user/loadUser',
     async () => {
-        const response = await fetch('/users/single-user', {
+        const response = await fetch('/api/users/single-user', {
             method: 'GET'
         });
         return (await response.json()) as UserAuth;
@@ -62,7 +62,7 @@ export const logoutUser = createAsyncThunk<void, void>(
     'user/logoutUser',
     async (_,{getState}) => {
         const {csrfToken} = getState() as {csrfToken: CsrfSliceType}
-        await fetch('/users/logout', {
+        await fetch('/api/users/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
     'user/updateUser',
     async (updateData, {getState}) => {
         const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/users/update-user', {
+        const response = await fetch('/api/users/update-user', {
             method: 'PUT',
             body: JSON.stringify(updateData),
             headers: {
@@ -92,7 +92,7 @@ export const deleteUser = createAsyncThunk<ErrorDelete, {password: string}>(
     'user/deleteUser',
     async (passwordData, {getState}) => {
         const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/users/delete-user', {
+        const response = await fetch('/api/users/delete-user', {
             method: 'DELETE',
             body: JSON.stringify(passwordData),
             headers: {
