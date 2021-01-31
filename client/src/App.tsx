@@ -4,7 +4,7 @@ import {BrowserRouter, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
 import { createBrowserHistory } from 'history';
-import Notes from "./pages/NotesPage";
+import StartPage from "./pages/StartPage";
 import RegisterPage from "./pages/RegisterPage";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "./store/store";
@@ -41,8 +41,8 @@ const App: React.FC<{}> = () => {
             <>
                 <NavBar />
                 <Switch>
-                    <Route exact path="/" component={Notes}/>
-                    <Route exact path="/notes" component={Notes}/>
+                    <Route exact path="/" component={StartPage}/>
+                    <Route exact path="/notes" component={StartPage}/>
                     <Route path="/profile" component={ProfilePage} />
                 </Switch>
             </>

@@ -6,10 +6,10 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BaseEntity,
-    OneToMany
+    OneToMany, JoinTable, ManyToMany
 } from "typeorm";
-import { Length } from "class-validator";
-import {Note} from "./Note";
+import {Language} from "./Language";
+import {Deck} from "./Deck";
 
 @Entity()
 @Unique(["username", "email"])
@@ -20,15 +20,13 @@ export class User extends BaseEntity {
     @Column({nullable: true})
     name: string;
 
-    @Column({unique: true})
-    @Length(4, 64)
+    @Column({unique: true, length: 64})
     username!: string;
 
-    @Column()
-    @Length(4, 100)
+    @Column({length: 100})
     password!: string;
 
-    @Column({unique: true})
+    @Column({unique: true, length: 320})
     email!: string;
 
     @Column()
@@ -39,6 +37,10 @@ export class User extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => Note, note => note.user)
-    notes: Note[];
+    @OneToMany(() => Deck, deck => deck.user)
+    decks: Deck[];
+
+    @ManyToMany(() => Language)
+    @JoinTable({name: "userLanguages"})
+    userLanguages: Language[]
 }

@@ -1,0 +1,38 @@
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne, OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
+import {User} from "./User";
+import {Language} from "./Language";
+import {Card} from "./Card";
+
+@Entity()
+export class Deck extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    deckId: number;
+
+    @Column({length: 40})
+    deckName!: string;
+
+    @Column()
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @Column()
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+    @ManyToOne(() => User, user => user.decks)
+    user: User;
+
+    @ManyToOne(() => Language)
+    language: Language;
+
+    @OneToMany(() => Card, card => card.deck)
+    cards: Card[];
+}

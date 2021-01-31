@@ -11,12 +11,40 @@ import cookieParser from 'cookie-parser';
 import usersRouter from "./routes/usersRouter";
 import notesRouter from "./routes/notesRouter";
 import {User} from "./entities/User";
-import {Note} from "./entities/Note";
+import {Language} from "./entities/Language";
+import {Card} from "./entities/Card";
+import {Deck} from "./entities/Deck";
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
     return res.status(500).json({error: err});
 }
+
+// const setLanguages = async (connection: Connection) => {
+//     const german = new Language();
+//     german.languageName = 'German';
+//     await connection.manager.save(german);
+//
+//     const french = new Language();
+//     french.languageName = 'French';
+//     await connection.manager.save(french);
+//
+//     const russian = new Language();
+//     russian.languageName = 'Russian';
+//     await connection.manager.save(russian);
+//
+//     const spanish = new Language();
+//     spanish.languageName = 'Spanish';
+//     await connection.manager.save(spanish);
+//
+//     const english = new Language();
+//     english.languageName = 'English';
+//     await connection.manager.save(english);
+//
+//     const norwegian = new Language();
+//     norwegian.languageName = 'Norwegian';
+//     await connection.manager.save(norwegian);
+// }
 
 createConnection({
     type: 'postgres',
@@ -25,8 +53,10 @@ createConnection({
     password: process.env.postgresPassword,
     logging: true,
     synchronize: true,
-    entities: [User, Note]
+    entities: [User, Deck, Language, Card]
 }).then(connection => {
+    // setLanguages(connection);
+
     const app: Application = express();
 
     app.use(helmet());
