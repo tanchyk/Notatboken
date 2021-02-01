@@ -55,3 +55,5 @@ export interface Passwords {
     confirmPassword: string;
     oldPassword: string;
 }
+
+export type Languages  = 'English' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';

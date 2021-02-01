@@ -1,4 +1,11 @@
-import {BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 
 @Entity()
 export class Language extends BaseEntity {
@@ -15,4 +22,7 @@ export class Language extends BaseEntity {
     @Column()
     @UpdateDateColumn()
     updatedAt: Date;
+    //
+    // @ManyToMany(() => User, (user: User) => user.userLanguages)
+    // users: User[];
 }

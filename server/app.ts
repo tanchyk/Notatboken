@@ -9,7 +9,7 @@ import csurf from 'csurf';
 import cookieParser from 'cookie-parser';
 
 import usersRouter from "./routes/usersRouter";
-import notesRouter from "./routes/notesRouter";
+import languageRouter from "./routes/languageRouter";
 import {User} from "./entities/User";
 import {Language} from "./entities/Language";
 import {Card} from "./entities/Card";
@@ -76,7 +76,7 @@ createConnection({
     });
 
     app.use('/users', usersRouter);
-    app.use('/posts', notesRouter);
+    app.use('/languages', languageRouter);
 
     const PORT = 5000;
 
