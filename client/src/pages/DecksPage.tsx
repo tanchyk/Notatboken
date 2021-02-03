@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     match
 } from 'react-router-dom';
@@ -12,9 +12,15 @@ import {
     Text,
     CloseButton,
     useStyleConfig,
-    Button
+    Button,
+    Input,
+    AlertDialogOverlay, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, AlertDialog, AlertDialogContent,
+    FormControl, FormLabel
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
+import {history} from '../App';
+import {useSelector} from "react-redux";
+import {userData} from "../store/userSlice";
 
 interface DecksProps {
     match: match<{language: string}>
@@ -24,7 +30,25 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
     const styleStack = useStyleConfig("Stack");
     const language = match.params.language.charAt(0).toUpperCase() + match.params.language.slice(1);
 
+    const [isOpen, setIsOpen] = useState(false);
+    const onClose = () => setIsOpen(false);
+    const cancelRef = useRef<HTMLButtonElement>(null);
+
     const [createClose, setCreateClose] = useState<boolean>(false);
+
+    const user = useSelector(userData);
+
+    useEffect(() => {
+        let check = false;
+        user.languages?.forEach(languageUser => {
+            if(languageUser.languageName === language) {
+                check = true;
+            }
+        });
+        if(!check) {
+            history.push('/error')
+        }
+    }, [])
 
     return (
         <>
@@ -56,7 +80,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                         spacing={8}
                     >
                         {
-                            createClose ? null : (
+                            createClose? null : (
                                 <Box
                                     sx={styleStack}
                                     padding={9}
@@ -64,7 +88,8 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                 >
                                     <Flex direction="row" justifyContent="space-between">
                                         <Box boxSize="150px">
-                                            <Image src="https://i.pinimg.com/564x/1d/fd/b3/1dfdb395848d105618ebc0b87b1b96b7.jpg" />
+                                            <Image
+                                                src="https://lh3.googleusercontent.com/Pw712TgyLqjyCoE9ljuyegTZ1XHapQI6RvrsEn5SqgZshSpIZheLPJlPcP_HtGWgQ-ss6HtzPLWeYqsNC8U-mLCoM6wxwB3_sCdbMBxioHdfQ4mhV2pT86MdV8rfXjgGlsBxINP_i32Y7Ah17WhFEi9n69AvW_sIiumxg5XTMGIAacBqHGWniR7rnNT1aNQkJLABeCgoMGSRhAS6ys0Z_NSsi2y-Z7tAd8ET_Qspf1fHW6RBWu-2cCVfEEqeHc2G99nd-27rFkf0CZErmnQTfbHMJOwflWPc72pEuANi2sSb6Rp-Kvt-cJuBWBuEPmXfI2TYuDw2i5Tn-Fuq4CSbJvDppQzznXV3mi6mKQbKNuKSfMmiMVN9wBUlXPteFACDVgVbL121FgWdCN2DsyEkW2gFwlVePfhNJN65vXhV5yoay3qPuy8hLbGk7ddzwYpoiu-F96dWtWT3MZmCLtneOzI6_YuWiAVxnZSZ4IMGoXLCN9UiYRkuBkIHfp81rPzHvSTb7_DTSdpmobXtn59AINe1sJVGN5dcsW4NjJ30IKHAetklY_HDOxw-DoFvW7HU5iwfHq2z5PF1G81bFv8LuMD5V17BQrgVu0sUi_t9sT-ejOAqu_hZ2SFlHhXLYlJ-X6ZuoLKAwkg7oQfBeMreuERvjWmqglyNyCI0zc8hXJ1fJhlFcjgAHn1hQWXu=w423-h411-no?authuser=0"/>
                                         </Box>
                                         <Box w="60%">
                                             <Heading size="lg">{`Create a study deck for the ${language} language`}</Heading>
@@ -72,13 +97,13 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                                 width="140px"
                                                 size="lg"
                                                 type="submit"
-                                                // onClick={addHandler}
+                                                onClick={() => setIsOpen(true)}
                                                 marginTop={5}
                                             >
                                                 Create Deck
                                             </Button>
                                         </Box>
-                                        <CloseButton onClick={() => setCreateClose(true) }/>
+                                        <CloseButton onClick={() => setCreateClose(true)}/>
                                     </Flex>
                                 </Box>
                             )
@@ -115,6 +140,38 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                     </Stack>
                 </Wrapper>
             </Flex>
+
+            <AlertDialog
+                isOpen={isOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onClose}
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader backgroundColor="blue.50" borderTopRadius="lg">
+                            <Heading as="h1" size="lg">
+                                Create Deck
+                            </Heading>
+                        </AlertDialogHeader>
+
+                        <AlertDialogBody>
+                            <FormControl id="first-name" isRequired>
+                                <FormLabel fontSize="xl">Deck name</FormLabel>
+                                <Input variant="outline" placeholder="Please, enter name of the deck" size="lg" />
+                            </FormControl>
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter>
+                            <Button variant="outline" ref={cancelRef} onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button onClick={onClose} ml={3}>
+                                Create
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
         </>
     );
 }

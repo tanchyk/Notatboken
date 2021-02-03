@@ -8,15 +8,15 @@ class LanguageController {
         const userId = res.locals.userId;
 
         const userRepository = getRepository(User);
-        let languages;
+        let user: User
         try {
-            languages = await userRepository.find({ relations: ["userLanguages"], where: {id: userId}});
+            user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {id: userId}});
         } catch (err) {
             return res.status(404).send({message: "User not found"});
         }
 
         return res.status(201).send({
-            languages: languages[0].userLanguages
+            languages: user.userLanguages
         });
     }
 

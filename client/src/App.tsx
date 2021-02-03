@@ -14,6 +14,7 @@ import NavBar from "./components/Navbar";
 import {ProfilePage} from "./pages/ProfilePage";
 import {theme} from "./utils/theme";
 import DecksPage from "./pages/DecksPage";
+import {ErrorPage} from "./pages/ErrorPage";
 
 export const history = createBrowserHistory();
 
@@ -43,6 +44,7 @@ const App: React.FC<{}> = () => {
                 <NavBar />
                 <Switch>
                     <Route exact path="/" component={StartPage}/>
+                    <Route exact path="/error" component={ErrorPage}/>
                     <Route exact path="/user-page" component={StartPage}/>
                     <Route exact path="/decks/:language" component={DecksPage}/>
                     <Route path="/profile" component={ProfilePage} />
@@ -53,6 +55,7 @@ const App: React.FC<{}> = () => {
         routes = (
             <Switch>
                 <Route exact path="/" component={MainPage}/>
+                <Route exact path="/error" component={ErrorPage}/>
                 <Route exact path="/login" component={LoginPage}/>
                 <Route exact path="/register" component={RegisterPage}/>
             </Switch>

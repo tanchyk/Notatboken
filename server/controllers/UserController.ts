@@ -12,13 +12,14 @@ class UserController {
         let user: User;
 
         try {
-            user = await userRepository.findOneOrFail({where: {id: userId}});
+            user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {id: userId}});
             if(user) {
                 res.status(200).json({
                     userId: user.id,
                     name: user.name,
                     username: user.username,
-                    email: user.email
+                    email: user.email,
+                    languages: user.userLanguages
                 });
             } else {
                 throw new Error('User not found')

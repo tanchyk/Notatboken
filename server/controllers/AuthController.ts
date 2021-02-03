@@ -18,13 +18,13 @@ class AuthController {
 
         if(usernameOrEmail.includes('@')) {
             try {
-                user = await userRepository.findOneOrFail({where: {email: usernameOrEmail}});
+                user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {email: usernameOrEmail}});
             } catch (e) {
                 return res.status(401).send({message: 'Incorrect username/email or password'});
             }
         } else {
             try {
-                user = await userRepository.findOneOrFail({where: {username: usernameOrEmail}});
+                user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {username: usernameOrEmail}});
             } catch (e) {
                 return res.status(401).send({message: 'Incorrect username/email or password'});
             }
@@ -49,7 +49,8 @@ class AuthController {
             userId: user.id,
             name: user.name,
             username: user.username,
-            email: user.email
+            email: user.email,
+            languages: user.userLanguages
         });
     }
 

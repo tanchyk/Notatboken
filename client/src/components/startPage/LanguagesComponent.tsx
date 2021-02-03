@@ -1,19 +1,22 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {Box, Button, Flex, Heading, Image, Select, Stack, Text, useStyleConfig, useToast} from "@chakra-ui/react";
 import {ChevronRightIcon} from "@chakra-ui/icons";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {csrfData} from "../../store/csrfSlice";
 import {Languages} from "../../utils/types";
 import {flags} from "../../utils/theme";
 import {Link as LinkPage} from "react-router-dom";
+import {loadUser, userData} from "../../store/userSlice";
+import {AppDispatch} from "../../store/store";
 
 export const LanguagesComponent: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
     const toast = useToast();
 
     const [addLanguage, setAddLanguage] = useState<Languages>('English');
-    const [languages, setLanguages] = useState<Array<any> | null>(null);
 
+    const dispatch = useDispatch<AppDispatch>();
+    const user = useSelector(userData);
     const csrfToken = useSelector(csrfData);
 
     const changeHandler = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -41,6 +44,7 @@ export const LanguagesComponent: React.FC = () => {
                 duration: 9000,
                 isClosable: true,
             })
+            dispatch(loadUser());
         } else {
             toast({
                 title: "Language is not Added.",
@@ -52,16 +56,9 @@ export const LanguagesComponent: React.FC = () => {
         }
     }
 
-    const findLanguages = async () => {
-        const response = await fetch('/api/languages/language', {
-            method: 'GET'
-        });
-        setLanguages((await response.json()).languages);
-    }
-
     useEffect(() => {
-        findLanguages();
-    }, [addHandler])
+        dispatch(loadUser());
+    }, [])
 
     return (
         <Box flexDirection="column" w="70%">
@@ -83,7 +80,7 @@ export const LanguagesComponent: React.FC = () => {
                             marginLeft={5}
                         >
                             {
-                                languages?.map((language, index) => {
+                                user.languages?.map((language, index) => {
                                     // @ts-ignore
                                     const src = flags[language.languageName.toLowerCase()];
                                     return (

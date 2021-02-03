@@ -1,11 +1,13 @@
 import {SerializedError} from "@reduxjs/toolkit";
 import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
+import {Language} from "../../../server/entities/Language";
 
 export interface UserAuth {
     userId: number | null,
     name: string | null,
     username: string | null,
-    email: string | null
+    email: string | null,
+    languages: Array<Language> | null
 }
 
 export interface LoginData {

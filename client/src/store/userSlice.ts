@@ -6,7 +6,8 @@ const initialState = {
         userId: null,
         name: null,
         username: null,
-        email: null
+        email: null,
+        languages: null
     },
     status: 'idle',
     error: {
@@ -163,7 +164,7 @@ const userSlice = createSlice({
                 });
             } else {
                 return Object.assign({}, state, {
-                    user: payload,
+                    user: {...payload, languages: null},
                     status: 'succeeded',
                 });
             }
