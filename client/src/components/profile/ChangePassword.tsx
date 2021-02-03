@@ -7,7 +7,7 @@ import {
     Text,
     Alert,
     AlertIcon,
-    Button,
+    Button, Heading, Flex,
 } from "@chakra-ui/react";
 import {validatePassword} from "../../utils/validationFunctions";
 import {useSelector} from "react-redux";
@@ -69,7 +69,13 @@ export const ChangePassword: React.FC<{}> = () => {
         >
             {() => (
                 <Form>
-                    <ProfileWrapper variant='Change Password'>
+                    <ProfileWrapper>
+                        <Flex direction="row">
+                            <Heading size="lg">
+                                Change Password
+                            </Heading>
+                            <Text fontSize="20px" ml={2}>🔒</Text>
+                        </Flex>
                         <Alert status={status} fontSize="lg">
                             <AlertIcon />
                             {message}

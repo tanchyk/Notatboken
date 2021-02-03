@@ -1,11 +1,7 @@
 import React from "react";
-import {Heading, Stack, useStyleConfig} from "@chakra-ui/react";
+import {Stack, useStyleConfig} from "@chakra-ui/react";
 
-interface ProfileWrapperProps {
-    variant: 'Basic Information' | 'Change Password' | 'Delete Account'
-}
-
-export const ProfileWrapper: React.FC<ProfileWrapperProps> = ({children, variant}) => {
+export const ProfileWrapper: React.FC<{}> = ({children}) => {
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
 
@@ -17,9 +13,6 @@ export const ProfileWrapper: React.FC<ProfileWrapperProps> = ({children, variant
             marginTop={["0px", "0px", "30px", "30px"]}
             spacing={6}
         >
-            <Heading size="lg">
-                {variant}
-            </Heading>
             {children}
         </Stack>
     );

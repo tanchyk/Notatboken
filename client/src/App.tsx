@@ -13,6 +13,7 @@ import {fetchToken} from "./store/csrfSlice";
 import NavBar from "./components/Navbar";
 import {ProfilePage} from "./pages/ProfilePage";
 import {theme} from "./utils/theme";
+import DecksPage from "./pages/DecksPage";
 
 export const history = createBrowserHistory();
 
@@ -42,7 +43,8 @@ const App: React.FC<{}> = () => {
                 <NavBar />
                 <Switch>
                     <Route exact path="/" component={StartPage}/>
-                    <Route exact path="/notes" component={StartPage}/>
+                    <Route exact path="/user-page" component={StartPage}/>
+                    <Route exact path="/decks/:language" component={DecksPage}/>
                     <Route path="/profile" component={ProfilePage} />
                 </Switch>
             </>

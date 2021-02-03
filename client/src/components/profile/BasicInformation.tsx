@@ -3,7 +3,7 @@ import {
     Text,
     Box,
     Button,
-    useToast
+    useToast, Heading, Flex
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../../utils/types";
@@ -78,7 +78,13 @@ export const BasicInformation: React.FC<{}> = () => {
         >
             {() => (
                 <Form>
-                    <ProfileWrapper variant='Basic Information'>
+                    <ProfileWrapper>
+                        <Flex direction="row">
+                            <Heading size="lg">
+                                Basic Information
+                            </Heading>
+                            <Text fontSize="20px" ml={2}>📖</Text>
+                        </Flex>
                         <Box>
                             <Text fontSize="lg" marginBottom={3} fontWeight="bold">Name</Text>
                             <Field name="name" validate={validateName}>

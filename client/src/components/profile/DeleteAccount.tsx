@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Field, Form, Formik} from "formik";
 import {ProfileWrapper} from "../wrappers/ProfileWrapper";
 import {
+    Flex,
     Alert,
     AlertIcon,
     Box,
@@ -12,7 +13,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogContent,
-    AlertDialogOverlay
+    AlertDialogOverlay, Heading
 } from "@chakra-ui/react";
 import {validatePassword} from "../../utils/validationFunctions";
 import {FieldProps} from "../../utils/types";
@@ -56,7 +57,13 @@ export const DeleteAccount: React.FC<{}> = () => {
         >
             {(props) => (
                 <Form>
-                    <ProfileWrapper variant='Delete Account'>
+                    <ProfileWrapper>
+                        <Flex direction="row">
+                            <Heading size="lg">
+                                Delete Account
+                            </Heading>
+                            <Text fontSize="20px" ml={2}>🗑</Text>
+                        </Flex>
                         <Alert status={statusAlert} fontSize="lg">
                             <AlertIcon />
                             {message}
