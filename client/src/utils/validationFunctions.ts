@@ -12,8 +12,8 @@ export const validateUsernameOrEmail = (value: string) => {
 
 export const validateUsername = (value: string) => {
     let error;
-    const testUsername = /\w/;
-    if (!testUsername.test(value) || value.length < 3 || value.length > 64) {
+    const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+    if (!testUsername.test(value)) {
         error = "Please, enter a valid Username";
     }
     return error;

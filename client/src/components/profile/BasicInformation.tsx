@@ -32,6 +32,7 @@ export const BasicInformation: React.FC<{}> = () => {
     const status = useSelector(userStatus);
 
     useEffect(() => {
+        console.log('BasicInformation is called')
         if (error.type === 'update') {
             toast({
                 position: 'bottom',

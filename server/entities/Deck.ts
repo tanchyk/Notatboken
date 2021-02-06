@@ -27,12 +27,12 @@ export class Deck extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => User, user => user.decks)
+    @ManyToOne(() => User, user => user.decks, {onDelete: 'CASCADE'})
     user: User;
 
     @ManyToOne(() => Language)
     language: Language;
 
-    @OneToMany(() => Card, card => card.deck)
+    @OneToMany(() => Card,card => card.deck, { cascade: true})
     cards: Card[];
 }

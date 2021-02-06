@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app.ts",
     "server": "nodemon ./dist/server.js",
-    "devServer": "webpack --watch --mode development --config webpack.server.config.js"
+    "dev-server": "webpack --watch --mode development --config webpack.server.config.js"
   },
   "keywords": [
     "express",

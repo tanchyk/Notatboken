@@ -214,7 +214,7 @@ const userSlice = createSlice({
         builder.addCase(deleteUser.pending, fetchUserPending)
         builder.addCase(deleteUser.fulfilled, (state: UserSliceType, { payload} : {payload: ErrorDelete}) => {
             if(payload.message === 'Deleted') {
-                return Object.assign({}, state, initialState, {error: {type: 'delete'}});
+                return Object.assign({}, state, initialState, {error: {type: 'deleteUser'}});
             } else {
                 return Object.assign({}, state, {
                     status: 'failed',

@@ -84,12 +84,11 @@ export const LanguagesComponent: React.FC = () => {
                                     // @ts-ignore
                                     const src = flags[language.languageName.toLowerCase()];
                                     return (
-                                        <LinkPage to={`/decks/${language.languageName.toLowerCase()}`}>
+                                        <LinkPage to={`/decks/${language.languageName.toLowerCase()}`} key={index}>
                                             <Button
                                                 w="100%"
                                                 variant="ghost"
                                                 justifyContent="left"
-                                                key={index}
                                                 flexDirection="row"
                                                 rightIcon={<ChevronRightIcon/>}
                                             >

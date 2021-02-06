@@ -49,6 +49,6 @@ export class Card extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Deck, deck => deck.cards)
+    @ManyToOne(() => Deck, deck => deck.cards, { onDelete: 'CASCADE' })
     deck: Deck;
 }

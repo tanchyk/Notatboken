@@ -37,10 +37,10 @@ export class User extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => Deck, deck => deck.user)
+    @OneToMany(() => Deck, deck => deck.user, { cascade: true})
     decks: Deck[];
 
-    @ManyToMany(() => Language)
+    @ManyToMany(() => Language, (language: Language) => language.users,{ cascade: true })
     @JoinTable({name: "userLanguages"})
     userLanguages: Language[]
 }

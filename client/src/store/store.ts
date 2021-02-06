@@ -1,11 +1,13 @@
 import {configureStore} from '@reduxjs/toolkit';
 import userReducer from './userSlice';
 import csrfReducer from './csrfSlice';
+import decksReducer from './deckSlice';
 
 const store = configureStore({
     reducer: {
         user: userReducer,
-        csrfToken: csrfReducer
+        csrfToken: csrfReducer,
+        decks: decksReducer
     }
 });
 

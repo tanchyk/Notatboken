@@ -49,8 +49,8 @@ class UserController {
             return res.status(400).send({message: 'Invalid Email'});
         }
 
-        const testUsername = /\w/;
-        if(user.username !== username && (!testUsername.test(username) || username.length < 3 || username.length > 64)) {
+        const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+        if(user.username !== username && (!testUsername.test(username))) {
             return res.status(400).send({message: 'Invalid Username'});
         }
 

@@ -1,6 +1,7 @@
 import {SerializedError} from "@reduxjs/toolkit";
 import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
 import {Language} from "../../../server/entities/Language";
+import {Card} from "../../../server/entities/Card";
 
 export interface UserAuth {
     userId: number | null,
@@ -31,8 +32,23 @@ export interface CsrfSliceType {
     csrfToken: string | null
 }
 
+export interface DeckData {
+    deckId: number | null;
+    deckName: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    language: Language | null;
+    cards: Card[] | null;
+}
+
+export interface DeckSliceType {
+    decks: Array<DeckData>;
+    status: string,
+    error: ErrorFromServer
+}
+
 export interface ErrorFromServer extends Object {
-    type: 'login' | 'register' | 'update' | 'delete' | null,
+    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'createDeck' | 'loadDecks' | null,
     message: string | SerializedError | null
 }
 

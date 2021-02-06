@@ -4,8 +4,6 @@ import {authenticationJwt, getUserId} from "../middleware/middleware";
 
 const languageRouter = express.Router();
 
-languageRouter.get('/language',authenticationJwt, getUserId, LanguageController.getLanguages);
-
 languageRouter.post('/add-language', authenticationJwt, getUserId, LanguageController.addLanguage);
 
 export default  languageRouter;

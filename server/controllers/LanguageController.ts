@@ -4,22 +4,6 @@ import {User} from "../entities/User";
 import {Language} from "../entities/Language";
 
 class LanguageController {
-    static getLanguages = async (req: Request, res: Response, next: NextFunction) => {
-        const userId = res.locals.userId;
-
-        const userRepository = getRepository(User);
-        let user: User
-        try {
-            user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {id: userId}});
-        } catch (err) {
-            return res.status(404).send({message: "User not found"});
-        }
-
-        return res.status(201).send({
-            languages: user.userLanguages
-        });
-    }
-
     static addLanguage = async (req: Request, res: Response, next: NextFunction) => {
         const userId = res.locals.userId;
         const {language} = req.body;

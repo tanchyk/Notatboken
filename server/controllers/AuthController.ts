@@ -64,13 +64,13 @@ class AuthController {
             return res.status(400).send({message: 'Invalid Email'});
         }
 
-        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
-        if(!testPassword.test(password) || password.length > 100) {
+        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
+        if(!testPassword.test(password)) {
             return res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
         }
 
-        const testUsername = /\w/;
-        if(!testUsername.test(username) || username.length < 3 || username.length > 64) {
+        const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+        if(!testUsername.test(username)) {
             return res.status(400).send({message: 'Invalid Username'});
         }
 

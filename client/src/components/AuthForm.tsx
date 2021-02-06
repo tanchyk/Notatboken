@@ -36,6 +36,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
     const errorMessage = useSelector(userError);
 
     useEffect(() => {
+        console.log('AuthForm is called')
         if(status === 'succeeded') {
             history.push('/notes');
         } else if(status === 'failed' && errorMessage.type === action) {
