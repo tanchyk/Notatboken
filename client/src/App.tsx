@@ -26,7 +26,7 @@ const App: React.FC<{}> = () => {
     const error = useSelector(userError);
 
     useEffect(() => {
-        if(status === 'idle' && error.type === 'delete') {
+        if(status === 'idle' && error.type === 'deleteUser') {
             history.push('/');
         }
     }, [error]);
@@ -46,7 +46,7 @@ const App: React.FC<{}> = () => {
                     <Route exact path="/" component={StartPage}/>
                     <Route exact path="/error" component={ErrorPage}/>
                     <Route exact path="/user-page" component={StartPage}/>
-                    <Route exact path="/decks/:language" component={DecksPage}/>
+                    <Route path="/decks/:language" component={DecksPage}/>
                     <Route path="/profile" component={ProfilePage} />
                 </Switch>
             </>

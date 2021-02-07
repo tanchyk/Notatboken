@@ -35,6 +35,7 @@ interface DecksCreateProps extends DecksHomeProps {
 
 export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, closeCreateComponent}) => {
     const styleStack = useStyleConfig("Stack");
+    styleStack.borderLeftWidth = "6px";
 
     const dispatch = useDispatch<AppDispatch>();
     const deckError = useSelector(decksError);

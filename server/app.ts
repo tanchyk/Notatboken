@@ -15,6 +15,7 @@ import {Language} from "./entities/Language";
 import {Card} from "./entities/Card";
 import {Deck} from "./entities/Deck";
 import decksRouter from "./routes/decksRouter";
+import cardsRouter from "./routes/cardRoutes";
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -79,6 +80,7 @@ createConnection({
     app.use('/users', usersRouter);
     app.use('/languages', languageRouter);
     app.use('/decks', decksRouter);
+    app.use('cards', cardsRouter);
 
     const PORT = 5000;
 

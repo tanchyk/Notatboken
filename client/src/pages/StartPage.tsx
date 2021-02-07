@@ -14,8 +14,8 @@ const StartPage: React.FC = () => {
             <Flex
                 justifyContent="center"
                 backgroundColor="cyan.600"
-                paddingTop={10}
-                paddingBottom={10}
+                paddingTop={9}
+                paddingBottom={9}
             >
                 <Wrapper variant="regular">
                     <Heading color="white" fontSize="38px">{user.name ? user.name : user.username}</Heading>

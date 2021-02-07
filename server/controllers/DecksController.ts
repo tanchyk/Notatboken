@@ -67,7 +67,6 @@ class DecksController {
     static deleteDeck = async (req: Request, res: Response, next: NextFunction) => {
         const {deckId} = req.body
 
-        //Try to find user on database
         const deckRepository = getRepository(Deck);
 
         try {
