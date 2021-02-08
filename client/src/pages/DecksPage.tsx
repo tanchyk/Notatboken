@@ -14,12 +14,15 @@ import {
     useStyleConfig, Icon
 } from "@chakra-ui/react";
 import {history} from '../App';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {userData} from "../store/userSlice";
 import {NavItem} from "../components/profile/NavItem";
 import {DecksHome} from "../components/decks/DecksHome";
 import {Languages} from "../utils/types";
 import {IoLanguageOutline, FaRegFolderOpen, GiProgression, RiHome4Line} from "react-icons/all";
+import {AddCard} from "../components/cards/AddCard";
+import {decksData, decksStatus, fetchDecks} from "../store/deckSlice";
+import {AppDispatch} from "../store/store";
 
 interface DecksProps {
     match: match<{language: string}>
@@ -35,6 +38,11 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
     const [languageId, setLanguageId] = useState<number | null>(null);
     const user = useSelector(userData);
 
+    const dispatch = useDispatch<AppDispatch>();
+
+    const decks = useSelector(decksData);
+    const deckStatus = useSelector(decksStatus);
+
     useEffect(() => {
         console.log('Check for languages is called')
         let check = false;
@@ -45,9 +53,17 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
             }
         });
         if(!check) {
-            history.push('/error')
+            history.push('/error');
         }
     }, [])
+
+    useEffect(() => {
+        console.log('Status', deckStatus);
+        console.log('Lang', languageId);
+        if(deckStatus === 'idle' && languageId) {
+            dispatch(fetchDecks({languageId: languageId}));
+        }
+    }, [deckStatus, decks, languageId]);
 
     return (
         <>
@@ -128,6 +144,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                     <Switch>
                                         <Route path={`${match.url}/home`} render={() => <DecksHome language={language as Languages} languageId={languageId}/>}/>
                                         {/*<Route path={`${match.url}/progress`} component={ChangePassword}/>*/}
+                                        <Route path={`${match.url}/add-card/:deckId`} component={AddCard}/>
                                         <Redirect to={`${match.url}/home`}/>
                                     </Switch>
                                     {/*<DecksHome language={language as Languages} languageId={languageId}/>*/}

@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from "react";
 import {
     Box,
-    Button,
     Flex,
     Heading,
     Stack,
     Text,
     SimpleGrid,
-    useStyleConfig
+    useStyleConfig,
+    IconButton
 } from "@chakra-ui/react";
 import {AddIcon} from "@chakra-ui/icons";
 import {Languages} from "../../utils/types";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
-import {decksData, decksStatus, fetchDecks, clearDecks} from "../../store/deckSlice";
+import {decksData, clearDecks} from "../../store/deckSlice";
 import {DecksCreate} from "./DecksCreate";
 import {DeckBox} from "./DeckBox";
 
@@ -33,19 +33,12 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const decks = useSelector(decksData);
-    const deckStatus = useSelector(decksStatus);
 
     useEffect(() => {
         if(decks.length > 0 && decks[0]?.language?.languageId !== languageId) {
             dispatch(clearDecks());
         }
     }, [])
-
-    useEffect(() => {
-        if(deckStatus === 'idle') {
-            dispatch(fetchDecks({languageId: languageId}));
-        }
-    }, [deckStatus, decks]);
 
     return (
         <Stack
@@ -62,15 +55,7 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
                     <Heading as="h1" size="lg">Decks</Heading>
                     {
                         createClose ? (
-                            <Button
-                                variant="outline"
-                                ml={3}
-                                w="32px"
-                                _hover={{backgroundColor: "rgb(239, 239, 239)"}}
-                                onClick={openCreateComponent}
-                            >
-                                <AddIcon/>
-                            </Button>
+                            <IconButton  ml={3} aria-label="Close create deck" size="md" icon={<AddIcon/>} onClick={openCreateComponent}/>
                         ) : null
                     }
                 </Flex>

@@ -30,8 +30,7 @@ class CardsController {
             nativeWord,
             cardImage,
             voiceId,
-            foreignContext,
-            nativeContext
+            foreignContext
         } = req.body;
 
         const cardRepository = getRepository(Card);
@@ -57,7 +56,6 @@ class CardsController {
         card.cardImage = cardImage;
         card.voiceId = voiceId;
         card.foreignContext = foreignContext;
-        card.nativeContext = nativeContext;
 
         try {
             await cardRepository.save(card);

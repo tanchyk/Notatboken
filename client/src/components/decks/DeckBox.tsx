@@ -24,6 +24,10 @@ import {AppDispatch} from "../../store/store";
 import {deleteDeck} from "../../store/deckSlice";
 import {FaEllipsisV} from "react-icons/all";
 
+import {
+    Link as LinkPage
+} from 'react-router-dom';
+
 interface DeckBoxProps {
     deck: DeckData;
 }
@@ -76,7 +80,9 @@ export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
                             />
                             <MenuList>
                                 <MenuItem icon={<AttachmentIcon />}>Save to folder</MenuItem>
-                                <MenuItem icon={<AddIcon />}>Add cards</MenuItem>
+                                <LinkPage to={`/decks/${deck.language?.languageName}/add-card/${deck.deckId}`}>
+                                    <MenuItem icon={<AddIcon />}>Add cards</MenuItem>
+                                </LinkPage>
                                 <MenuItem icon={<EditIcon />}>Edit</MenuItem>
                                 <MenuItem icon={<DeleteIcon />} onClick={() => setIsOpen(true)}>Delete</MenuItem>
                             </MenuList>

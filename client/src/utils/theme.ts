@@ -1,26 +1,27 @@
 import {extendTheme} from "@chakra-ui/react";
+import {GlobalStyleProps, mode} from "@chakra-ui/theme-tools"
 
 const Stack = {
-    baseStyle: {
+    baseStyle: (props: GlobalStyleProps) => ({
         borderWidth: "1px",
         borderRadius: "lg",
         overflow: "hidden",
-        backgroundColor: "#fff"
-    }
+        backgroundColor: mode("#fff", "gray.700")(props)
+    })
 }
 
 export const theme = extendTheme({
     styles: {
-        global: {
+        global: (props) => ({
             "html, body": {
                 fontSize: "sm",
-                backgroundColor: "#f7f7f7",
-                color: "gray.600",
+                backgroundColor: mode("#f7f7f7", "gray.800")(props),
+                color: mode("gray.600", "white")(props),
                 lineHeight: "tall",
             },
             button: {
                 fontSize: "16px",
-                color: "gray.600",
+                color: mode("gray.600", "white")(props),
                 backgroundColor: "transparent",
                 _hover: {bg: "gray.100"},
                 _active: {
@@ -29,7 +30,7 @@ export const theme = extendTheme({
                 },
                 type: "submit"
             }
-        },
+        }),
     },
     components: {
         Stack

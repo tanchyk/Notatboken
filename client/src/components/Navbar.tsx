@@ -2,12 +2,13 @@ import React from "react";
 import {
     Link as LinkPage
 } from "react-router-dom";
-import {Box, Button, Flex, Heading, Image, Stack} from "@chakra-ui/react";
+import {Box, Button, Flex, Heading, Image, Stack, useColorModeValue} from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../store/userSlice";
 import {AppDispatch} from "../store/store";
 import {history} from '../App';
 import {Wrapper} from "./wrappers/Wrapper";
+import {ColorModeSwitcher} from "./ColorModeSwitcher";
 
 const NavBar: React.FC<{}> = ({}) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -66,8 +67,10 @@ const NavBar: React.FC<{}> = ({}) => {
         );
     }
 
+    const bgNavbar = useColorModeValue("#fff", "gray.700");
+
     return (
-        <Flex bg="#fff" p={3} justifyContent="center" borderBottom="1px">
+        <Flex bg={bgNavbar} p={3} justifyContent="center" borderBottom="1px">
             <Wrapper variant='regular'>
                 <LinkPage to="/">
                     <Stack direction="row" spacing={3} alignItems="center">
@@ -82,6 +85,7 @@ const NavBar: React.FC<{}> = ({}) => {
                     </Stack>
                 </LinkPage>
                 <Box>
+                    <ColorModeSwitcher />
                     {body}
                 </Box>
             </Wrapper>

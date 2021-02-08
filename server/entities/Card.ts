@@ -31,9 +31,6 @@ export class Card extends BaseEntity {
     @Column({nullable: true, length: 120})
     foreignContext: string;
 
-    @Column({nullable: true, length: 120})
-    nativeContext: string;
-
     @Column({
         type: "enum",
         enum: ['fail', 'repeat', '1d', '3d', '7d', '21d', '31d', '90d', 'learned'],
