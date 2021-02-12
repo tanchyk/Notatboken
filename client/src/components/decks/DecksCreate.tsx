@@ -13,10 +13,10 @@ import {
     CloseButton,
     Flex, FormControl, FormLabel,
     Heading,
-    Image, Input, Text, useStyleConfig
+    Image, Input, Text, useStyleConfig, useColorMode
 } from "@chakra-ui/react";
 import {useFormik} from "formik";
-import {addDeck, clearDeckError, decksError} from "../../store/deckSlice";
+import {addDeck, clearDeckError, decksError, decksStatus} from "../../store/deckSlice";
 import * as Yup from "yup";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
@@ -34,11 +34,13 @@ interface DecksCreateProps extends DecksHomeProps {
 }
 
 export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, closeCreateComponent}) => {
+    const { colorMode } = useColorMode()
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
 
     const dispatch = useDispatch<AppDispatch>();
     const deckError = useSelector(decksError);
+    const deckStatus = useSelector(decksStatus);
 
     //Create new deck
     const formikCreate = useFormik({
@@ -61,12 +63,10 @@ export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, c
     const cancelRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        console.log(1)
-        if(deckError.type === null) {
-            console.log('count')
+        if(deckError.type === "createDeck") {
             onClose();
         }
-    }, [deckError])
+    }, [deckStatus])
 
     return (
         <>
@@ -78,7 +78,8 @@ export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, c
                 <Flex direction="row" justifyContent="space-between">
                     <Box boxSize="150px">
                         <Image
-                            src="https://lh3.googleusercontent.com/Pw712TgyLqjyCoE9ljuyegTZ1XHapQI6RvrsEn5SqgZshSpIZheLPJlPcP_HtGWgQ-ss6HtzPLWeYqsNC8U-mLCoM6wxwB3_sCdbMBxioHdfQ4mhV2pT86MdV8rfXjgGlsBxINP_i32Y7Ah17WhFEi9n69AvW_sIiumxg5XTMGIAacBqHGWniR7rnNT1aNQkJLABeCgoMGSRhAS6ys0Z_NSsi2y-Z7tAd8ET_Qspf1fHW6RBWu-2cCVfEEqeHc2G99nd-27rFkf0CZErmnQTfbHMJOwflWPc72pEuANi2sSb6Rp-Kvt-cJuBWBuEPmXfI2TYuDw2i5Tn-Fuq4CSbJvDppQzznXV3mi6mKQbKNuKSfMmiMVN9wBUlXPteFACDVgVbL121FgWdCN2DsyEkW2gFwlVePfhNJN65vXhV5yoay3qPuy8hLbGk7ddzwYpoiu-F96dWtWT3MZmCLtneOzI6_YuWiAVxnZSZ4IMGoXLCN9UiYRkuBkIHfp81rPzHvSTb7_DTSdpmobXtn59AINe1sJVGN5dcsW4NjJ30IKHAetklY_HDOxw-DoFvW7HU5iwfHq2z5PF1G81bFv8LuMD5V17BQrgVu0sUi_t9sT-ejOAqu_hZ2SFlHhXLYlJ-X6ZuoLKAwkg7oQfBeMreuERvjWmqglyNyCI0zc8hXJ1fJhlFcjgAHn1hQWXu=w423-h411-no?authuser=0"/>
+                            src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1612990212/notatboken/pen-full_pwu6cj.png"
+                        />
                     </Box>
                     <Box w="60%">
                         <Heading size="lg">{`Create a study deck for the ${language} language`}</Heading>
@@ -103,7 +104,7 @@ export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, c
             >
                 <AlertDialogOverlay>
                     <AlertDialogContent>
-                        <AlertDialogHeader backgroundColor="blue.50" borderTopRadius="lg">
+                        <AlertDialogHeader backgroundColor={colorMode === "light" ? "cyan.50" : "cyan.700"} borderTopRadius="lg">
                             <Heading as="h1" size="lg">
                                 Create Deck
                             </Heading>

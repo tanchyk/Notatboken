@@ -2,6 +2,8 @@ import {Response, Request, NextFunction} from 'express';
 import {getRepository} from "typeorm";
 import {Card} from "../entities/Card";
 
+const Reverso = require('reverso-api');
+
 class CardsController {
     static findCards = async (req: Request, res: Response, next: NextFunction) => {
         const deckId = Number.parseInt(req.params.deckId);
@@ -28,34 +30,40 @@ class CardsController {
             languageId,
             foreignWord,
             nativeWord,
-            cardImage,
+            imageId,
             voiceId,
-            foreignContext
+            foreignContext,
+            nativeContext
         } = req.body;
+
+        if(!foreignWord || !nativeWord) {
+            return res.status(404).send({message: 'Please, check your data.'});
+        }
 
         const cardRepository = getRepository(Card);
         const card = new Card();
 
         //Checking for existing name
-        const cardCheck = await cardRepository.findOne({
-            relations: ["deck", "user", "language"],
-            where: {
-                user: {id: userId},
-                language: {languageId: languageId},
-                foreignWord: foreignWord
-            }
-        });
+        const cardCheck = await cardRepository.createQueryBuilder("card")
+            .leftJoinAndSelect("card.deck", "deck")
+            .leftJoinAndSelect("deck.user", "user")
+            .leftJoinAndSelect("deck.language", "language")
+            .where("user.id = :id", { id: userId })
+            .where("language.languageId = :languageId", {languageId})
+            .where("card.foreignWord = :foreignWord", {foreignWord})
+            .getMany();
 
-        if(cardCheck) {
+        if(cardCheck.length > 0) {
             return res.status(400).send({message: 'You already have this card in your list.'});
         }
 
         card.deck = deckId;
         card.foreignWord = foreignWord;
         card.nativeWord = nativeWord;
-        card.cardImage = cardImage;
+        card.imageId = imageId;
         card.voiceId = voiceId;
         card.foreignContext = foreignContext;
+        card.nativeContext = nativeContext;
 
         try {
             await cardRepository.save(card);
@@ -66,7 +74,7 @@ class CardsController {
     }
 
     static deleteCard = async (req: Request, res: Response, next: NextFunction) => {
-        const {cardId} = req.body
+        const {cardId} = req.body;
 
         const cardRepository = getRepository(Card);
 
@@ -76,6 +84,20 @@ class CardsController {
             next(err);
         }
         return res.status(204).send();
+    }
+
+    static searchContext = async (req: Request, res: Response, next: NextFunction) => {
+        const {languageName, foreignWord} = req.body;
+        console.log({languageName, foreignWord})
+
+        const reverso = new Reverso();
+
+        try {
+            const response = await reverso.getTranslation(foreignWord, languageName, 'English');
+            return res.status(200).send(response.context.examples);
+        } catch (err) {
+            return res.status(404).send({message: err});
+        }
     }
 }
 

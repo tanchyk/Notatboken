@@ -11,8 +11,7 @@ import {
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
 import {useSelector} from "react-redux";
-import {userData, userError, userStatus} from "../store/userSlice";
-import {history} from "../App";
+import {userError, userStatus} from "../store/userSlice";
 import {SerializedError} from "@reduxjs/toolkit";
 import {validateEmail, validatePassword, validateUsername, validateUsernameOrEmail} from "../utils/validationFunctions";
 import {PasswordInput} from "./inputs/PasswordInput";
@@ -31,18 +30,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
     //Data
     const [message, setMessage] = useState<string | null | SerializedError>(null);
 
-    const user = useSelector(userData);
     const status = useSelector(userStatus);
     const errorMessage = useSelector(userError);
 
     useEffect(() => {
-        console.log('AuthForm is called')
-        if(status === 'succeeded') {
-            history.push('/notes');
-        } else if(status === 'failed' && errorMessage.type === action) {
+        if(status === 'failed' && errorMessage.type === action) {
             setMessage(errorMessage.message);
         }
-    }, [user, errorMessage]);
+    }, [status, errorMessage]);
 
     let initialState = {};
     let authForm: ReactElement;
@@ -122,7 +117,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
                             <Stack spacing={5} textAlign="center">
                                 <Box boxSize={["sm", "sm", "sm", "md"]}>
                                     <Image
-                                        src={ action === "login" ? "https://lh3.googleusercontent.com/fZBzYoLp2Ea3eLBWaJ5Qqebgv301piTXxJRZvUOJscrTbdKj_wdoe3ljjbrPVWkG9BE8oEUw2iWh2g-RwSIJpsle480PNYPLZdXvzuGevbgVaeud1goS8USoz3io2eNI7T6_kNIoNKNd1lkXQktOdu3EuYpG1v5jwCFh1XyHVc2nlGQUayYe5QxgUNalGqkrHzdepbjsryhzKSO57APSyIosEQmeu45Da3CLwikLkehMhdNp5DQG2TFmiW4QSGoc5UWhCfZoqvKci0t0l1AOkT8wzyjPsUyhug2c1IV0fz6Ncyq6UmBj9XJ3IFtWLmOUJNaBFvZSUq8hwCx8jNPMunKJ_4NpFS7XxUs9xUpzVnslRNb26J9S-ogSf4r2H8Os3KfjFCK9AkOyYublKaQ_kyLoGHopT5qf9VboF_tp2BgOE6_Vs-SLqc9n8BV_2RLrAvyokHYZGecRyATZVbO2b8RJ4kv-nkfupDprfA_0SBrVHwspLqf3O8tTCzD07OaXLEhD5nWWJPiJ_tVt6ggk-VPKoaIvEPO6iC3nok1Z44OR0pipeq-465s3EvaAKZ1yCz1e-RxQLcCLgotGDcqxV6oIvuKOyFR87fYLcBKmAx47TW27o3ToM7enr0nB34yxr3s0TYNWLMyW1jYgnzH4EWN5PhBC3ANCpeuRPeRdWmRqhY_DTFBsLhPmCM4q=s640-no?authuser=0" : "https://lh3.googleusercontent.com/9sot2TLaiJZwhauamDy0EX_Nl3K_oucAexZBhFrBiYXp1AR-n6qadO9OG14DXT_hRzJSIKPPVwsjdqF3XEWoKWyhaASzYeUvG2haxh2G6s9Vmm_h809uuj8sD1H5WngRIDMxwtRAO49z07t4HNOBn48OhU4P8RGHFG5TUDmxEZfiMQ-i3ekHDe-iHiOsD2zNXdYM99IND8olO1Gif91TDna30S_vXpVXm5_fqGwISiw9IcyrXfTTblMI89WtBrJlYd-l3V4215yb-q2l_N9xLA5LU4ehOu2cpu7y8k8ydbXivGaR3Ktg2Upl4gTuNSYMPRgtNoH9SlWIorbAlgSVMUwUFMMKK6aXmuf-vdUXK1N9v2XaIf0Ob8184-gsAe4D06MC5gb80yzIEv7NtRhhdY1MXsXrGstt2K42ukqaKDNI20_rx9WbX3XInWoIRLykUrn83Sdzu6u-q_6SfbdmbRlM0uJm9Uz5mw356rH3NlJILmB8jAaoAaCumf60wRd5v_CPbFJ75Q-ajInLXR2vd8_vgSPQP6P5naPK8Du9VGJ3kwXIveN11gFkqiOHfG3GWCkUbqF6mj1eUxwO8KLYAEPExUsr40iQTjHfJmkEoZ2iqCDkAY6f1EJ-Iy6ZjIIG9Q5dji-BTQfqeT9IM61Av911RiucIMzoqbvKEPaZugHzKaCI2ts1sMSZ56Ua=s640-no?authuser=0"}
+                                        src={ action === "login" ? "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1612990210/notatboken/workplace_cgjgtd.png" : "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1612990220/notatboken/goal_1_jtrupn.png"}
                                     />
                                 </Box>
                                 <LinkPage to={`/${action === 'login' ? 'register' : 'login'}`}>

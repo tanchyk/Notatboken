@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useState} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {Box, Button, Flex, Heading, Image, Select, Stack, Text, useStyleConfig, useToast} from "@chakra-ui/react";
 import {ChevronRightIcon} from "@chakra-ui/icons";
 import {useDispatch, useSelector} from "react-redux";
@@ -13,7 +13,7 @@ export const LanguagesComponent: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
     const toast = useToast();
 
-    const [addLanguage, setAddLanguage] = useState<Languages>('English');
+    const [addLanguage, setAddLanguage] = useState<Languages>('Norwegian');
 
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector(userData);
@@ -56,10 +56,6 @@ export const LanguagesComponent: React.FC = () => {
         }
     }
 
-    useEffect(() => {
-        dispatch(loadUser());
-    }, [])
-
     return (
         <Box flexDirection="column" w="70%">
             <Heading as="h1" fontSize="22px" marginTop={8}>Languages 🎓</Heading>
@@ -72,7 +68,7 @@ export const LanguagesComponent: React.FC = () => {
             >
                 <Flex direction="row" spacing={4} justifyContent="space-between">
                     <Box w="78%">
-                        <Heading as="h1" size="md">Your Languages</Heading>
+                        <Heading as="h1" size="md">Your Languages to study</Heading>
                         <Stack
                             spacing={2}
                             marginTop={5}
@@ -101,9 +97,9 @@ export const LanguagesComponent: React.FC = () => {
                             }
                         </Stack>
                         <Select variant="filled" size="md" onChange={changeHandler}>
-                            <option value="English">English</option>
-                            <option value="German">German</option>
                             <option value="Norwegian">Norwegian</option>
+                            <option value="German">German</option>
+                            <option value="Polish">Polish</option>
                             <option value="Russian">Russian</option>
                             <option value="French">French</option>
                             <option value="Spanish">Spanish</option>

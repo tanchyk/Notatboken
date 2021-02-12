@@ -11,7 +11,12 @@ class DecksController {
         let decks: Deck[];
         if(languageId) {
             try {
-                decks = await deckRepository.find({relations: ["language", "user"], where: {user: {id: userId}, language: {languageId: languageId}}});
+                decks = await deckRepository.find({
+                    relations: ["language", "user"], where: {
+                        user: {id: userId},
+                        language: {languageId: languageId}
+                    }
+                });
             } catch (err) {
                 return res.status(404).send({message: "You have no decks"});
             }
@@ -55,13 +60,20 @@ class DecksController {
 
         await deckRepository.save(deck);
 
-        return res.status(200).send({
-            deckId: deck.deckId,
-            deckName: deck.deckName,
-            createdAt: deck.createdAt,
-            updatedAt: deck.updatedAt,
-            cards: deck.cards
+        const deckSend: Deck = await deckRepository.findOneOrFail({
+            relations: ["language", "user"], where: {
+                deckName,
+                user: {
+                    id: userId
+                },
+                language: {
+                    languageId
+                }
+            }
         });
+
+
+        return res.status(200).send(deckSend);
     }
 
     static deleteDeck = async (req: Request, res: Response, next: NextFunction) => {

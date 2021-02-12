@@ -74,7 +74,7 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
                             </Flex>
                         </Box>
                     ) : (
-                        <SimpleGrid columns={2} spacing={4} marginTop={4}>
+                        <SimpleGrid columns={2} spacing={4} marginTop={4} marginBottom={4}>
                             {
                                 decks.map((deck, key) => {
                                     return (

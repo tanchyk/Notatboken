@@ -12,7 +12,7 @@ import {
 import {HiPhotograph} from "react-icons/all";
 import {AdditionalDataBox} from "./AdditionalDataBox";
 
-const API_PEXELS = '563492ad6f91700001000001847674becf574b9fbbf64ad924d2b7f2';
+const API_PEXELS = `${process.env.REACT_APP_API_PEXELS}`;
 
 interface ChoosePhotoProps {
     nativeWord: string;
@@ -25,7 +25,8 @@ export const ChoosePhoto: React.FC<ChoosePhotoProps> = ({nativeWord, isDisabled,
     const [images, setImages] = useState<any>();
     const [imageError, setImageError] = useState<string | null>(null);
 
-    const loadImages = async (nativeWord: string) => {
+    //Load and prepare images
+    const loadImages = async () => {
         setImageError(null);
         const imagesFromFetch = await fetch(`https://api.pexels.com/v1/search?query=${nativeWord}`, {
                 headers: {
@@ -37,18 +38,19 @@ export const ChoosePhoto: React.FC<ChoosePhotoProps> = ({nativeWord, isDisabled,
         if(imagesFromFetch.photos.length !== 15) {
             setImageError("We can't find a photo for you 😢");
         } else {
-            const obj = [
+            //Setting images for better user interaction
+            setImages([
                 imagesFromFetch.photos.slice(0, 5),
                 imagesFromFetch.photos.slice(5, 10),
                 imagesFromFetch.photos.slice(10, 15)
-            ]
-            setImages(obj);
+            ]);
         }
     }
 
+    //Functions for user clicks
     const openModal = async () => {
         onOpen();
-        await loadImages(nativeWord);
+        await loadImages();
     }
 
     const choosePhoto = (photo: any) => {

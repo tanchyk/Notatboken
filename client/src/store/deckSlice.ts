@@ -54,7 +54,10 @@ export const deleteDeck = createAsyncThunk<ErrorDelete, {deckId: number}>(
             }
         }).then(response => {
             if(response.status === 204) {
-                return {message: 'Deleted'};
+                return {
+                    message: 'Deleted',
+                    deckId: deckData.deckId
+                };
             } else {
                 return response.json()
             }
@@ -118,13 +121,17 @@ const deckSlice = createSlice({
                     status: 'failed',
                     error: {
                         message: payload['message'],
-                        type: 'createDeck'
+                        type: 'notCreateDeck'
                     }
                 });
             } else {
                 return Object.assign({}, state, {
                     decks: state.decks.concat(payload),
-                    status: 'succeeded'
+                    status: 'succeeded',
+                    error: {
+                        type: 'createDeck',
+                        message: null
+                    }
                 });
             }
         })
@@ -134,7 +141,10 @@ const deckSlice = createSlice({
         builder.addCase(deleteDeck.pending, fetchDeckPending)
         builder.addCase(deleteDeck.fulfilled, (state: DeckSliceType, { payload} : {payload: ErrorDelete}) => {
             if(payload.message === 'Deleted') {
-                return Object.assign({}, state, initialState, {error: {type: 'deleteDeck'}});
+                return Object.assign({}, state,{
+                    decks: state.decks.filter(deck => deck.deckId !== payload!.deckId),
+                    status: 'succeeded'
+                }, {error: {type: 'deleteDeck'}});
             } else {
                 return;
             }

@@ -21,7 +21,7 @@ import {DecksHome} from "../components/decks/DecksHome";
 import {Languages} from "../utils/types";
 import {IoLanguageOutline, FaRegFolderOpen, GiProgression, RiHome4Line} from "react-icons/all";
 import {AddCard} from "../components/cards/AddCard";
-import {decksData, decksStatus, fetchDecks} from "../store/deckSlice";
+import {decksData, decksStatus, fetchDecks, clearDecks} from "../store/deckSlice";
 import {AppDispatch} from "../store/store";
 
 interface DecksProps {
@@ -33,7 +33,6 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
     const [clicked, setClicked] = useState<'decks-home' | 'progress' | 'folders'>('decks-home');
     const handleClick = (event: React.MouseEvent<HTMLParagraphElement>) => setClicked(event.currentTarget.id as 'decks-home' | 'progress' | 'folders');
 
-
     const language = match.params.language.charAt(0).toUpperCase() + match.params.language.slice(1);
     const [languageId, setLanguageId] = useState<number | null>(null);
     const user = useSelector(userData);
@@ -44,26 +43,24 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
     const deckStatus = useSelector(decksStatus);
 
     useEffect(() => {
-        console.log('Check for languages is called')
+        dispatch(clearDecks());
         let check = false;
         user.languages?.forEach(languageUser => {
-            if(languageUser.languageName === language) {
+            if (languageUser.languageName === language) {
                 check = true;
                 setLanguageId(languageUser.languageId);
             }
         });
-        if(!check) {
+        if (!check) {
             history.push('/error');
         }
     }, [])
 
     useEffect(() => {
-        console.log('Status', deckStatus);
-        console.log('Lang', languageId);
-        if(deckStatus === 'idle' && languageId) {
+        if (deckStatus === 'idle' && languageId !== null) {
             dispatch(fetchDecks({languageId: languageId}));
         }
-    }, [deckStatus, decks, languageId]);
+    }, [decks, languageId]);
 
     return (
         <>

@@ -39,7 +39,7 @@ export const theme = extendTheme({
 
 export const flags = {
     german: 'https://cdn.countryflags.com/thumbs/germany/flag-waving-250.png',
-    english: 'https://cdn.countryflags.com/thumbs/united-kingdom/flag-waving-250.png',
+    polish: 'https://cdn.countryflags.com/thumbs/poland/flag-waving-250.png',
     norwegian: 'https://cdn.countryflags.com/thumbs/norway/flag-waving-250.png',
     russian: 'https://cdn.countryflags.com/thumbs/russia/flag-waving-250.png',
     spanish: 'https://cdn.countryflags.com/thumbs/spain/flag-waving-250.png',

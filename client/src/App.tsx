@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {ChakraProvider} from "@chakra-ui/react";
-import {BrowserRouter, Route, Router, Switch} from "react-router-dom";
+import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
 import { createBrowserHistory } from 'history';
@@ -48,6 +48,7 @@ const App: React.FC<{}> = () => {
                     <Route exact path="/user-page" component={StartPage}/>
                     <Route path="/decks/:language" component={DecksPage}/>
                     <Route path="/profile" component={ProfilePage} />
+                    <Redirect to="/" />
                 </Switch>
             </>
         );

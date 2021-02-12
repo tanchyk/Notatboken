@@ -29,7 +29,8 @@ export const ErrorPage: React.FC = () => {
                         <Box w={["100%", "100%", "100%", "50%"]}>
                             <Box boxSize={["240px", "240px", "300px", "360px"]} margin="auto">
                                 <Image
-                                    src="https://lh3.googleusercontent.com/lI7mHVeXFS-kHuz_oxSuYfzkiwSq57MVeIVWe0G0D7n-pFYV3S_faBWFk1-uVz18r4A6gTvi9oU_Wa5qCovE8oOKf2Yy7jsGiPJuzX_jS01ScANz2SnPepkSZ5T2Esrz6sU5YB9OdNwOc70QG0NfLCVEokxADVb9is_4U9GbVPCRrzm6HA39hgmzoqJKribY6pY2YD_rjRy12zDISd2fkaP0emASW0cmKi6DBShwcuqY6wQc3s02HD-FB44InHfb-VAykyvlAjTyjpdqtA1ShsFyLh8gf8qCrKEPHHpkc1VbygXUzsQwgtWHzq5sHc1Q908TDRRnG6hWIWyMtcj0Qa7aA6XjbPPgYOPwmNVQwtPQGOQSV-faDMHGRSHfjuEgzbtXM1mds4lzCv9cjcVQw8Mur1JKBD-Xq8GoP43b9ETWcUqaIF_MLizcmPRYQ6Q46lv2GbkBa3H08qnuTgknV490kWiqsYVTycHjojAgFZCclwZXpvVW6ez0RRcmxBELNd40K0Dr5C3BkM5vGQlh8knz6tRDKAaRDjI_iEqOR2wrQXl1KV53WRP4MHzRpq-BbQap6vb33xwaZjV_YEDYDaYnkVhixXWC8z8f5Zf4VS_MiKPjqSOi0Ss86Cq7wim6skatYHjjcjROLNTwThJP_2TrT6On1fS9V0KNREguKcfSABmw_PayZpuaeY0EuA=s512-no?authuser=0"/>
+                                    src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1612990203/notatboken/upload_moe1hr.png"
+                                />
                             </Box>
                         </Box>
                     </Stack>

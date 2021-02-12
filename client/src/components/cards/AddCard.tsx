@@ -3,16 +3,18 @@ import {
     match
 } from 'react-router-dom';
 import {
+    Flex,
     Heading,
     Stack,
+    Checkbox,
     Box,
     Text,
     Button,
-    Image
+    Image, IconButton, useToast
 } from "@chakra-ui/react";
 import {useSelector} from "react-redux";
 import {decksData} from "../../store/deckSlice";
-import {DeckData, FieldProps} from "../../utils/types";
+import {ContextApi, DeckData, FieldProps} from "../../utils/types";
 import {history} from "../../App";
 import {useStyleConfig} from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
@@ -21,12 +23,16 @@ import {validateUsername} from "../../utils/validationFunctions";
 import {ChoosePhoto} from "./ChoosePhoto";
 import {ChoosePronunciation} from "./ChoosePronunciation";
 import {ChooseContext} from "./ChooseContext";
+import {ContextBox} from "./ContexBox";
+import { MdDelete} from "react-icons/all";
+import {csrfData} from "../../store/csrfSlice";
 
 interface AddCardProps {
     match: match<{deckId: string}>
 }
 
 export const AddCard: React.FC<AddCardProps> = ({match}) => {
+    const toast = useToast();
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
 
@@ -34,7 +40,9 @@ export const AddCard: React.FC<AddCardProps> = ({match}) => {
     const [deck, setDeck] = useState<DeckData | null>(null);
 
     const decks = useSelector(decksData);
+    const csrfToken = useSelector(csrfData);
 
+    //Checking if user has this deck
     useEffect(() => {
         if(decks.length > 0) {
             let checkDeck = null;
@@ -53,11 +61,16 @@ export const AddCard: React.FC<AddCardProps> = ({match}) => {
         }
     }, [decks])
 
-    const [photo, setPhoto] = useState<any>();
+    //State for keeping data that was selected by user
+    const [photo, setPhoto] = useState<any>(null);
+    const [context, setContext] = useState<ContextApi | null>(null);
 
     const clear = () => {
         if(photo) {
-            setPhoto(undefined);
+            setPhoto(null);
+        }
+        if(context) {
+            setContext(null)
         }
     }
 
@@ -65,13 +78,51 @@ export const AddCard: React.FC<AddCardProps> = ({match}) => {
         <Formik
             initialValues={{
                 foreignWord: '',
-                nativeWord: ''
+                nativeWord: '',
+                includeNativeContext: false
             }}
-            onSubmit={async (values) => {
-                console.log(values);
+            onSubmit={async (values, {resetForm, setFieldError}) => {
+                const result: {message: string} = await fetch('/api/cards/create-card', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        deckId,
+                        languageId: deck?.language?.languageId,
+                        foreignWord: values.foreignWord,
+                        nativeWord: values.nativeWord,
+                        imageId: photo ? photo.id : null,
+                        foreignContext: context ? context?.from : null,
+                        nativeContext: values.includeNativeContext ? context?.to : null
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': `${csrfToken}`
+                    }
+                }).then(response => response.json());
+
+                if(result.message === "Card is created") {
+                    resetForm();
+                    clear();
+                    return toast({
+                        title: "Card is created.",
+                        description: "We've created a card for you.",
+                        status: "success",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+
+                } else {
+                    setFieldError('foreignWord', result.message);
+                    return toast({
+                        title: "Card is not created.",
+                        description: "Please, check your data.",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                }
             }}
         >
-            {({values, isValid, dirty}) => (
+            {({values, isValid, dirty, setFieldValue}) => (
                 <Form>
                     <Stack
                         sx={styleStack}
@@ -111,7 +162,24 @@ export const AddCard: React.FC<AddCardProps> = ({match}) => {
                                 </Field>
                             </Box>
 
-                            <ChoosePhoto nativeWord={values.nativeWord} isDisabled={!(isValid && dirty)} setPhoto={setPhoto}/>
+                            <Flex direction="row">
+                            <ChoosePhoto
+                                nativeWord={values.nativeWord}
+                                isDisabled={!(isValid && dirty)}
+                                setPhoto={setPhoto}
+                            />
+                                {
+                                    photo ? (
+                                        <IconButton
+                                            aria-label="Delete Photo"
+                                            size="sm"
+                                            ml={2}
+                                            icon={<MdDelete/>}
+                                            onClick={() => setPhoto(null)}
+                                        />
+                                    ) : null
+                                }
+                            </Flex>
                             {
                                 photo ? (
                                     <Image
@@ -121,10 +189,45 @@ export const AddCard: React.FC<AddCardProps> = ({match}) => {
                                     />
                                 ) : null
                             }
+                            {
+                                deck?.language?.languageId === 6 ? <Heading as="h1" size="sm">😔 Sorry, Notatboken can't add context for Norwegian language</Heading> : (
+                                    <>
+                                        <Flex direction="row">
+                                            <ChooseContext
+                                                isDisabled={!(isValid && dirty)}
+                                                setContext={setContext}
+                                                foreignWord={values.foreignWord}
+                                                languageName={deck?.language?.languageName}
+                                            />
+                                            {
+                                                context ? (
+                                                    <IconButton
+                                                        aria-label="Delete Context"
+                                                        size="sm"
+                                                        ml={2}
+                                                        icon={<MdDelete/>}
+                                                        onClick={() => setContext(null)}
+                                                    />
+                                                ) : null
+                                            }
+                                        </Flex>
+                                        {
+                                            context ? (
+                                                <ContextBox from={context.from} to={context.to} />
+                                            ) : null
+                                        }
+                                        <Checkbox
+                                            isDisabled={!(!!context)}
+                                            isChecked={values.includeNativeContext}
+                                            onChange={() => setFieldValue('includeNativeContext', !values.includeNativeContext)}
+                                        >
+                                            Include context in your native language?
+                                        </Checkbox>
+                                    </>
+                                )
+                            }
 
-                            <ChoosePronunciation isDisabled={!(isValid && dirty)}/>
-
-                            <ChooseContext isDisabled={!(isValid && dirty)}/>
+                            <ChoosePronunciation isDisabled={true}/>
 
                             <Box alignSelf="flex-end">
                                 <Button

@@ -29,6 +29,7 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
+    "reverso-api": "^2.16.1",
     "shortid": "^2.2.15",
     "ts-node": "^9.0.0",
     "typeorm": "^0.2.30"
@@ -52,7 +53,7 @@
     "@types/express-jwt": "^6.0.0",
     "@types/express-validator": "^3.0.0",
     "@types/jsonwebtoken": "^8.5.0",
-    "@types/node": "^14.10.1",
+    "@types/node": "^14.14.25",
     "@types/pg": "^7.14.4",
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.2",

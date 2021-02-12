@@ -40,7 +40,6 @@ export const DeleteAccount: React.FC<{}> = () => {
     const errorMessage = useSelector(userError);
 
     useEffect(() => {
-        console.log('Delete is called')
         if(status === 'failed' && errorMessage.type === 'deleteUser') {
             setMessage(errorMessage.message);
             setStatusAlert('error');

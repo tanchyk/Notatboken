@@ -8,6 +8,8 @@ cardsRouter.get('/find-cards/:deckId', authenticationJwt, CardsController.findCa
 
 cardsRouter.post('/create-card', authenticationJwt, getUserId, CardsController.addCard);
 
-cardsRouter.delete('/delete-card', authenticationJwt, CardsController.deleteCard)
+cardsRouter.delete('/delete-card', authenticationJwt, CardsController.deleteCard);
+
+cardsRouter.post('/search-context', authenticationJwt, CardsController.searchContext);
 
 export default  cardsRouter;

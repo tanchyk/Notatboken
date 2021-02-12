@@ -48,12 +48,13 @@ export interface DeckSliceType {
 }
 
 export interface ErrorFromServer extends Object {
-    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'createDeck' | 'loadDecks' | null,
+    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'loadDecks' | null,
     message: string | SerializedError | null
 }
 
 export interface ErrorDelete extends Object {
-    message: string | SerializedError | null
+    message: string | SerializedError | null;
+    deckId: number;
 }
 
 export interface FieldProps<V = any> {
@@ -74,4 +75,11 @@ export interface Passwords {
     oldPassword: string;
 }
 
-export type Languages  = 'English' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';
+export type Languages  = 'Polish' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';
+
+export interface ContextApi {
+    from: string;
+    to: string;
+    phrase_from: string;
+    phrase_to: string;
+}

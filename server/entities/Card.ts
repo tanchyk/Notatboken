@@ -23,13 +23,16 @@ export class Card extends BaseEntity {
     nativeWord!: string;
 
     @Column({nullable: true})
-    cardImage: string;
+    imageId: number;
 
     @Column({nullable: true})
     voiceId: number;
 
     @Column({nullable: true, length: 120})
     foreignContext: string;
+
+    @Column({nullable: true, length: 120})
+    nativeContext: string;
 
     @Column({
         type: "enum",

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {AdditionalDataBox} from "./AdditionalDataBox";
-import {AiFillSound} from "react-icons/all";
-import {Select, Stack} from "@chakra-ui/react";
+import {AiFillSound, BsFillLockFill} from "react-icons/all";
+import {Select, Stack, IconButton, Flex, Tooltip} from "@chakra-ui/react";
 
 interface ChoosePronunciationProps {
     isDisabled: boolean;
@@ -12,12 +12,24 @@ export const ChoosePronunciation: React.FC<ChoosePronunciationProps> = ({isDisab
 
     return (
         <Stack spacing={5}>
-            <AdditionalDataBox
-                icon={AiFillSound}
-                text="Add a pronunciation to your card?"
-                onOpen={() => setShowSelect(!showSelect)}
-                isDisabled={isDisabled}
-            />
+            <Flex>
+                <AdditionalDataBox
+                    icon={AiFillSound}
+                    text="Add a pronunciation to your card?"
+                    onOpen={() => setShowSelect(!showSelect)}
+                    isDisabled={isDisabled}
+                />
+                <Tooltip label="Premium feature" fontSize="md">
+                    <IconButton
+                        aria-label="Premium feature"
+                        size="sm"
+                        ml={2}
+                        bg="yellow.300"
+                        _hover={{bg: "yellow.200"}}
+                        icon={<BsFillLockFill/>}
+                    />
+                </Tooltip>
+            </Flex>
             {
                 showSelect ? (<Select variant="outline" placeholder="Outline" />) : null
             }

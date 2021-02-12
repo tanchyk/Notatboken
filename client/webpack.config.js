@@ -3,8 +3,12 @@ const HtmlWebPackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const webpack = require("webpack");
+const dotenv = require('dotenv');
 
 module.exports = function(env, argv) {
+    const envParsed = dotenv.config().parsed;
+
     return {
         mode: env.production ? 'production' : 'development',
 
@@ -21,7 +25,7 @@ module.exports = function(env, argv) {
 
         target: 'web',
 
-        devtool: env.production ? 'source-map' : 'eval',
+        devtool: env.production ? 'eval-cheap-source-map' : 'eval',
 
         resolve: {
             extensions: ['.ts', '.tsx', '.js']
@@ -63,6 +67,9 @@ module.exports = function(env, argv) {
                 minify: {
                     collapseWhitespace: true
                 }
+            }),
+            new webpack.DefinePlugin({
+                'process.env.REACT_APP_API_PEXELS': JSON.stringify(`${envParsed.REACT_APP_API_PEXELS}`)
             }),
             new MiniCssExtractPlugin({
                 filename: '[name].css'

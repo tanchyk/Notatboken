@@ -39,9 +39,9 @@ const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunct
 //     spanish.languageName = 'Spanish';
 //     await connection.manager.save(spanish);
 //
-//     const english = new Language();
-//     english.languageName = 'English';
-//     await connection.manager.save(english);
+//     const polish = new Language();
+//     polish.languageName = 'Polish';
+//     await connection.manager.save(polish);
 //
 //     const norwegian = new Language();
 //     norwegian.languageName = 'Norwegian';
@@ -80,7 +80,7 @@ createConnection({
     app.use('/users', usersRouter);
     app.use('/languages', languageRouter);
     app.use('/decks', decksRouter);
-    app.use('cards', cardsRouter);
+    app.use('/cards', cardsRouter);
 
     const PORT = 5000;
 
