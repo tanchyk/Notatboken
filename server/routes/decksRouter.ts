@@ -8,6 +8,8 @@ decksRouter.get('/find-decks/:languageId', authenticationJwt, getUserId, DecksCo
 
 decksRouter.post('/create-deck', authenticationJwt, getUserId, DecksController.addDeck);
 
-decksRouter.delete('/delete-deck', authenticationJwt, DecksController.deleteDeck)
+decksRouter.delete('/delete-deck', authenticationJwt, DecksController.deleteDeck);
+
+decksRouter.put('/edit-deck', authenticationJwt, DecksController.editDeck);
 
 export default  decksRouter;

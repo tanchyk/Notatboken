@@ -1,13 +1,8 @@
 import React, {useRef} from "react";
 import {DeckData} from "../../utils/types";
 import {
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent, AlertDialogFooter, AlertDialogHeader,
-    AlertDialogOverlay,
     Box,
     IconButton,
-    Button,
     Flex,
     Heading,
     Menu,
@@ -27,6 +22,7 @@ import {FaEllipsisV} from "react-icons/all";
 import {
     Link as LinkPage
 } from 'react-router-dom';
+import {AlertForDelete} from "../AlertForDelete";
 
 interface DeckBoxProps {
     deck: DeckData;
@@ -83,7 +79,9 @@ export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
                                 <LinkPage to={`/decks/${deck.language?.languageName}/add-card/${deck.deckId}`}>
                                     <MenuItem icon={<AddIcon />}>Add cards</MenuItem>
                                 </LinkPage>
-                                <MenuItem icon={<EditIcon />}>Edit</MenuItem>
+                                <LinkPage to={`/decks/${deck.language?.languageName}/edit-deck/${deck.deckId}`}>
+                                    <MenuItem icon={<EditIcon/>}>Edit</MenuItem>
+                                </LinkPage>
                                 <MenuItem icon={<DeleteIcon />} onClick={() => setIsOpen(true)}>Delete</MenuItem>
                             </MenuList>
                         </Menu>
@@ -91,39 +89,13 @@ export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
                 </Flex>
             </Box>
 
-            <AlertDialog
+            <AlertForDelete
+                header={`Delete Deck ${deck.deckName}`}
                 isOpen={isOpen}
-                leastDestructiveRef={cancelRef}
                 onClose={onClose}
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize="xl" fontWeight="bold">
-                            {`Delete Deck ${deck.deckName}`}
-                        </AlertDialogHeader>
-
-                        <AlertDialogBody fontSize="lg">
-                            Are you sure? You can't undo this action afterwards.
-                        </AlertDialogBody>
-
-                        <AlertDialogFooter>
-                            <Button
-                                ref={cancelRef}
-                                onClick={onClose}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                colorScheme="red"
-                                onClick={deleteHandler}
-                                ml={3}
-                            >
-                                Delete
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
+                onClick={deleteHandler}
+                cancelRef={cancelRef}
+            />
         </>
     );
 }

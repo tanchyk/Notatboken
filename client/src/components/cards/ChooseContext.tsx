@@ -83,7 +83,7 @@ export const ChooseContext: React.FC<ChooseContextProps> = ({foreignWord, langua
                     <ModalCloseButton/>
                     <ModalBody>
                         {
-                            contextError ? (<Text fontSize="xl">{contextError}</Text>) : (
+                            contextError ? (<Text fontSize="xl" mb={5}>{contextError}</Text>) : (
                                 <Stack direction="column" spacing={6} mb={5}>
                                     {
                                         contexts?.map((contextItem, index) => {

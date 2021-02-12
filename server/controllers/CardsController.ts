@@ -36,10 +36,6 @@ class CardsController {
             nativeContext
         } = req.body;
 
-        if(!foreignWord || !nativeWord) {
-            return res.status(404).send({message: 'Please, check your data.'});
-        }
-
         const cardRepository = getRepository(Card);
         const card = new Card();
 
@@ -88,16 +84,16 @@ class CardsController {
 
     static searchContext = async (req: Request, res: Response, next: NextFunction) => {
         const {languageName, foreignWord} = req.body;
-        console.log({languageName, foreignWord})
 
         const reverso = new Reverso();
 
-        try {
-            const response = await reverso.getTranslation(foreignWord, languageName, 'English');
-            return res.status(200).send(response.context.examples);
-        } catch (err) {
-            return res.status(404).send({message: err});
+        const response = await reverso.getTranslation(foreignWord, languageName, 'English');
+
+        if (response.context.examples === 'no context examples') {
+            return res.status(404).send({message: "Sorry, we can't seem to find context for you 😔"});
         }
+
+        return res.status(200).send(response.context.examples);
     }
 }
 

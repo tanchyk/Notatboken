@@ -22,7 +22,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {DecksHomeProps} from "./DecksHome";
 
-const SignupSchema = Yup.object().shape({
+export const DeckNameSchema = Yup.object().shape({
     deckName: Yup.string()
         .min(3, 'Too Short, name should be longer than 3.')
         .max(64, 'Too Long, name should be shorter than 50.')
@@ -47,7 +47,7 @@ export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, c
         initialValues: {
             deckName: '',
         },
-        validationSchema: SignupSchema,
+        validationSchema: DeckNameSchema,
         onSubmit: async (values) => {
             await dispatch(clearDeckError());
             await dispatch(addDeck({deckName: values.deckName, languageId: languageId}));

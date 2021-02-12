@@ -8,12 +8,7 @@ import {
     Box,
     Button,
     Text,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay, Heading
+    Heading
 } from "@chakra-ui/react";
 import {validatePassword} from "../../utils/validationFunctions";
 import {FieldProps} from "../../utils/types";
@@ -22,6 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {deleteUser, userError, userStatus} from "../../store/userSlice";
 import {SerializedError} from "@reduxjs/toolkit";
+import {AlertForDelete} from "../AlertForDelete";
 
 export const DeleteAccount: React.FC<{}> = () => {
     //Functions for confirmation page
@@ -92,43 +88,16 @@ export const DeleteAccount: React.FC<{}> = () => {
                         </Button>
 
                         //Alert delete
-                        <AlertDialog
+                        <AlertForDelete
+                            header="Delete Account"
                             isOpen={isOpen}
-                            leastDestructiveRef={cancelRef}
                             onClose={onClose}
-                        >
-                            <AlertDialogOverlay>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader fontSize="xl" fontWeight="bold">
-                                        Delete Account
-                                    </AlertDialogHeader>
-
-                                    <AlertDialogBody fontSize="lg">
-                                        Are you sure? You can't undo this action afterwards.
-                                    </AlertDialogBody>
-
-                                    <AlertDialogFooter>
-                                        <Button
-                                            ref={cancelRef}
-                                            onClick={onClose}
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            colorScheme="red"
-                                            onClick={ async () => {
-                                                onClose()
-                                                await props.submitForm()
-                                            }}
-                                            ml={3}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialogOverlay>
-                        </AlertDialog>
-
+                            onClick={async () => {
+                                onClose()
+                                await props.submitForm()
+                            }}
+                            cancelRef={cancelRef}
+                        />
                     </ProfileWrapper>
                 </Form>
             )}

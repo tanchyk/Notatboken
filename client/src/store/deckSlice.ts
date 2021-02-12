@@ -41,6 +41,22 @@ export const addDeck = createAsyncThunk<Deck, {deckName: string, languageId: num
     }
 );
 
+export const editDeck = createAsyncThunk<Deck, {deckName: string, deckId: number}>(
+    'decks/editDeck',
+        async (deckData, {getState}) => {
+            const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
+            const response = await fetch('/api/decks/edit-deck', {
+                method: 'PUT',
+                body: JSON.stringify(deckData),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': `${csrfToken.csrfToken}`
+                }
+            })
+            return (await response.json()) as Deck;
+        }
+)
+
 export const deleteDeck = createAsyncThunk<ErrorDelete, {deckId: number}>(
     'decks/deleteDeck',
     async (deckData, {getState}) => {
@@ -136,6 +152,36 @@ const deckSlice = createSlice({
             }
         })
         builder.addCase(addDeck.rejected, fetchDeckRejected)
+
+        //Update
+        builder.addCase(editDeck.pending, fetchDeckPending)
+        builder.addCase(editDeck.fulfilled, (state: DeckSliceType, { payload }: { payload: Deck | {message: string} }) => {
+            if("message" in payload) {
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        type: 'editDeck',
+                        message: payload['message']
+                    }
+                });
+            } else {
+                return Object.assign({}, state, {
+                    decks: state.decks.map(deck => {
+                        if(deck.deckId === payload.deckId) {
+                            return payload;
+                        } else {
+                            return deck;
+                        }
+                    }),
+                    status: 'succeeded',
+                    error: {
+                        message: null,
+                        type: null
+                    }
+                });
+            }
+        })
+        builder.addCase(editDeck.rejected, fetchDeckRejected)
 
         //Delete
         builder.addCase(deleteDeck.pending, fetchDeckPending)

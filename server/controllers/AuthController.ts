@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 class AuthController {
     static login = async (req: Request, res: Response) => {
         const {usernameOrEmail, password} = req.body;
-        console.log({usernameOrEmail, password});
+
         if (!(usernameOrEmail && password)) {
             return res.status(400).send();
         }
@@ -57,22 +57,6 @@ class AuthController {
     static register = async (req: Request, res: Response) => {
         const {username, email, password} = req.body;
         const user = new User();
-
-        //Testing the input of a user
-        const testEmail = /\S+@\S+\.\S+/;
-        if(!testEmail.test(email) || email.length < 8 || email.length >= 254) {
-            return res.status(400).send({message: 'Invalid Email'});
-        }
-
-        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
-        if(!testPassword.test(password)) {
-            return res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
-        }
-
-        const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
-        if(!testUsername.test(username)) {
-            return res.status(400).send({message: 'Invalid Username'});
-        }
 
         //Creating User
         const hashedPassword = await argon2.hash(password);

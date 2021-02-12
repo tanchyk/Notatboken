@@ -23,29 +23,13 @@ const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunct
 }
 
 // const setLanguages = async (connection: Connection) => {
-//     const german = new Language();
-//     german.languageName = 'German';
-//     await connection.manager.save(german);
+//     const languages = ['Polish', 'German', 'Russian', 'Norwegian', 'Spanish', 'French'];
 //
-//     const french = new Language();
-//     french.languageName = 'French';
-//     await connection.manager.save(french);
-//
-//     const russian = new Language();
-//     russian.languageName = 'Russian';
-//     await connection.manager.save(russian);
-//
-//     const spanish = new Language();
-//     spanish.languageName = 'Spanish';
-//     await connection.manager.save(spanish);
-//
-//     const polish = new Language();
-//     polish.languageName = 'Polish';
-//     await connection.manager.save(polish);
-//
-//     const norwegian = new Language();
-//     norwegian.languageName = 'Norwegian';
-//     await connection.manager.save(norwegian);
+//     for(const language of languages) {
+//         const insertLang = new Language();
+//         insertLang.languageName = language;
+//         await connection.manager.save(insertLang);
+//     }
 // }
 
 createConnection({

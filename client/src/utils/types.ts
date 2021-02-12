@@ -1,66 +1,41 @@
 import {SerializedError} from "@reduxjs/toolkit";
 import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
-import {Language} from "../../../server/entities/Language";
 import {Card} from "../../../server/entities/Card";
+import {Language} from "../../../server/entities/Language";
+import {Deck} from "../../../server/entities/Deck";
 
-export interface UserAuth {
-    userId: number | null,
-    name: string | null,
-    username: string | null,
-    email: string | null,
-    languages: Array<Language> | null
-}
-
-export interface LoginData {
-    usernameOrEmail: string,
-    password: string
-}
-
-export interface RegisterData {
-    username: string,
-    email: string,
-    password: string
-}
+//Slice Types
 
 export interface UserSliceType {
-    user: UserAuth,
-    status: string,
-    error: ErrorFromServer
+    user: UserAuth;
+    status: Status;
+    error: ErrorFromServer;
 }
 
 export interface CsrfSliceType {
-    csrfToken: string | null
-}
-
-export interface DeckData {
-    deckId: number | null;
-    deckName: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    language: Language | null;
-    cards: Card[] | null;
+    csrfToken: string | null;
 }
 
 export interface DeckSliceType {
     decks: Array<DeckData>;
-    status: string,
-    error: ErrorFromServer
+    status: Status;
+    error: ErrorFromServer;
 }
 
-export interface ErrorFromServer extends Object {
-    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'loadDecks' | null,
-    message: string | SerializedError | null
+export interface CardSliceType {
+    cards: Array<CardData>;
+    status: Status;
+    error: ErrorFromServer;
 }
 
-export interface ErrorDelete extends Object {
-    message: string | SerializedError | null;
-    deckId: number;
-}
+//User types
 
-export interface FieldProps<V = any> {
-    field: FieldInputProps<V>;
-    form: FormikProps<V>;
-    meta: FieldMetaProps<V>;
+export interface UserAuth {
+    userId: number | null;
+    name: string | null;
+    username: string | null;
+    email: string | null;
+    languages: Array<Language> | null;
 }
 
 export interface BasicUser {
@@ -75,11 +50,75 @@ export interface Passwords {
     oldPassword: string;
 }
 
-export type Languages  = 'Polish' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';
+export interface LoginData {
+    usernameOrEmail: string;
+    password: string;
+}
+
+export interface RegisterData {
+    username: string;
+    email: string;
+    password: string;
+}
+
+//Deck types
+
+export interface DeckData {
+    deckId: number | null;
+    deckName: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    language: Language | null;
+    cards: Card[] | null;
+}
+
+export interface ErrorDelete extends Object {
+    message: string | SerializedError | null;
+    deckId: number;
+}
+
+//Card types
+
+export interface CardData {
+    cardId: number | null;
+    foreignWord: string | null;
+    nativeWord: string | null;
+    imageId: number | null;
+    voiceId: number | null;
+    foreignContext: string | null;
+    nativeContext: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    deck: Deck | null;
+}
+
+export interface ErrorDeleteCard extends Object {
+    message: string | SerializedError | null;
+    cardId: number;
+}
 
 export interface ContextApi {
     from: string;
     to: string;
     phrase_from: string;
     phrase_to: string;
+}
+
+//Other
+
+export type Languages  = 'Polish' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';
+
+export type Status = 'idle' | 'succeeded' | 'failed' | 'loading';
+
+export type Proficiency = 'fail' | 'repeat' | '1d' | '3d' | '7d' | '21d' | '31d' | '90d' | 'learned';
+
+export interface ErrorFromServer extends Object {
+    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks' | 'loadCards' | null,
+    message: string | SerializedError | null
+}
+
+export interface FieldProps<V = any> {
+    field: FieldInputProps<V>;
+    form: FormikProps<V>;
+    meta: FieldMetaProps<V>;
 }

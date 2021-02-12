@@ -19,6 +19,15 @@ export const validateUsername = (value: string) => {
     return error;
 }
 
+export const validateCard = (value: string) => {
+    let error;
+    const testCard = /^(?=.{1,84}$)[A-Za-z0-9äöüßÄÖÜæÆøØåÅ,;\s]+[A-Za-zäöüßÄÖÜæÆøØåÅ.?!]$/;
+    if (!testCard.test(value)) {
+        error = "Please, enter a valid word or a sentence";
+    }
+    return error;
+}
+
 export const validateEmail = (value: string) => {
     let error;
     const testEmail = /\S+@\S+\.\S+/;
@@ -30,7 +39,7 @@ export const validateEmail = (value: string) => {
 
 export const validatePassword = (value: string) => {
     let error;
-    const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
+    const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
     if (!testPassword.test(value)) {
         error = "Please, enter a valid Password";
     }

@@ -76,6 +76,37 @@ class DecksController {
         return res.status(200).send(deckSend);
     }
 
+    static editDeck = async (req: Request, res: Response, next: NextFunction) => {
+        const {deckId, deckName} = req.body;
+
+        if(deckName.length < 3 || deckName.length > 64) {
+            return res.status(400).send({message: 'Invalid Deck name'});
+        }
+
+        const deckRepository = getRepository(Deck);
+        let deckCheck: Deck | undefined;
+
+        //Finding deck
+        try {
+            deckCheck = await deckRepository.findOne({where: {deckId}});
+        } catch (err) {
+            next(err);
+        }
+
+        //Checking deck
+        if(!deckCheck) {
+            return res.status(400).send({message: 'Invalid Deck'});
+        } else if(deckCheck.deckName === deckName) {
+            return res.status(400).send({message: 'Please, enter different name'});
+        } else {
+            deckCheck.deckName = deckName
+        }
+
+        await deckRepository.save(deckCheck);
+
+        return res.status(200).send(deckCheck);
+    }
+
     static deleteDeck = async (req: Request, res: Response, next: NextFunction) => {
         const {deckId} = req.body
 

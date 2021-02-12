@@ -43,22 +43,6 @@ class UserController {
             return res.status(404).send({message: "User not found"});
         }
 
-        //Testing data
-        const testEmail = /\S+@\S+\.\S+/;
-        if(user.email !== email && (!testEmail.test(email) || email.length < 8 || email.length >= 254)) {
-            return res.status(400).send({message: 'Invalid Email'});
-        }
-
-        const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
-        if(user.username !== username && (!testUsername.test(username))) {
-            return res.status(400).send({message: 'Invalid Username'});
-        }
-
-        const testName = /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/i;
-        if (user.name !== name && (!testName.test(name) || name.length < 5)) {
-            return res.status(400).send({message: 'Invalid Name'});
-        }
-
         //Checking if data already in database
         const checkExisting: User | undefined = await userRepository.findOne({
             where : [{
@@ -99,8 +83,8 @@ class UserController {
         const { newPassword, oldPassword } = req.body;
 
         //Checking new password
-        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}/;
-        if(!testPassword.test(newPassword) || newPassword.length > 100) {
+        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
+        if(!testPassword.test(newPassword)) {
             return res.status(400).send({message: 'Password should contain at least one number, one lowercase and one uppercase letter'});
         }
 
