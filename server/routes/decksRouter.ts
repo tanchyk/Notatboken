@@ -10,6 +10,6 @@ decksRouter.post('/create-deck', authenticationJwt, getUserId, DecksController.a
 
 decksRouter.delete('/delete-deck', authenticationJwt, DecksController.deleteDeck);
 
-decksRouter.put('/edit-deck', authenticationJwt, DecksController.editDeck);
+decksRouter.put('/edit-deck', authenticationJwt, getUserId, DecksController.editDeck);
 
 export default  decksRouter;

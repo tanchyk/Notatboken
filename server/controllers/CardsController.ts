@@ -69,6 +69,56 @@ class CardsController {
         return res.status(200).send({message: "Card is created"});
     }
 
+    static changeCard = async (req: Request, res: Response, next: NextFunction) => {
+        const userId = res.locals.userId;
+        const {
+            cardId,
+            languageId,
+            foreignWord,
+            nativeWord,
+            imageId,
+            voiceId,
+            foreignContext,
+            nativeContext
+        } = req.body;
+
+        const cardRepository = getRepository(Card);
+        let card: Card;
+
+        //Finding card
+        card = await cardRepository.findOneOrFail({relations: ["deck"], where: {cardId}});
+
+        //Checking for existing name
+        if(card.foreignWord !== foreignWord) {
+            const cardCheck = await cardRepository.createQueryBuilder("card")
+                .leftJoinAndSelect("card.deck", "deck")
+                .leftJoinAndSelect("deck.user", "user")
+                .leftJoinAndSelect("deck.language", "language")
+                .where("user.id = :id", { id: userId })
+                .where("language.languageId = :languageId", {languageId})
+                .where("card.foreignWord = :foreignWord", {foreignWord})
+                .getMany();
+
+            if(cardCheck.length > 0) {
+                return res.status(400).send({message: 'You already have this card in your list.'});
+            }
+        }
+
+        card.foreignWord = foreignWord;
+        card.nativeWord = nativeWord;
+        card.imageId = imageId;
+        card.voiceId = voiceId;
+        card.foreignContext = foreignContext;
+        card.nativeContext = nativeContext;
+
+        try {
+            await cardRepository.save(card);
+        } catch (err) {
+            next(err);
+        }
+        return res.status(200).send(card);
+    }
+
     static deleteCard = async (req: Request, res: Response, next: NextFunction) => {
         const {cardId} = req.body;
 

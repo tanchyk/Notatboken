@@ -77,34 +77,48 @@ class DecksController {
     }
 
     static editDeck = async (req: Request, res: Response, next: NextFunction) => {
-        const {deckId, deckName} = req.body;
+        const userId = res.locals.userId;
+        const {deckId, deckName, languageId} = req.body;
 
         if(deckName.length < 3 || deckName.length > 64) {
             return res.status(400).send({message: 'Invalid Deck name'});
         }
 
         const deckRepository = getRepository(Deck);
-        let deckCheck: Deck | undefined;
+        let deck: Deck | undefined;
 
         //Finding deck
         try {
-            deckCheck = await deckRepository.findOne({where: {deckId}});
+            deck = await deckRepository.findOne({ relations: ["language", "user"],where: {deckId}});
         } catch (err) {
             next(err);
         }
 
         //Checking deck
-        if(!deckCheck) {
+        if(!deck) {
             return res.status(400).send({message: 'Invalid Deck'});
-        } else if(deckCheck.deckName === deckName) {
+        } else if(deck.deckName === deckName) {
             return res.status(400).send({message: 'Please, enter different name'});
-        } else {
-            deckCheck.deckName = deckName
         }
 
-        await deckRepository.save(deckCheck);
+        const deckCheck = await deckRepository.findOne({
+            relations: ["language", "user"],
+            where: {
+                user: {id: userId},
+                language: {languageId: languageId},
+                deckName
+            }
+        });
 
-        return res.status(200).send(deckCheck);
+        if(deckCheck) {
+            return res.status(400).send({message: 'Ooooops, you already have this deck 🙃'});
+        }
+
+        deck.deckName = deckName
+
+        await deckRepository.save(deck);
+
+        return res.status(200).send(deck);
     }
 
     static deleteDeck = async (req: Request, res: Response, next: NextFunction) => {

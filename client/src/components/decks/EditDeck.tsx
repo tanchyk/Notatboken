@@ -12,7 +12,7 @@ import {
 import {Field, Form, Formik} from "formik";
 import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
 import {DeckData, FieldProps} from "../../utils/types";
-import {AdditionalDeckInfProps} from "../cards/AddCard";
+import {AdditionalDeckInfProps} from "../cards/CreateCard";
 import {UserInput} from "../inputs/UserInput";
 import {DeckNameSchema} from "./DecksCreate";
 import {useDispatch, useSelector} from "react-redux";
@@ -45,64 +45,63 @@ export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
                 decksName: ''
             }}
             onSubmit={async (values) => {
-                await dispatch(editDeck({deckName: values.decksName, deckId}));
+                await dispatch(editDeck({deckName: values.decksName, deckId, languageId: deck!.language!.languageId}));
             }}
         >
             {() => (
-                <Form>
-                    <AdditionalDecksWrapper title={`Edit deck ${deck?.deckName} 🗃️`} setDeck={setDeck} deckId={deckId}>
-                        <Heading size="md">{`Change the name of your deck  ${deck?.deckName}`}</Heading>
-                        {
-                            deckError.type === 'editDeck' ? (
-                                <Alert status="error">
-                                    <AlertIcon />
-                                    <AlertDescription fontSize="lg">{deckError.message}</AlertDescription>
-                                </Alert>
-                            ) : null
-                        }
-                        <Box>
-                            <Field name="decksName" validate={DeckNameSchema}>
-                                {({field, form}: FieldProps) => (
-                                    <UserInput
-                                        size="md"
-                                        name="decksName"
-                                        placeholder="Put your new deck name here"
-                                        field={field}
-                                        form={form}
-                                    />
-                                )}
-                            </Field>
-                        </Box>
-
-                        <Button type="submit" width="80px">
-                            Change
-                        </Button>
-
-                        <Stack
-                            paddingTop={4}
-                            spacing={4}
-                        >
-                            <Flex direction="row" alignItems="center">
-                                <Heading size="md">Cards in your deck:</Heading>
-                                {
-                                    deck ? (
-                                        <LinkPage to={`/decks/${deck?.language?.languageName}/add-card/${deck!.deckId}`}>
-                                            <IconButton  ml={3} aria-label="Close create deck" size="sm" icon={<AddIcon/>}/>
-                                        </LinkPage>
-                                    ) : null
-                                }
-                            </Flex>
+                <AdditionalDecksWrapper title={`Edit deck ${deck?.deckName} 🗃️`} setDeck={setDeck} deckId={deckId}>
+                    <Form>
+                        <Stack spacing={5} mt={3}>
+                            <Heading size="md">{`Change the name of your deck  ${deck?.deckName}`}</Heading>
                             {
-                                cards.length !== 0 ? (cards.map((card, index) => {
-                                        return (
-                                            <EditDeckCardBox card={card} key={index} />
-                                        );
-                                    })
-                                ) : <NoDataBox type="cards"/>
+                                deckError.type === 'editDeck' ? (
+                                    <Alert status="error">
+                                        <AlertIcon/>
+                                        <AlertDescription fontSize="lg">{deckError.message}</AlertDescription>
+                                    </Alert>
+                                ) : null
                             }
+                            <Box>
+                                <Field name="decksName" validate={DeckNameSchema}>
+                                    {({field, form}: FieldProps) => (
+                                        <UserInput
+                                            size="md"
+                                            name="decksName"
+                                            placeholder="Put your new deck name here"
+                                            field={field}
+                                            form={form}
+                                        />
+                                    )}
+                                </Field>
+                            </Box>
+
+                            <Button type="submit" width="80px">
+                                Change
+                            </Button>
                         </Stack>
-                    </AdditionalDecksWrapper>
-                </Form>
+                    </Form>
+
+                    <Stack
+                        paddingTop={4}
+                        spacing={3}
+                    >
+                        <Flex direction="row" alignItems="center">
+                            <Heading size="md">Cards in your deck:</Heading>
+                            {
+                                deck ? (
+                                    <LinkPage to={`/decks/${deck?.language?.languageName}/add-card/${deck!.deckId}`}>
+                                        <IconButton ml={3} aria-label="Close create deck" size="sm" icon={<AddIcon/>}/>
+                                    </LinkPage>
+                                ) : null
+                            }
+                        </Flex>
+                        {
+                            cards.length !== 0 ? (
+                                cards.map((card, index) => <EditDeckCardBox card={card} deck={deck!} key={index}/>)
+                            ) : <NoDataBox type="cards"/>
+                        }
+                    </Stack>
+                </AdditionalDecksWrapper>
             )}
         </Formik>
     );

@@ -20,7 +20,7 @@ import {NavItem} from "../components/profile/NavItem";
 import {DecksHome} from "../components/decks/DecksHome";
 import {Languages} from "../utils/types";
 import {IoLanguageOutline, FaRegFolderOpen, GiProgression, RiHome4Line} from "react-icons/all";
-import {AddCard} from "../components/cards/AddCard";
+import {CreateCard} from "../components/cards/CreateCard";
 import {decksData, decksStatus, fetchDecks, clearDecks} from "../store/deckSlice";
 import {AppDispatch} from "../store/store";
 import {EditDeck} from "../components/decks/EditDeck";
@@ -142,7 +142,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                     <Switch>
                                         <Route path={`${match.url}/home`} render={() => <DecksHome language={language as Languages} languageId={languageId}/>}/>
                                         {/*<Route path={`${match.url}/progress`} component={ChangePassword}/>*/}
-                                        <Route path={`${match.url}/add-card/:deckId`} component={AddCard}/>
+                                        <Route path={`${match.url}/add-card/:deckId`} component={CreateCard}/>
                                         <Route path={`${match.url}/edit-deck/:deckId`} component={EditDeck}/>
                                         <Redirect to={`${match.url}/home`}/>
                                     </Switch>

@@ -41,7 +41,7 @@ export const addDeck = createAsyncThunk<Deck, {deckName: string, languageId: num
     }
 );
 
-export const editDeck = createAsyncThunk<Deck, {deckName: string, deckId: number}>(
+export const editDeck = createAsyncThunk<Deck, {deckName: string, deckId: number, languageId: number}>(
     'decks/editDeck',
         async (deckData, {getState}) => {
             const {csrfToken} = getState() as {csrfToken: CsrfSliceType};

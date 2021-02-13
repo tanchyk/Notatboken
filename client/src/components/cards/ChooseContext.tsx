@@ -99,7 +99,7 @@ export const ChooseContext: React.FC<ChooseContextProps> = ({foreignWord, langua
                                                     key={index}
                                                 >
                                                     <ContextBox
-                                                        from={contextItem.from}
+                                                        from={contextItem.from!}
                                                         to={contextItem.to}
                                                     />
                                                 </Box>

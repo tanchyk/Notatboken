@@ -4,7 +4,7 @@ import {Box, Text} from "@chakra-ui/react";
 
 interface ContexBoxProps {
     from: string;
-    to: string;
+    to: string | null;
 }
 
 export const ContextBox: React.FC<ContexBoxProps> = ({from, to}) => {

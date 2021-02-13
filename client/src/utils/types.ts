@@ -89,7 +89,7 @@ export interface CardData {
     nativeContext: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    deck: Deck | null;
+    deck: Deck | DeckData | null;
 }
 
 export interface ErrorDeleteCard extends Object {
@@ -98,10 +98,21 @@ export interface ErrorDeleteCard extends Object {
 }
 
 export interface ContextApi {
-    from: string;
-    to: string;
-    phrase_from: string;
-    phrase_to: string;
+    from: string | null;
+    to: string | null;
+    phrase_from: string | null;
+    phrase_to: string | null;
+}
+
+export interface CardDispatch {
+    languageId: number | null,
+    deckId?: number | null,
+    cardId?: number | null,
+    foreignWord: string | null,
+    nativeWord: string | null,
+    imageId: number | null,
+    foreignContext: string | null,
+    nativeContext: string | null
 }
 
 //Other
@@ -113,7 +124,7 @@ export type Status = 'idle' | 'succeeded' | 'failed' | 'loading';
 export type Proficiency = 'fail' | 'repeat' | '1d' | '3d' | '7d' | '21d' | '31d' | '90d' | 'learned';
 
 export interface ErrorFromServer extends Object {
-    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks' | 'loadCards' | null,
+    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks' | 'loadCards' | 'createCard' | 'failedCreateCard' | 'editCard' | null,
     message: string | SerializedError | null
 }
 
@@ -122,3 +133,5 @@ export interface FieldProps<V = any> {
     form: FormikProps<V>;
     meta: FieldMetaProps<V>;
 }
+
+export const API_PEXELS = `${process.env.REACT_APP_API_PEXELS}`;

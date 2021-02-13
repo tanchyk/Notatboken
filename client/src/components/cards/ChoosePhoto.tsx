@@ -11,8 +11,7 @@ import {
 } from "@chakra-ui/react";
 import {HiPhotograph} from "react-icons/all";
 import {AdditionalDataBox} from "./AdditionalDataBox";
-
-const API_PEXELS = `${process.env.REACT_APP_API_PEXELS}`;
+import {API_PEXELS} from "../../utils/types";
 
 interface ChoosePhotoProps {
     nativeWord: string;

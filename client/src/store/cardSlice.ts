@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {CardSliceType, CsrfSliceType, ErrorDeleteCard} from "../utils/types";
+import {CardDispatch, CardSliceType, CsrfSliceType, ErrorDeleteCard} from "../utils/types";
 import {Card} from "../../../server/entities/Card";
 
 const initialState = {
@@ -22,6 +22,40 @@ export const fetchCards = createAsyncThunk<Array<Card>, {deckId: number}>(
             }
         });
         return (await response.json()) as Array<Card>;
+    }
+)
+
+export const addCard = createAsyncThunk<{message: string}, {card: CardDispatch}>(
+    'cards/addCard',
+    async (cardData, {getState}) => {
+        console.log(cardData);
+        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
+        const response = await fetch('/api/cards/create-card', {
+            method: 'POST',
+            body: JSON.stringify(cardData.card),
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': `${csrfToken.csrfToken}`
+            }
+        })
+        return (await response.json()) as {message: string};
+    }
+)
+
+export const editCard = createAsyncThunk<Card, {card: CardDispatch}>(
+    'cards/editCard',
+    async (cardData, {getState}) => {
+        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
+        console.log(cardData.card)
+        const response = await fetch('/api/cards/edit-card', {
+            method: 'PUT',
+            body: JSON.stringify(cardData.card),
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': `${csrfToken.csrfToken}`
+            }
+        });
+        return (await response.json()) as Card;
     }
 )
 
@@ -87,6 +121,56 @@ const cardSlice = createSlice({
             }
         })
         builder.addCase(fetchCards.rejected, fetchCardRejected)
+
+        //Add
+        builder.addCase(addCard.pending, fetchCardPending)
+        builder.addCase(addCard.fulfilled, (state: CardSliceType, { payload }: { payload: {message: string} }) => {
+            console.log('Message', payload.message)
+            if (payload.message === "Card is created") {
+                return Object.assign({}, state, {
+                    status: 'succeeded',
+                    error: {
+                        type: 'createCard',
+                        message: payload['message']
+                    }
+                });
+            } else {
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        type: 'failedCreateCard',
+                        message: payload['message']
+                    }
+                });
+            }
+        })
+        builder.addCase(addCard.rejected, fetchCardRejected)
+
+        //Edit
+        builder.addCase(editCard.pending, fetchCardPending)
+        builder.addCase(editCard.fulfilled, (state: CardSliceType, { payload }: { payload: Card }) => {
+            if ("message" in payload) {
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        type: 'editCard',
+                        message: payload['message']
+                    }
+                });
+            } else {
+                return Object.assign({}, state, {
+                    cards: state.cards.map(card => {
+                        if(card.cardId === payload.cardId) {
+                            return payload;
+                        } else {
+                            return card;
+                        }
+                    }),
+                    status: 'succeeded'
+                });
+            }
+        })
+        builder.addCase(editCard.rejected, fetchCardRejected)
 
         //Delete
         builder.addCase(deleteCard.pending, fetchCardPending)
