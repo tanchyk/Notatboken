@@ -1,5 +1,5 @@
 import {Response, Request, NextFunction} from 'express';
-import {getRepository} from "typeorm";
+import {Brackets, getRepository} from "typeorm";
 import {Card} from "../entities/Card";
 
 const Reverso = require('reverso-api');
@@ -10,9 +10,37 @@ class CardsController {
 
         const cardRepository = getRepository(Card);
         let cards: Card[];
+        let count: number;
         if(deckId) {
             try {
-                cards = await cardRepository.find({relations: ["deck"], where: {deck: {deckId: deckId}}});
+                [cards, count] = await cardRepository.findAndCount({relations: ["deck"], where: {deck: {deckId: deckId}}});
+            } catch (err) {
+                return res.status(404).send({message: "You have no cards in this deck"});
+            }
+
+            return res.status(200).json({cards, count});
+        } else {
+            return res.status(404).send({message: "This deck has no cards!"});
+        }
+    }
+
+    static findCardsForReview = async (req: Request, res: Response, next: NextFunction) => {
+        const deckId = Number.parseInt(req.params.deckId);
+
+        const cardRepository = getRepository(Card);
+        let cards: Card[];
+
+        if(deckId) {
+            try {
+                cards = await cardRepository.createQueryBuilder("card")
+                    .leftJoinAndSelect("card.deck", "deck")
+                    .where("deck.deckId = :deckId", {deckId})
+                    // .where("card.reviewDate is null")
+                    .andWhere(new Brackets(qb => {
+                        qb.where("card.reviewDate is null")
+                            .orWhere(`card.reviewDate < :reviewDate`, {reviewDate: new Date()})
+                    }))
+                    .getMany()
             } catch (err) {
                 return res.status(404).send({message: "You have no cards in this deck"});
             }
@@ -116,6 +144,40 @@ class CardsController {
         } catch (err) {
             next(err);
         }
+        return res.status(200).send(card);
+    }
+
+    static changeCardStatus = async (req: Request, res: Response, next: NextFunction) => {
+        const {cardId, proficiency} = req.body;
+
+        const cardRepository = getRepository(Card);
+        let card: Card;
+
+        //Finding card
+        card = await cardRepository.findOneOrFail({relations: ["deck"], where: {cardId}});
+
+        let amountOfDays = 0;
+
+        if(proficiency === 'learned') {
+            amountOfDays = Infinity;
+        } else if(proficiency.length === 2) {
+            amountOfDays = Number.parseInt(proficiency.charAt(0));
+        } else if(proficiency.length === 3) {
+            amountOfDays = Number.parseInt(proficiency.splice(0, 1));
+        }
+
+        let date = new Date();
+        date.setDate(date.getDate() + amountOfDays);
+
+        card.proficiency = proficiency
+        card.reviewDate = date;
+
+        try {
+            await cardRepository.save(card);
+        } catch (err) {
+            next(err);
+        }
+
         return res.status(200).send(card);
     }
 

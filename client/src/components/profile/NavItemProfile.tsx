@@ -16,7 +16,7 @@ interface NavItemPropsDeck {
     icon?: IconType | null;
 }
 
-export const NavItem: React.FC<NavItemProps | NavItemPropsDeck> = ({id, handleClick, clicked, children, icon=null}) => {
+export const NavItemProfile: React.FC<NavItemProps | NavItemPropsDeck> = ({id, handleClick, clicked, children, icon=null}) => {
     return (
         <Flex
             direction="row"

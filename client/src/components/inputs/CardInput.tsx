@@ -4,11 +4,11 @@ import {Box, Checkbox, Flex, Heading, IconButton, Image, Text} from "@chakra-ui/
 import {validateCard} from "../../utils/validationFunctions";
 import {ContextApi, DeckData, FieldProps} from "../../utils/types";
 import {UserInput} from "./UserInput";
-import {ChoosePhoto} from "../cards/ChoosePhoto";
+import {ChoosePhoto} from "../cards/createUpdateCards/additionalComponents/ChoosePhoto";
 import {MdDelete} from "react-icons/all";
-import {ChooseContext} from "../cards/ChooseContext";
-import {ContextBox} from "../cards/ContexBox";
-import {ChoosePronunciation} from "../cards/ChoosePronunciation";
+import {ChooseContext} from "../cards/createUpdateCards/additionalComponents/ChooseContext";
+import {ContextBox} from "../cards/createUpdateCards/boxes/ContexBox";
+import {ChoosePronunciation} from "../cards/createUpdateCards/additionalComponents/ChoosePronunciation";
 
 interface CardInputProps {
     photo: any | null;

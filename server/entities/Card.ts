@@ -34,7 +34,14 @@ export class Card extends BaseEntity {
     @Column({nullable: true, length: 120})
     nativeContext: string;
 
-    @Column({nullable: true, default: new Date()})
+    @Column({
+        type: "enum",
+        enum: ['fail', 'repeat', '1d', '3d', '7d', '21d', '31d', '90d', 'learned'],
+        default: 'fail'
+    })
+    proficiency: ProficiencyType
+
+    @Column({nullable: true})
     reviewDate: Date;
 
     @Column()

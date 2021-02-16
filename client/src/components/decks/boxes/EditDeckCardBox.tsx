@@ -1,13 +1,13 @@
 import React, {useRef} from "react";
+import {Link as LinkPage} from "react-router-dom";
 import {Divider, Flex, IconButton, Stack, Text, useStyleConfig} from "@chakra-ui/react";
 import {EditIcon} from "@chakra-ui/icons";
 import {MdDelete} from "react-icons/all";
-import {CardData, DeckData} from "../../utils/types";
+import {CardData, DeckData} from "../../../utils/types";
 import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../store/store";
-import {deleteCard} from "../../store/cardSlice";
-import {AlertForDelete} from "../AlertForDelete";
-import {AlertForCardChange} from "../cards/AlertForCardChange";
+import {AppDispatch} from "../../../store/store";
+import {deleteCard} from "../../../store/cardSlice";
+import {AlertForDelete} from "../../AlertForDelete";
 
 interface EditDeckCardBoxProps {
     card: CardData;
@@ -22,11 +22,6 @@ export const EditDeckCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) =>
     const [isOpen, setIsOpen] = React.useState(false);
     const onClose = () => setIsOpen(false);
     const cancelRef = useRef<HTMLButtonElement>(null);
-
-    //Edit card
-    const [isOpenEdit, setIsOpenEdit] = React.useState(false);
-    const onCloseEdit = () => setIsOpenEdit(false);
-    const cancelRefEdit = useRef<HTMLButtonElement>(null);
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -58,12 +53,13 @@ export const EditDeckCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) =>
                     spacing={2}
                     direction="row"
                 >
-                    <IconButton
-                        aria-label="Edit Card"
-                        size="sm"
-                        icon={<EditIcon/>}
-                        onClick={() => setIsOpenEdit(true)}
-                    />
+                    <LinkPage to={`/decks/${deck.language?.languageName}/edit-card/${deck.deckId}/${card.cardId}`}>
+                        <IconButton
+                            aria-label="Edit Card"
+                            size="sm"
+                            icon={<EditIcon/>}
+                        />
+                    </LinkPage>
                     <IconButton
                         aria-label="Delete Card"
                         size="sm"
@@ -72,14 +68,6 @@ export const EditDeckCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) =>
                     />
                 </Stack>
             </Flex>
-
-            <AlertForCardChange
-                card={card}
-                isOpen={isOpenEdit}
-                onClose={onCloseEdit}
-                cancelRef={cancelRefEdit}
-                deck={deck}
-            />
 
             <AlertForDelete
                 header="Delete Card"

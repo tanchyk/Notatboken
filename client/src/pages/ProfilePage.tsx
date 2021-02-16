@@ -5,7 +5,7 @@ import {DeleteAccount} from "../components/profile/DeleteAccount";
 import {Link as LinkPage, Redirect, Route, Switch, useRouteMatch} from "react-router-dom";
 import {BasicInformation} from "../components/profile/BasicInformation";
 import {ChangePassword} from "../components/profile/ChangePassword";
-import {NavItem} from "../components/profile/NavItem";
+import {NavItemProfile} from "../components/profile/NavItemProfile";
 
 export const ProfilePage: React.FC<{}> = ({}) => {
     const styleStack = useStyleConfig("Stack");
@@ -27,31 +27,31 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                     maxH="188.4px"
                 >
                     <LinkPage to={`${match.url}/basic-information`}>
-                        <NavItem
+                        <NavItemProfile
                             id="basic"
                             handleClick={handleClick}
                             clicked={clicked}
                         >
                             Basic Information
-                        </NavItem>
+                        </NavItemProfile>
                     </LinkPage>
                     <LinkPage to={`${match.url}/change-password`}>
-                        <NavItem
+                        <NavItemProfile
                             id="change-p"
                             handleClick={handleClick}
                             clicked={clicked}
                         >
                             Change Password
-                        </NavItem>
+                        </NavItemProfile>
                     </LinkPage>
                     <LinkPage to={`${match.url}/delete-account`}>
-                        <NavItem
+                        <NavItemProfile
                             id="delete"
                             handleClick={handleClick}
                             clicked={clicked}
                         >
                             Delete Account
-                        </NavItem>
+                        </NavItemProfile>
                     </LinkPage>
                 </Stack>
                 <Box w={["100%", "90%", "55%", "66%"]}>

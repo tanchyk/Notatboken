@@ -4,12 +4,14 @@ import {
 } from 'react-router-dom';
 import {Box, Button, useToast} from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
-import {ContextApi, DeckData} from "../../utils/types";
+import {ContextApi, DeckSliceType} from "../../../utils/types";
 import {Form, Formik, FormikProps} from "formik";
-import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
-import {CardInput} from "../inputs/CardInput";
-import {AppDispatch} from "../../store/store";
-import {addCard, cardsError} from "../../store/cardSlice";
+import {AdditionalDecksWrapper} from "../../wrappers/AdditionalDecksWrapper";
+import {CardInput} from "../../inputs/CardInput";
+import {AppDispatch} from "../../../store/store";
+import {addCard, cardsError} from "../../../store/cardSlice";
+import {decksStatus, singleDeck} from "../../../store/deckSlice";
+import {history} from "../../../App";
 
 export interface AdditionalDeckInfProps {
     match: match<{deckId: string}>
@@ -17,15 +19,16 @@ export interface AdditionalDeckInfProps {
 
 export const CreateCard: React.FC<AdditionalDeckInfProps> = ({match}) => {
     const toast = useToast();
-    const formikRef = useRef<FormikProps<{ foreignWord: string; nativeWord: string; includeNativeContext: boolean; }> | null>(null);
-
     const deckId = Number.parseInt(match.params.deckId);
-    const [deck, setDeck] = useState<DeckData | null>(null);
 
+    //Redux state
     const dispatch = useDispatch<AppDispatch>();
     const cardError = useSelector(cardsError);
+    const deck = useSelector((state: {decks: DeckSliceType}) => singleDeck(state, deckId));
+    const deckStatus = useSelector(decksStatus);
 
     //State for keeping data that was selected by user
+    const formikRef = useRef<FormikProps<{ foreignWord: string; nativeWord: string; includeNativeContext: boolean; }> | null>(null);
     const [photo, setPhoto] = useState<any>(null);
     const [context, setContext] = useState<ContextApi | null>(null);
 
@@ -37,6 +40,12 @@ export const CreateCard: React.FC<AdditionalDeckInfProps> = ({match}) => {
             setContext(null)
         }
     }
+
+    useEffect(() => {
+        if(deck === undefined && deckStatus === 'succeeded') {
+            history.push('/error');
+        }
+    }, [deckStatus])
 
     useEffect(() => {
         if(cardError.type === 'createCard') {
@@ -88,13 +97,13 @@ export const CreateCard: React.FC<AdditionalDeckInfProps> = ({match}) => {
         >
             {({}) => (
                 <Form>
-                    <AdditionalDecksWrapper title={`Create card for ${deck?.deckName} 🗳️`} deckId={deckId} setDeck={setDeck}>
+                    <AdditionalDecksWrapper title={`Create card for ${deck?.deckName} 🗳️`}>
                         <CardInput
                             photo={photo}
                             setPhoto={setPhoto}
                             context={context}
                             setContext={setContext}
-                            deck={deck}
+                            deck={deck!}
                         />
 
                         <Box alignSelf="flex-end">

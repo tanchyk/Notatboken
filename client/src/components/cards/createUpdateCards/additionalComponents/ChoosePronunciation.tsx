@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {AdditionalDataBox} from "./AdditionalDataBox";
+import {AdditionalDataBox} from "../boxes/AdditionalDataBox";
 import {AiFillSound, BsFillLockFill} from "react-icons/all";
 import {Select, Stack, IconButton, Flex, Tooltip} from "@chakra-ui/react";
 

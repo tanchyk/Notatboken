@@ -10,8 +10,8 @@ import {
     ModalCloseButton, ModalBody, Modal, Image
 } from "@chakra-ui/react";
 import {HiPhotograph} from "react-icons/all";
-import {AdditionalDataBox} from "./AdditionalDataBox";
-import {API_PEXELS} from "../../utils/types";
+import {AdditionalDataBox} from "../boxes/AdditionalDataBox";
+import {API_PEXELS} from "../../../../utils/types";
 
 interface ChoosePhotoProps {
     nativeWord: string;

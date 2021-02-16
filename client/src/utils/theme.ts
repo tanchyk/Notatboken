@@ -10,6 +10,24 @@ const Stack = {
     })
 }
 
+const Card = {
+    baseStyle: (props: GlobalStyleProps) => ({
+        ...Stack.baseStyle(props),
+        borderWidth: "2px",
+        w: "250px",
+        h: "360px",
+        alignItems: "center"
+    })
+}
+
+const BackCard = {
+    baseStyle: {
+        w: "70%",
+        justifyContent: "center",
+        alignItems: "center",
+    }
+}
+
 export const theme = extendTheme({
     styles: {
         global: (props) => ({
@@ -33,7 +51,9 @@ export const theme = extendTheme({
         }),
     },
     components: {
-        Stack
+        Stack,
+        Card,
+        BackCard
     }
 })
 

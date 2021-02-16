@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {decksData, clearDecks} from "../../store/deckSlice";
 import {DecksCreate} from "./DecksCreate";
-import {DeckBox} from "./DeckBox";
+import {DeckBox} from "./boxes/DeckBox";
 import {NoDataBox} from "../NoDataBox";
 
 export interface DecksHomeProps {
@@ -61,11 +61,7 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
                     ) : (
                         <SimpleGrid columns={2} spacing={4} marginTop={4} marginBottom={4}>
                             {
-                                decks.map((deck, key) => {
-                                    return (
-                                        <DeckBox deck={deck} key={key}/>
-                                    );
-                                })
+                                decks.map((deck, key) => <DeckBox deck={deck} key={key}/>)
                             }
                         </SimpleGrid>
                     )

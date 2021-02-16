@@ -122,7 +122,9 @@ const deckSlice = createSlice({
                 });
             } else {
                 return Object.assign({}, state, {
-                    decks: state.decks.concat(payload),
+                    decks: state.decks.concat(payload.sort(
+                        (deckA, deckB) => new Date(deckA.createdAt).getTime() - new Date(deckB.createdAt).getTime()
+                    )),
                     status: 'succeeded'
                 });
             }
@@ -200,6 +202,7 @@ const deckSlice = createSlice({
 });
 
 export const decksData = (state: {decks: DeckSliceType}) => state.decks.decks;
+export const singleDeck = (state: {decks: DeckSliceType}, deckId: number) => state.decks.decks.find(deck => deck.deckId === deckId);
 export const decksStatus = (state: {decks: DeckSliceType}) => state.decks.status;
 export const decksError = (state: {decks: DeckSliceType}) => state.decks.error;
 

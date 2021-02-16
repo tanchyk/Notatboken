@@ -3,8 +3,8 @@ import {Flex, Heading, Text} from "@chakra-ui/react";
 import {Wrapper} from "../components/wrappers/Wrapper";
 import {useDispatch, useSelector} from "react-redux";
 import {loadUser, userData} from "../store/userSlice";
-import {LanguagesComponent} from "../components/startPage/LanguagesComponent";
-import {StatisticsComponent} from "../components/startPage/StatisticsComponent";
+import {LanguagesList} from "../components/startPage/LanguagesList";
+import {UserStatistics} from "../components/startPage/UserStatistics";
 import {AppDispatch} from "../store/store";
 
 const StartPage: React.FC = () => {
@@ -31,8 +31,8 @@ const StartPage: React.FC = () => {
             </Flex>
             <Flex justifyContent="center">
                 <Wrapper variant="regular">
-                    <LanguagesComponent/>
-                    <StatisticsComponent/>
+                    <LanguagesList/>
+                    <UserStatistics/>
                 </Wrapper>
             </Flex>
         </>

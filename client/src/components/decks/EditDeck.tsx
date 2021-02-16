@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {
     AlertIcon,
     Box,
@@ -11,26 +11,29 @@ import {
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
-import {DeckData, FieldProps} from "../../utils/types";
-import {AdditionalDeckInfProps} from "../cards/CreateCard";
+import {DeckSliceType, FieldProps} from "../../utils/types";
+import {AdditionalDeckInfProps} from "../cards/createUpdateCards/CreateCard";
 import {UserInput} from "../inputs/UserInput";
 import {DeckNameSchema} from "./DecksCreate";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {cardsData, fetchCards, clearCards} from "../../store/cardSlice";
 import {NoDataBox} from "../NoDataBox";
-import {EditDeckCardBox} from "./EditDeckCardBox";
-import {decksError, editDeck, clearDeckError} from "../../store/deckSlice";
+import {EditDeckCardBox} from "./boxes/EditDeckCardBox";
+import {decksError, editDeck, clearDeckError, singleDeck, decksStatus, decksData} from "../../store/deckSlice";
 import {AddIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
+import {history} from "../../App";
 
 export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
     const deckId = Number.parseInt(match.params.deckId);
-    const [deck, setDeck] = useState<DeckData | null>(null);
+    const deck = useSelector((state: {decks: DeckSliceType}) => singleDeck(state, deckId));
 
     //Load cards
     const dispatch = useDispatch<AppDispatch>();
+    const decks = useSelector(decksData);
     const deckError = useSelector(decksError);
+    const deckStatus = useSelector(decksStatus);
     const cards = useSelector(cardsData);
 
     useEffect(() => {
@@ -38,6 +41,12 @@ export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
         dispatch(clearDeckError());
         dispatch(fetchCards({deckId: deckId}));
     }, [])
+
+    useEffect(() => {
+        if(deck === undefined && deckStatus === 'succeeded') {
+            history.push('/error');
+        }
+    }, [deckStatus])
 
     return (
         <Formik
@@ -49,7 +58,7 @@ export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
             }}
         >
             {() => (
-                <AdditionalDecksWrapper title={`Edit deck ${deck?.deckName} 🗃️`} setDeck={setDeck} deckId={deckId}>
+                <AdditionalDecksWrapper title={`Edit deck ${deck?.deckName} 🗃️`}>
                     <Form>
                         <Stack spacing={5} mt={3}>
                             <Heading size="md">{`Change the name of your deck  ${deck?.deckName}`}</Heading>
@@ -96,7 +105,7 @@ export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
                             }
                         </Flex>
                         {
-                            cards.length !== 0 ? (
+                            cards.length !== 0 && decks.length !== 0 ? (
                                 cards.map((card, index) => <EditDeckCardBox card={card} deck={deck!} key={index}/>)
                             ) : <NoDataBox type="cards"/>
                         }

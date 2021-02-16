@@ -24,8 +24,14 @@ export interface DeckSliceType {
 
 export interface CardSliceType {
     cards: Array<CardData>;
+    count: number;
     status: Status;
     error: ErrorFromServer;
+}
+
+export interface CardsFetch {
+    cards: Array<Card>;
+    count: number;
 }
 
 //User types
@@ -87,6 +93,8 @@ export interface CardData {
     voiceId: number | null;
     foreignContext: string | null;
     nativeContext: string | null;
+    proficiency: Proficiency | null;
+    reviewDate: Date | null;
     createdAt: Date | null;
     updatedAt: Date | null;
     deck: Deck | DeckData | null;

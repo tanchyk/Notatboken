@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {AdditionalDataBox} from "./AdditionalDataBox";
+import {AdditionalDataBox} from "../boxes/AdditionalDataBox";
 import {BiMessageAdd} from "react-icons/all";
 import {
     Box,
@@ -13,9 +13,9 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import {useSelector} from "react-redux";
-import {csrfData} from "../../store/csrfSlice";
-import {ContextApi} from "../../utils/types";
-import {ContextBox} from "./ContexBox";
+import {csrfData} from "../../../../store/csrfSlice";
+import {ContextApi} from "../../../../utils/types";
+import {ContextBox} from "../boxes/ContexBox";
 
 interface ChooseContextProps {
     foreignWord: string;

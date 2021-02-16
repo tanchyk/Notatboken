@@ -1,7 +1,7 @@
 import React from "react";
 import {Box, Heading, useStyleConfig} from "@chakra-ui/react";
 
-export const StatisticsComponent: React.FC = () => {
+export const UserStatistics: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
 
     return (

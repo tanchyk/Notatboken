@@ -16,14 +16,16 @@ import {
 import {history} from '../App';
 import {useDispatch, useSelector} from "react-redux";
 import {userData} from "../store/userSlice";
-import {NavItem} from "../components/profile/NavItem";
+import {NavItemProfile} from "../components/profile/NavItemProfile";
 import {DecksHome} from "../components/decks/DecksHome";
 import {Languages} from "../utils/types";
 import {IoLanguageOutline, FaRegFolderOpen, GiProgression, RiHome4Line} from "react-icons/all";
-import {CreateCard} from "../components/cards/CreateCard";
-import {decksData, decksStatus, fetchDecks, clearDecks} from "../store/deckSlice";
+import {CreateCard} from "../components/cards/createUpdateCards/CreateCard";
+import {decksStatus, fetchDecks, clearDecks} from "../store/deckSlice";
 import {AppDispatch} from "../store/store";
 import {EditDeck} from "../components/decks/EditDeck";
+import {CardsReview} from "../components/cards/reviewCards/CardsReview";
+import {CardChange} from "../components/cards/CardChange";
 
 interface DecksProps {
     match: match<{language: string}>
@@ -40,7 +42,6 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
 
     const dispatch = useDispatch<AppDispatch>();
 
-    const decks = useSelector(decksData);
     const deckStatus = useSelector(decksStatus);
 
     useEffect(() => {
@@ -49,6 +50,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
         user.languages?.forEach(languageUser => {
             if (languageUser.languageName === language) {
                 check = true;
+                console.log('Loaded language', languageUser.languageId)
                 setLanguageId(languageUser.languageId);
             }
         });
@@ -61,7 +63,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
         if (deckStatus === 'idle' && languageId !== null) {
             dispatch(fetchDecks({languageId: languageId}));
         }
-    }, [decks, languageId]);
+    }, [deckStatus, languageId]);
 
     return (
         <>
@@ -91,34 +93,34 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                     spacing={5}
                                 >
                                     <LinkPage to={`${match.url}/home`}>
-                                        <NavItem
+                                        <NavItemProfile
                                             id="decks-home"
                                             handleClick={handleClick}
                                             clicked={clicked}
                                             icon={RiHome4Line}
                                         >
                                             Home
-                                        </NavItem>
+                                        </NavItemProfile>
                                     </LinkPage>
                                     <LinkPage to={`${match.url}/progress`}>
-                                        <NavItem
+                                        <NavItemProfile
                                             id="progress"
                                             handleClick={handleClick}
                                             clicked={clicked}
                                             icon={GiProgression}
                                         >
                                             Progress
-                                        </NavItem>
+                                        </NavItemProfile>
                                     </LinkPage>
                                     <LinkPage to={`${match.url}/folders`}>
-                                        <NavItem
+                                        <NavItemProfile
                                             id="folders"
                                             handleClick={handleClick}
                                             clicked={clicked}
                                             icon={FaRegFolderOpen}
                                         >
                                             Folders
-                                        </NavItem>
+                                        </NavItemProfile>
                                     </LinkPage>
                                     <Divider/>
                                     <LinkPage to="/">
@@ -140,18 +142,21 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                 </Stack>
                                 <Box w={["100%", "90%", "55%", "70%"]}>
                                     <Switch>
-                                        <Route path={`${match.url}/home`} render={() => <DecksHome language={language as Languages} languageId={languageId}/>}/>
+                                        <Route path={`${match.url}/home`}
+                                               render={() => <DecksHome language={language as Languages}
+                                                                        languageId={languageId}/>}/>
                                         {/*<Route path={`${match.url}/progress`} component={ChangePassword}/>*/}
                                         <Route path={`${match.url}/add-card/:deckId`} component={CreateCard}/>
                                         <Route path={`${match.url}/edit-deck/:deckId`} component={EditDeck}/>
+                                        <Route path={`${match.url}/edit-card/:deckId/:cardId`} component={CardChange} />
+                                        <Route path={`${match.url}/review/:deckId`} component={CardsReview}/>
                                         <Redirect to={`${match.url}/home`}/>
                                     </Switch>
                                     {/*<DecksHome language={language as Languages} languageId={languageId}/>*/}
                                 </Box>
                             </>
-                            ) : null
+                        ) : null
                     }
-
                 </Wrapper>
             </Flex>
         </>

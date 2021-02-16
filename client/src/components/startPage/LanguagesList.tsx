@@ -9,7 +9,7 @@ import {Link as LinkPage} from "react-router-dom";
 import {loadUser, userData} from "../../store/userSlice";
 import {AppDispatch} from "../../store/store";
 
-export const LanguagesComponent: React.FC = () => {
+export const LanguagesList: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
     const toast = useToast();
 
