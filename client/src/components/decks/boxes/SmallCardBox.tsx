@@ -14,7 +14,7 @@ interface EditDeckCardBoxProps {
     deck: DeckData;
 }
 
-export const EditDeckCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) => {
+export const SmallCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) => {
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
 

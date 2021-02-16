@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useEffect, useState} from "react";
+import React, { useEffect, useState} from "react";
 import {API_PEXELS, CardData, Proficiency} from "../../../utils/types";
 import {Stack, Image, Flex, Heading, Text, Button, useStyleConfig} from "@chakra-ui/react";
 import ReactCardFlip from "react-card-flip";
@@ -8,12 +8,12 @@ import {editCardStatus} from "../../../store/cardSlice";
 
 interface CardBoxProps {
     card: CardData;
-    cardIdRef: MutableRefObject<number | null>;
+    setCardId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const proficiencyValues: Array<Proficiency> = ['fail', 'repeat', '1d', '3d', '7d', '21d', '31d', '90d', 'learned'];
 
-export const CardBox: React.FC<CardBoxProps> = ({card, cardIdRef}) => {
+export const CardBox: React.FC<CardBoxProps> = ({card, setCardId}) => {
     const styleCard = useStyleConfig("Card");
     const backCard = useStyleConfig("BackCard");
 
@@ -50,7 +50,7 @@ export const CardBox: React.FC<CardBoxProps> = ({card, cardIdRef}) => {
 
     useEffect(() => {
         loadImage();
-        cardIdRef.current = card.cardId;
+        setCardId(card.cardId);
         if(card.proficiency) {
             card.proficiency === 'fail' ? setProfStatus([
                 card.proficiency,

@@ -17,7 +17,7 @@ interface CardChangeProps {
     match: match<{cardId: string, deckId: string}>
 }
 
-export const CardChange: React.FC<CardChangeProps>= ({match}) => {
+export const EditCard: React.FC<CardChangeProps>= ({match}) => {
     const toast = useToast();
     const formikRef = useRef<FormikProps<{ foreignWord: string | null; nativeWord: string | null; includeNativeContext: boolean; }> | null>(null);
     const deckId = Number.parseInt(match.params.deckId);

@@ -13,6 +13,7 @@ const Stack = {
 const Card = {
     baseStyle: (props: GlobalStyleProps) => ({
         ...Stack.baseStyle(props),
+        backgroundColor: mode("gray.50", "gray.700")(props),
         borderWidth: "2px",
         w: "250px",
         h: "360px",

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect} from "react";
 import {
     Box,
     Flex,
@@ -12,9 +12,10 @@ import {Languages} from "../../utils/types";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {decksData, clearDecks} from "../../store/deckSlice";
-import {DecksCreate} from "./DecksCreate";
+import {CreateDeck} from "./CreateDeck";
 import {DeckBox} from "./boxes/DeckBox";
 import {NoDataBox} from "../NoDataBox";
+import {CloseContext} from "../../App";
 
 export interface DecksHomeProps {
     language: Languages;
@@ -22,9 +23,9 @@ export interface DecksHomeProps {
 }
 
 export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
-    const [createClose, setCreateClose] = useState<boolean>(false);
-    const closeCreateComponent = () => setCreateClose(true);
-    const openCreateComponent = () => setCreateClose(false);
+    const [closeCreate, setCloseCreate] = useContext(CloseContext);
+    const closeCreateComponent = () => setCloseCreate(true);
+    const openCreateComponent = () => setCloseCreate(false);
 
     //Load Decks
     const dispatch = useDispatch<AppDispatch>();
@@ -42,15 +43,15 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
             spacing={8}
         >
             {
-                createClose ? null : (
-                    <DecksCreate language={language} languageId={languageId} closeCreateComponent={closeCreateComponent}/>
+                closeCreate ? null : (
+                    <CreateDeck language={language} languageId={languageId} closeCreateComponent={closeCreateComponent}/>
                 )
             }
             <Box>
                 <Flex>
                     <Heading as="h1" size="lg">Decks</Heading>
                     {
-                        createClose ? (
+                        closeCreate ? (
                             <IconButton  ml={3} aria-label="Close create deck" size="md" icon={<AddIcon/>} onClick={openCreateComponent}/>
                         ) : null
                     }

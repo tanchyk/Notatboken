@@ -1,6 +1,6 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Link as LinkPage} from "react-router-dom";
-import {Stack, Heading, IconButton, Flex} from "@chakra-ui/react";
+import {Stack, Heading, IconButton, Flex, useColorMode} from "@chakra-ui/react";
 import {AdditionalDeckInfProps} from "../createUpdateCards/CreateCard";
 import {clearDeckError, decksStatus, singleDeck} from "../../../store/deckSlice";
 import {useDispatch, useSelector} from "react-redux";
@@ -16,11 +16,12 @@ import {AlertForDelete} from "../../AlertForDelete";
 
 export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
     const deckId = Number.parseInt(match.params.deckId);
+    const { colorMode } = useColorMode();
 
-    const cardIdRef = useRef<number | null>(null);
+    const [cardId, setCardId] = useState<number | null>(null);
 
     //Delete card
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const onClose = () => setIsOpen(false);
     const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -29,8 +30,8 @@ export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
     }
 
     const deleteHandler = async () => {
-        if(cardIdRef.current) {
-            await dispatch(deleteCard({cardId: cardIdRef.current}))
+        if(cardId) {
+            await dispatch(deleteCard({cardId: cardId}))
         }
         onClose();
     }
@@ -54,6 +55,7 @@ export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
 
     return (
         <Stack
+            bg={colorMode === "light" ? "#fff" : "transparent"}
             spacing={8}
             marginTop={8}
             marginBottom={1}
@@ -77,7 +79,7 @@ export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
                     {
                         cards.length === 0 ? null : (
                             <>
-                                <LinkPage to={`/decks/${deck?.language?.languageName}/edit-card/${deck?.deckId}/${cardIdRef.current}`}>
+                                <LinkPage to={`/decks/${deck?.language?.languageName}/edit-card/${deck?.deckId}/${cardId}`}>
                                     <IconButton
                                         aria-label="Edit Card"
                                         size="md"
@@ -99,7 +101,7 @@ export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
                 </Flex>
             </Flex>
 
-            <CardsCarousel cardIdRef={cardIdRef}/>
+            <CardsCarousel setCardId={setCardId}/>
 
             <AlertForDelete
                 header="Delete Card"

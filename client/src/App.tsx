@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ChakraProvider} from "@chakra-ui/react";
 import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
@@ -15,10 +15,15 @@ import {ProfilePage} from "./pages/ProfilePage";
 import {theme} from "./utils/theme";
 import DecksPage from "./pages/DecksPage";
 import {ErrorPage} from "./pages/ErrorPage";
+import {createContext} from 'react';
+
+export const CloseContext = createContext<any>([]);
 
 export const history = createBrowserHistory();
 
 const App: React.FC<{}> = () => {
+    const [closeCreate, setCloseCreate] = useState<boolean>(false);
+
     const dispatch = useDispatch<AppDispatch>();
 
     const user = useSelector(userData);
@@ -66,9 +71,11 @@ const App: React.FC<{}> = () => {
     return (
         <BrowserRouter basename='/'>
             <ChakraProvider theme={theme}>
-                <Router history={history}>
-                    {routes}
-                </Router>
+                <CloseContext.Provider value={[closeCreate, setCloseCreate]}>
+                    <Router history={history}>
+                        {routes}
+                    </Router>
+                </CloseContext.Provider>
             </ChakraProvider>
         </BrowserRouter>
     );

@@ -25,7 +25,7 @@ import {decksStatus, fetchDecks, clearDecks} from "../store/deckSlice";
 import {AppDispatch} from "../store/store";
 import {EditDeck} from "../components/decks/EditDeck";
 import {CardsReview} from "../components/cards/reviewCards/CardsReview";
-import {CardChange} from "../components/cards/CardChange";
+import {EditCard} from "../components/cards/EditCard";
 
 interface DecksProps {
     match: match<{language: string}>
@@ -148,7 +148,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                         {/*<Route path={`${match.url}/progress`} component={ChangePassword}/>*/}
                                         <Route path={`${match.url}/add-card/:deckId`} component={CreateCard}/>
                                         <Route path={`${match.url}/edit-deck/:deckId`} component={EditDeck}/>
-                                        <Route path={`${match.url}/edit-card/:deckId/:cardId`} component={CardChange} />
+                                        <Route path={`${match.url}/edit-card/:deckId/:cardId`} component={EditCard} />
                                         <Route path={`${match.url}/review/:deckId`} component={CardsReview}/>
                                         <Redirect to={`${match.url}/home`}/>
                                     </Switch>

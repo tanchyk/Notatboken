@@ -114,7 +114,7 @@ export const CardInput: React.FC<CardInputProps> = (
                             ) : null
                         }
                         <Checkbox
-                            isDisabled={!(!!context && isValid)}
+                            isDisabled={!(!!context?.to && isValid)}
                             isChecked={values.includeNativeContext}
                             onChange={() => setFieldValue('includeNativeContext', !values.includeNativeContext)}
                         >

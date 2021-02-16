@@ -14,12 +14,12 @@ import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
 import {DeckSliceType, FieldProps} from "../../utils/types";
 import {AdditionalDeckInfProps} from "../cards/createUpdateCards/CreateCard";
 import {UserInput} from "../inputs/UserInput";
-import {DeckNameSchema} from "./DecksCreate";
+import {DeckNameSchema} from "./CreateDeck";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {cardsData, fetchCards, clearCards} from "../../store/cardSlice";
 import {NoDataBox} from "../NoDataBox";
-import {EditDeckCardBox} from "./boxes/EditDeckCardBox";
+import {SmallCardBox} from "./boxes/SmallCardBox";
 import {decksError, editDeck, clearDeckError, singleDeck, decksStatus, decksData} from "../../store/deckSlice";
 import {AddIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
@@ -106,7 +106,7 @@ export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
                         </Flex>
                         {
                             cards.length !== 0 && decks.length !== 0 ? (
-                                cards.map((card, index) => <EditDeckCardBox card={card} deck={deck!} key={index}/>)
+                                cards.map((card, index) => <SmallCardBox card={card} deck={deck!} key={index}/>)
                             ) : <NoDataBox type="cards"/>
                         }
                     </Stack>

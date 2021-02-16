@@ -33,7 +33,7 @@ interface DecksCreateProps extends DecksHomeProps {
     closeCreateComponent: () => void
 }
 
-export const DecksCreate: React.FC<DecksCreateProps> = ({language, languageId, closeCreateComponent}) => {
+export const CreateDeck: React.FC<DecksCreateProps> = ({language, languageId, closeCreateComponent}) => {
     const { colorMode } = useColorMode()
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
