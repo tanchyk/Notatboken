@@ -22,9 +22,14 @@ export interface DeckSliceType {
     error: ErrorFromServer;
 }
 
+export interface FolderSliceType {
+    folders: Array<FolderData>;
+    status: Status;
+    error: ErrorFromServer;
+}
+
 export interface CardSliceType {
     cards: Array<CardData>;
-    count: number;
     status: Status;
     error: ErrorFromServer;
 }
@@ -83,6 +88,22 @@ export interface ErrorDelete extends Object {
     deckId: number;
 }
 
+//Folder types
+
+export interface FolderData {
+    folderId: number | null;
+    folderName: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    language: Language | null;
+    decks: Deck[] | null;
+}
+
+export interface ErrorDeleteFolder extends Object {
+    message: string | SerializedError | null;
+    folderId: number;
+}
+
 //Card types
 
 export interface CardData {
@@ -132,7 +153,11 @@ export type Status = 'idle' | 'succeeded' | 'failed' | 'loading';
 export type Proficiency = 'fail' | 'repeat' | '1d' | '3d' | '7d' | '21d' | '31d' | '90d' | 'learned';
 
 export interface ErrorFromServer extends Object {
-    type: 'login' | 'register' | 'update' | 'deleteUser' | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks' | 'loadCards' | 'createCard' | 'failedCreateCard' | 'editCard' | null,
+    type:
+        'login' | 'register' | 'update' | 'deleteUser'
+        | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks'
+        | 'loadCards' | 'createCard' | 'failedCreateCard' | 'editCard'
+        | 'loadFolders' | 'createFolder' | 'failedCreateFolder' | 'editFolder' | 'deleteFolder' | 'failedAddDeckToFolder' | null,
     message: string | SerializedError | null
 }
 

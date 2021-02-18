@@ -17,12 +17,14 @@ import DecksPage from "./pages/DecksPage";
 import {ErrorPage} from "./pages/ErrorPage";
 import {createContext} from 'react';
 
-export const CloseContext = createContext<any>([]);
+export const CloseContextHome = createContext<any>([]);
+export const CloseContextFolders = createContext<any>([]);
 
 export const history = createBrowserHistory();
 
 const App: React.FC<{}> = () => {
-    const [closeCreate, setCloseCreate] = useState<boolean>(false);
+    const [closeCreateHome, setCloseCreateHome] = useState<boolean>(false);
+    const [closeCreateFolders, setCloseCreateFolders] = useState<boolean>(false);
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -71,11 +73,13 @@ const App: React.FC<{}> = () => {
     return (
         <BrowserRouter basename='/'>
             <ChakraProvider theme={theme}>
-                <CloseContext.Provider value={[closeCreate, setCloseCreate]}>
+                <CloseContextHome.Provider value={[closeCreateHome, setCloseCreateHome]}>
+                    <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
                     <Router history={history}>
                         {routes}
                     </Router>
-                </CloseContext.Provider>
+                    </CloseContextFolders.Provider>
+                </CloseContextHome.Provider>
             </ChakraProvider>
         </BrowserRouter>
     );

@@ -10,15 +10,14 @@ class CardsController {
 
         const cardRepository = getRepository(Card);
         let cards: Card[];
-        let count: number;
         if(deckId) {
             try {
-                [cards, count] = await cardRepository.findAndCount({relations: ["deck"], where: {deck: {deckId: deckId}}});
+                cards = await cardRepository.find({relations: ["deck"], where: {deck: {deckId: deckId}}});
             } catch (err) {
                 return res.status(404).send({message: "You have no cards in this deck"});
             }
 
-            return res.status(200).json({cards, count});
+            return res.status(200).json(cards);
         } else {
             return res.status(404).send({message: "This deck has no cards!"});
         }

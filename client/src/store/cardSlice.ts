@@ -1,7 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {
     CardDispatch,
-    CardsFetch,
     CardSliceType,
     CsrfSliceType,
     ErrorDeleteCard,
@@ -11,7 +10,6 @@ import {Card} from "../../../server/entities/Card";
 
 const initialState = {
     cards: [],
-    count: 0,
     status: 'idle',
     error: {
         type: null,
@@ -20,7 +18,7 @@ const initialState = {
 } as CardSliceType;
 
 //Async reducers
-export const fetchCards = createAsyncThunk<CardsFetch, {deckId: number}>(
+export const fetchCards = createAsyncThunk<Array<Card>, {deckId: number}>(
     'cards/fetchCards',
     async (cardData) => {
         const response = await fetch(`/api/cards/find-cards/${cardData.deckId}`, {
@@ -29,7 +27,7 @@ export const fetchCards = createAsyncThunk<CardsFetch, {deckId: number}>(
                 'Content-Type': 'application/json'
             }
         });
-        return (await response.json()) as CardsFetch;
+        return (await response.json()) as Array<Card>;
     }
 )
 
@@ -141,7 +139,7 @@ const cardSlice = createSlice({
     extraReducers: builder => {
         //Fetch
         builder.addCase(fetchCards.pending, fetchCardPending)
-        builder.addCase(fetchCards.fulfilled, (state: CardSliceType, { payload }: { payload: CardsFetch }) => {
+        builder.addCase(fetchCards.fulfilled, (state: CardSliceType, { payload }: { payload: Array<Card> }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -152,11 +150,10 @@ const cardSlice = createSlice({
                 });
             } else {
                 return Object.assign({}, state, {
-                    cards: state.cards.concat(payload.cards.sort(
+                    cards: state.cards.concat(payload.sort(
                         (cardA, cardB) => new Date(cardA.reviewDate).getTime() - new Date(cardB.reviewDate).getTime()
                         )
                     ),
-                    count: payload.count,
                     status: 'succeeded'
                 });
             }
@@ -283,7 +280,6 @@ const cardSlice = createSlice({
 
 export const cardsData = (state: {cards: CardSliceType}) => state.cards.cards;
 export const singleCard = (state: {cards: CardSliceType}, cardId: number) => state.cards.cards.find(card => card.cardId === cardId);
-export const countCards = (state: {cards: CardSliceType}) => state.cards.count;
 export const cardsStatus = (state: {cards: CardSliceType}) => state.cards.status;
 export const cardsError = (state: {cards: CardSliceType}) => state.cards.error;
 

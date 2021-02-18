@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import {Language} from "./Language";
 import {Deck} from "./Deck";
+import {Folder} from "./Folder";
 
 @Entity()
 @Unique(["username", "email"])
@@ -39,6 +40,9 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Deck, deck => deck.user, { cascade: true})
     decks: Deck[];
+
+    @OneToMany(() => Folder, folder => folder.user, { cascade: true})
+    folders: Folder[];
 
     @ManyToMany(() => Language, (language: Language) => language.users,{ cascade: true })
     @JoinTable({name: "userLanguages"})

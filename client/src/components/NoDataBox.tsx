@@ -2,7 +2,7 @@ import React from "react";
 import {Box, Flex, Heading, Text, useStyleConfig} from "@chakra-ui/react";
 
 interface NoDataBoxProps {
-    type: 'cards' | 'decks';
+    type: 'cards' | 'decks' | 'folders';
 }
 
 export const NoDataBox: React.FC<NoDataBoxProps> = ({type}) => {

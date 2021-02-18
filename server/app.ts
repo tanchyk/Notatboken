@@ -16,6 +16,8 @@ import {Card} from "./entities/Card";
 import {Deck} from "./entities/Deck";
 import decksRouter from "./routes/decksRouter";
 import cardsRouter from "./routes/cardRoutes";
+import {Folder} from "./entities/Folder";
+import foldersRouter from "./routes/folderRoutes";
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -39,7 +41,7 @@ createConnection({
     password: process.env.postgresPassword,
     logging: true,
     synchronize: true,
-    entities: [User, Deck, Language, Card]
+    entities: [User, Deck, Folder, Language, Card]
 }).then(connection => {
     // setLanguages(connection);
 
@@ -65,6 +67,7 @@ createConnection({
     app.use('/languages', languageRouter);
     app.use('/decks', decksRouter);
     app.use('/cards', cardsRouter);
+    app.use('/folders', foldersRouter);
 
     const PORT = 5000;
 

@@ -5,9 +5,10 @@ import {BsArrowLeft} from "react-icons/all";
 
 interface DecksWrapperProps {
     title: string;
+    w?: string;
 }
 
-export const AdditionalDecksWrapper: React.FC<DecksWrapperProps> = ({title, children}) => {
+export const AdditionalDecksWrapper: React.FC<DecksWrapperProps> = ({title, w="75%", children}) => {
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
 
@@ -27,12 +28,12 @@ export const AdditionalDecksWrapper: React.FC<DecksWrapperProps> = ({title, chil
                 alignItems="center"
                 justifyContent="space-between"
                 mb={8}
-                w="75%"
+                w={w}
             >
                 <Heading as="h1" size="lg">{title}</Heading>
                 <IconButton aria-label="Go Back" size="sm" icon={<BsArrowLeft />} onClick={goBack}/>
             </Flex>
-            <Stack spacing={6} w="75%">
+            <Stack spacing={6} w={w}>
                 {children}
             </Stack>
         </Stack>

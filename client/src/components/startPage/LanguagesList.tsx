@@ -76,10 +76,7 @@ export const LanguagesList: React.FC = () => {
                             marginLeft={5}
                         >
                             {
-                                user.languages?.map((language, index) => {
-                                    // @ts-ignore
-                                    const src = flags[language.languageName.toLowerCase()];
-                                    return (
+                                user.languages?.map((language, index) => (
                                         <LinkPage to={`/decks/${language.languageName.toLowerCase()}`} key={index}>
                                             <Button
                                                 w="100%"
@@ -88,12 +85,12 @@ export const LanguagesList: React.FC = () => {
                                                 flexDirection="row"
                                                 rightIcon={<ChevronRightIcon/>}
                                             >
-                                                <Image w="28px" src={src}/>
+                                                <Image w="28px" src={flags[language.languageName.toLowerCase() as keyof typeof flags]}/>
                                                 <Text fontSize="lg" ml={2}>{language.languageName}</Text>
                                             </Button>
                                         </LinkPage>
                                     )
-                                })
+                                )
                             }
                         </Stack>
                         <Select variant="filled" size="md" onChange={changeHandler}>

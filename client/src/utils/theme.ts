@@ -59,10 +59,10 @@ export const theme = extendTheme({
 })
 
 export const flags = {
-    german: 'https://cdn.countryflags.com/thumbs/germany/flag-waving-250.png',
-    polish: 'https://cdn.countryflags.com/thumbs/poland/flag-waving-250.png',
-    norwegian: 'https://cdn.countryflags.com/thumbs/norway/flag-waving-250.png',
-    russian: 'https://cdn.countryflags.com/thumbs/russia/flag-waving-250.png',
-    spanish: 'https://cdn.countryflags.com/thumbs/spain/flag-waving-250.png',
-    french: 'https://cdn.countryflags.com/thumbs/france/flag-waving-250.png'
+    german: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/germany_uj7j4v.png',
+    polish: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/poland_kuj1ll.png',
+    norwegian: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/norway_mniwmm.png',
+    russian: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/russia_zciob7.png',
+    spanish: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/spain_ojzd3t.png',
+    french: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/france_kt0j2q.png'
 }

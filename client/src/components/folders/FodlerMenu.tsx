@@ -1,19 +1,21 @@
 import React, {useRef} from "react";
+import {
+    Link as LinkPage
+} from 'react-router-dom';
 import {IconButton, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import {FaEllipsisV} from "react-icons/all";
-import {AddIcon, AttachmentIcon, DeleteIcon, EditIcon} from "@chakra-ui/icons";
-import {Link as LinkPage} from "react-router-dom";
-import {DeckData} from "../../utils/types";
+import {DeleteIcon, EditIcon} from "@chakra-ui/icons";
+import {FolderData} from "../../utils/types";
 import {AlertForDelete} from "../AlertForDelete";
-import {deleteDeck} from "../../store/deckSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../store/store";
+import {deleteFolder} from "../../store/folderSlice";
 
-interface DeckMenuProps {
-    deck: DeckData;
+interface FolderMenuProps {
+    folder: FolderData;
 }
 
-export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
+export const FolderMenu: React.FC<FolderMenuProps> = ({folder}) => {
     //Functions for confirmation page
     const [isOpen, setIsOpen] = React.useState(false);
     const onClose = () => setIsOpen(false);
@@ -23,8 +25,8 @@ export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const deleteHandler = async () => {
-        if(deck.deckId) {
-            await dispatch(deleteDeck({deckId: deck.deckId}))
+        if(folder.folderId) {
+            await dispatch(deleteFolder({folderId: folder.folderId}))
         }
         onClose();
     }
@@ -40,13 +42,7 @@ export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
                     icon={<FaEllipsisV/>}
                 />
                 <MenuList>
-                    <LinkPage to={`/decks/${deck.language?.languageName}/add-to-folder/${deck.deckId}`}>
-                        <MenuItem icon={<AttachmentIcon/>}>Save to folder</MenuItem>
-                    </LinkPage>
-                    <LinkPage to={`/decks/${deck.language?.languageName}/add-card/${deck.deckId}`}>
-                        <MenuItem icon={<AddIcon/>}>Add cards</MenuItem>
-                    </LinkPage>
-                    <LinkPage to={`/decks/${deck.language?.languageName}/edit-deck/${deck.deckId}`}>
+                    <LinkPage to={`/decks/${folder.language?.languageName}/${folder.language?.languageId}/edit-folder/${folder.folderId}`}>
                         <MenuItem icon={<EditIcon/>}>Edit</MenuItem>
                     </LinkPage>
                     <MenuItem icon={<DeleteIcon/>} onClick={() => setIsOpen(true)}>Delete</MenuItem>
@@ -54,7 +50,7 @@ export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
             </Menu>
 
             <AlertForDelete
-                header={`Delete Deck ${deck.deckName}`}
+                header={`Delete Folder ${folder.folderName}`}
                 isOpen={isOpen}
                 onClose={onClose}
                 onClick={deleteHandler}

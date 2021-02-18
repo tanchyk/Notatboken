@@ -25,7 +25,7 @@ import {DecksHomeProps} from "./DecksHome";
 export const DeckNameSchema = Yup.object().shape({
     deckName: Yup.string()
         .min(3, 'Too Short, name should be longer than 3.')
-        .max(64, 'Too Long, name should be shorter than 50.')
+        .max(40, 'Too Long, name should be shorter than 40.')
         .required('Required')
 });
 
@@ -82,7 +82,7 @@ export const CreateDeck: React.FC<DecksCreateProps> = ({language, languageId, cl
                         />
                     </Box>
                     <Box w="60%">
-                        <Heading size="lg">{`Create a study deck for the ${language} language`}</Heading>
+                        <Heading size="lg">{`Create a study deck for the ${language} language.`}</Heading>
                         <Button
                             width="140px"
                             size="lg"

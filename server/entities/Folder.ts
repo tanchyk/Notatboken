@@ -3,22 +3,22 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne, OneToMany,
+    ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {User} from "./User";
+import {Deck} from "./Deck";
 import {Language} from "./Language";
-import {Card} from "./Card";
-import {Folder} from "./Folder";
 
 @Entity()
-export class Deck extends BaseEntity {
+export class Folder extends BaseEntity {
     @PrimaryGeneratedColumn()
-    deckId: number;
+    folderId: number;
 
     @Column({length: 40})
-    deckName!: string;
+    folderName!: string;
 
     @Column()
     @CreateDateColumn()
@@ -28,15 +28,12 @@ export class Deck extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => User, user => user.decks, {onDelete: 'CASCADE'})
+    @ManyToOne(() => User, user => user.folders, {onDelete: 'CASCADE'})
     user: User;
-
-    @ManyToOne(() => Folder, folder => folder.decks, { nullable: true, onDelete: 'SET NULL'})
-    folder: Folder | null;
 
     @ManyToOne(() => Language)
     language: Language;
 
-    @OneToMany(() => Card,card => card.deck, { cascade: true})
-    cards: Card[];
+    @OneToMany(() => Deck, deck => deck.folder)
+    decks: Deck[];
 }

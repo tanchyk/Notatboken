@@ -8,6 +8,7 @@ import {
     Box,
     Flex,
     Heading,
+    Image,
     Stack,
     Text,
     Divider,
@@ -26,6 +27,11 @@ import {AppDispatch} from "../store/store";
 import {EditDeck} from "../components/decks/EditDeck";
 import {CardsReview} from "../components/cards/reviewCards/CardsReview";
 import {EditCard} from "../components/cards/EditCard";
+import {Folders} from "../components/folders/Folders";
+import {AddDeckToFolder} from "../components/decks/AddDeckToFolder";
+import {EditFolder} from "../components/folders/EditFolder";
+import {flags} from "../utils/theme";
+import {DecksReview} from "../components/folders/DecksReview";
 
 interface DecksProps {
     match: match<{language: string}>
@@ -74,7 +80,10 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                 paddingBottom={9}
             >
                 <Wrapper variant="regular">
-                    <Heading color="white" fontSize="38px">{language}</Heading>
+                    <Flex direction="row">
+                        <Heading color="white" fontSize="38px" mr={3}>{language}</Heading>
+                        <Image src={flags[language.toLowerCase() as keyof typeof flags]} w="40px" pt={2}/>
+                    </Flex>
                     <Text color="white">here you will se stats</Text>
                 </Wrapper>
             </Flex>
@@ -142,14 +151,22 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                 </Stack>
                                 <Box w={["100%", "90%", "55%", "70%"]}>
                                     <Switch>
-                                        <Route path={`${match.url}/home`}
-                                               render={() => <DecksHome language={language as Languages}
-                                                                        languageId={languageId}/>}/>
+                                        <Route
+                                            path={`${match.url}/home`}
+                                            render={() => <DecksHome language={language as Languages} languageId={languageId}/>}
+                                        />
                                         {/*<Route path={`${match.url}/progress`} component={ChangePassword}/>*/}
+                                        <Route
+                                            path={`${match.url}/folders`}
+                                            render={() => <Folders language={language as Languages} languageId={languageId} />}
+                                        />
+                                        <Route path={`${match.url}/:languageId/edit-folder/:folderId`} component={EditFolder}/>
+                                        <Route path={`${match.url}/add-to-folder/:deckId`} component={AddDeckToFolder} />
                                         <Route path={`${match.url}/add-card/:deckId`} component={CreateCard}/>
                                         <Route path={`${match.url}/edit-deck/:deckId`} component={EditDeck}/>
                                         <Route path={`${match.url}/edit-card/:deckId/:cardId`} component={EditCard} />
                                         <Route path={`${match.url}/review/:deckId`} component={CardsReview}/>
+                                        <Route path={`${match.url}/:languageId/folders/review/:folderId`} component={DecksReview}/>
                                         <Redirect to={`${match.url}/home`}/>
                                     </Switch>
                                     {/*<DecksHome language={language as Languages} languageId={languageId}/>*/}

@@ -31,7 +31,7 @@ class DecksController {
         const userId = res.locals.userId;
         const {deckName, languageId} = req.body;
 
-        if(deckName.length < 3 || deckName.length > 64) {
+        if(deckName.length < 3 || deckName.length > 40) {
             return res.status(400).send({message: 'Invalid Deck name'});
         }
 

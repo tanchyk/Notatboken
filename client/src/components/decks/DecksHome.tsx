@@ -15,7 +15,7 @@ import {decksData, clearDecks} from "../../store/deckSlice";
 import {CreateDeck} from "./CreateDeck";
 import {DeckBox} from "./boxes/DeckBox";
 import {NoDataBox} from "../NoDataBox";
-import {CloseContext} from "../../App";
+import {CloseContextHome} from "../../App";
 
 export interface DecksHomeProps {
     language: Languages;
@@ -23,7 +23,7 @@ export interface DecksHomeProps {
 }
 
 export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
-    const [closeCreate, setCloseCreate] = useContext(CloseContext);
+    const [closeCreate, setCloseCreate] = useContext(CloseContextHome);
     const closeCreateComponent = () => setCloseCreate(true);
     const openCreateComponent = () => setCloseCreate(false);
 
