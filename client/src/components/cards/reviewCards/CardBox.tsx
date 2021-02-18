@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {API_PEXELS, CardData, Proficiency} from "../../../utils/types";
 import {Stack, Image, Flex, Heading, Text, Button, useStyleConfig} from "@chakra-ui/react";
 import ReactCardFlip from "react-card-flip";
@@ -48,8 +48,8 @@ export const CardBox: React.FC<CardBoxProps> = ({card, setCardId}) => {
         }
     }
 
-    useEffect(() => {
-        loadImage();
+    useMemo(async () => {
+        await loadImage();
         setCardId(card.cardId);
         if(card.proficiency) {
             card.proficiency === 'fail' ? setProfStatus([

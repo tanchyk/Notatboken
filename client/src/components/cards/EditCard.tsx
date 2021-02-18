@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {
     match
 } from 'react-router-dom';
@@ -41,7 +41,7 @@ export const EditCard: React.FC<CardChangeProps>= ({match}) => {
     const [photo, setPhoto] = useState<any>(null);
     const [context, setContext] = useState<ContextApi | null>(null);
 
-    const loadDataApi = async () => {
+    const loadDataApi = useCallback(async () => {
         if(card?.foreignContext) {
             setContext({
                 from: card.foreignContext,
@@ -60,7 +60,7 @@ export const EditCard: React.FC<CardChangeProps>= ({match}) => {
 
             setPhoto(imageFromFetch);
         }
-    }
+    }, [card])
 
     useEffect(() => {
         if(cardStatus === 'idle') {

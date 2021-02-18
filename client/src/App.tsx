@@ -19,12 +19,14 @@ import {createContext} from 'react';
 
 export const CloseContextHome = createContext<any>([]);
 export const CloseContextFolders = createContext<any>([]);
+export const LanguageContext = createContext<any>([]);
 
 export const history = createBrowserHistory();
 
 const App: React.FC<{}> = () => {
     const [closeCreateHome, setCloseCreateHome] = useState<boolean>(false);
     const [closeCreateFolders, setCloseCreateFolders] = useState<boolean>(false);
+    const [language, setLanguage] = useState<string | null>(null);
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -75,9 +77,11 @@ const App: React.FC<{}> = () => {
             <ChakraProvider theme={theme}>
                 <CloseContextHome.Provider value={[closeCreateHome, setCloseCreateHome]}>
                     <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
-                    <Router history={history}>
-                        {routes}
-                    </Router>
+                        <LanguageContext.Provider value={[language, setLanguage]}>
+                            <Router history={history}>
+                                {routes}
+                            </Router>
+                        </LanguageContext.Provider>
                     </CloseContextFolders.Provider>
                 </CloseContextHome.Provider>
             </ChakraProvider>

@@ -1,8 +1,5 @@
 import React, {useEffect} from "react";
-import {
-    // Link as LinkPage,
-    match
-} from 'react-router-dom';
+import {useRouteMatch} from 'react-router-dom';
 import {Field, Form, Formik} from "formik";
 import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
 import {useDispatch, useSelector} from "react-redux";
@@ -14,13 +11,10 @@ import {DeckNameSchema} from "../decks/CreateDeck";
 import {UserInput} from "../inputs/UserInput";
 import {history} from "../../App";
 import {NoDataBox} from "../NoDataBox";
-import {SmallDeckBox} from "./SmallDeckBox";
+import {SmallDeckBox} from "./boxes/SmallDeckBox";
 
-export interface EditFolderProps {
-    match: match<{folderId: string, languageId: string}>;
-}
-
-export const EditFolder: React.FC<EditFolderProps> = ({match}) => {
+export const EditFolder: React.FC = () => {
+    const match = useRouteMatch<{folderId: string, languageId: string}>();
     const folderId = Number.parseInt(match.params.folderId);
     const languageId = Number.parseInt(match.params.languageId);
 

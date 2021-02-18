@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {CsrfSliceType, DeckSliceType, ErrorDelete} from "../utils/types";
+import {DeckSliceType, ErrorDelete} from "../utils/types";
 import {Deck} from "../../../server/entities/Deck";
+import {serverRequest} from "./requestFunction";
 
 const initialState = {
     decks: [],
@@ -28,15 +29,7 @@ export const fetchDecks = createAsyncThunk<Array<Deck>, {languageId: number}>(
 export const addDeck = createAsyncThunk<Deck, {deckName: string, languageId: number}>(
     'decks/addDeck',
     async (deckData, {getState}) => {
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/decks/create-deck', {
-            method: 'POST',
-            body: JSON.stringify(deckData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        });
+        const response = await serverRequest(deckData, getState, '/api/decks/create-deck', 'POST');
         return (await response.json()) as Deck;
     }
 );
@@ -44,15 +37,7 @@ export const addDeck = createAsyncThunk<Deck, {deckName: string, languageId: num
 export const editDeck = createAsyncThunk<Deck, {deckName: string, deckId: number, languageId: number}>(
     'decks/editDeck',
         async (deckData, {getState}) => {
-            const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-            const response = await fetch('/api/decks/edit-deck', {
-                method: 'PUT',
-                body: JSON.stringify(deckData),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': `${csrfToken.csrfToken}`
-                }
-            })
+            const response = await serverRequest(deckData, getState, '/api/decks/edit-deck', 'PUT');
             return (await response.json()) as Deck;
         }
 )
@@ -60,15 +45,9 @@ export const editDeck = createAsyncThunk<Deck, {deckName: string, deckId: number
 export const deleteDeck = createAsyncThunk<ErrorDelete, {deckId: number}>(
     'decks/deleteDeck',
     async (deckData, {getState}) => {
-    const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/decks/delete-deck', {
-            method: 'DELETE',
-            body: JSON.stringify(deckData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        }).then(response => {
+        await serverRequest(deckData, getState, '/api/decks/delete-deck', 'DELETE')
+        const response = await serverRequest(deckData, getState, '/api/decks/delete-deck', 'DELETE')
+            .then(response => {
             if(response.status === 204) {
                 return {
                     message: 'Deleted',
@@ -123,7 +102,7 @@ const deckSlice = createSlice({
             } else {
                 return Object.assign({}, state, {
                     decks: state.decks.concat(payload.sort(
-                        (deckA, deckB) => new Date(deckA.createdAt).getTime() - new Date(deckB.createdAt).getTime()
+                        (deckA, deckB) => deckA.deckName.localeCompare(deckB.deckName)
                     )),
                     status: 'succeeded'
                 });
@@ -144,7 +123,9 @@ const deckSlice = createSlice({
                 });
             } else {
                 return Object.assign({}, state, {
-                    decks: state.decks.concat(payload),
+                    decks: state.decks.concat(payload).sort(
+                        (deckA, deckB) => deckA.deckName!.localeCompare(deckB.deckName!)
+                    ),
                     status: 'succeeded',
                     error: {
                         type: 'createDeck',

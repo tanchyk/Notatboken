@@ -17,14 +17,14 @@ import {decksStatus, singleDeck} from "../../store/deckSlice";
 import {history} from "../../App";
 import {NoDataBox} from "../NoDataBox";
 import {SimpleGrid, Box, Stack, Flex, Button, Icon, Heading, useStyleConfig} from "@chakra-ui/react";
-import {FolderBox} from "../folders/FolderBox";
+import {FolderBox} from "../folders/boxes/FolderBox";
 import {FiFolderPlus} from "react-icons/all";
 
 interface AddDeckToFolderProps {
     match: match<{deckId: string}>;
 }
 
-export const  AddDeckToFolder: React.FC< AddDeckToFolderProps> = ({match}) => {
+export const  ChooseFolder: React.FC< AddDeckToFolderProps> = ({match}) => {
     const styleStack = useStyleConfig("Stack");
     const deckId = Number.parseInt(match.params.deckId);
 
@@ -83,7 +83,7 @@ export const  AddDeckToFolder: React.FC< AddDeckToFolderProps> = ({match}) => {
                                             _hover={{cursor: "pointer"}}
                                             key={index}
                                         >
-                                            <FolderBox folder={folder}/>
+                                            <FolderBox folder={folder} from="decks"/>
                                         </Box>
                                     )
                                 )

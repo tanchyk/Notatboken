@@ -1,6 +1,7 @@
-import {CsrfSliceType, ErrorDeleteFolder, FolderSliceType} from "../utils/types";
+import {ErrorDeleteFolder, FolderSliceType} from "../utils/types";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Folder} from "../../../server/entities/Folder";
+import {serverRequest} from "./requestFunction";
 
 const initialState = {
     folders: [],
@@ -28,15 +29,7 @@ export const fetchFolder = createAsyncThunk<Array<Folder>, {languageId: number}>
 export const addFolder = createAsyncThunk<Folder, {folderName: string, languageId: number}>(
     'folders/addFolder',
     async (folderData, {getState}) => {
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/folders/create-folder', {
-            method: 'POST',
-            body: JSON.stringify(folderData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        });
+        const response = await serverRequest(folderData, getState, '/api/folders/create-folder', 'POST');
         return (await response.json()) as Folder;
     }
 );
@@ -44,15 +37,7 @@ export const addFolder = createAsyncThunk<Folder, {folderName: string, languageI
 export const editFolder = createAsyncThunk<Folder, {folderId: number, folderName: string}>(
     'folders/editFolder',
     async (folderData, {getState}) => {
-        const {csrfToken} = getState() as { csrfToken: CsrfSliceType };
-        const response = await fetch('/api/folders/edit-folder', {
-            method: 'PUT',
-            body: JSON.stringify(folderData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        });
+        const response = await serverRequest(folderData, getState, '/api/folders/edit-folder', 'PUT');
         return (await response.json()) as Folder;
     }
 )
@@ -60,15 +45,7 @@ export const editFolder = createAsyncThunk<Folder, {folderId: number, folderName
 export const addDeckToFolder = createAsyncThunk<{folder: Folder}, {folderId: number, deckId: number}>(
     'folders/addDeckToFolder',
     async (folderData, {getState}) => {
-        const {csrfToken} = getState() as { csrfToken: CsrfSliceType };
-        const response = await fetch('/api/folders/add-deck-folder', {
-            method: 'PUT',
-            body: JSON.stringify(folderData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        });
+        const response = await serverRequest(folderData, getState, '/api/folders/add-deck-folder', 'PUT');
         return (await response.json()) as {folder: Folder};
     }
 );
@@ -76,15 +53,7 @@ export const addDeckToFolder = createAsyncThunk<{folder: Folder}, {folderId: num
 export const deleteDeckFromFolder = createAsyncThunk<{folder: Folder}, {folderId: number, deckId: number}>(
     'folders/deleteDeckFromFolder',
     async (folderData, {getState}) => {
-        const {csrfToken} = getState() as { csrfToken: CsrfSliceType };
-        const response = await fetch('/api/folders/delete-deck-folder', {
-            method: 'PUT',
-            body: JSON.stringify(folderData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        })
+        const response = await serverRequest(folderData, getState, '/api/folders/delete-deck-folder', 'PUT');
         return (await response.json()) as {folder: Folder};
     }
 );
@@ -92,15 +61,8 @@ export const deleteDeckFromFolder = createAsyncThunk<{folder: Folder}, {folderId
 export const deleteFolder = createAsyncThunk<ErrorDeleteFolder, {folderId: number}>(
     'folders/deleteFolder',
     async (folderData, {getState}) => {
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/folders/delete-folder', {
-            method: 'DELETE',
-            body: JSON.stringify(folderData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        }).then(response => {
+        const response = await serverRequest(folderData, getState, '/api/folders/delete-folder', 'DELETE')
+            .then(response => {
             if(response.status === 204) {
                 return {
                     message: 'Deleted',
@@ -178,7 +140,7 @@ const folderSlice = createSlice({
             } else {
                 return Object.assign({}, state, {
                     folders: state.folders.concat(payload.sort(
-                        (folderA, folderB) => new Date(folderA.createdAt).getTime() - new Date(folderB.createdAt).getTime()
+                        (folderA, folderB) => folderA.folderName.localeCompare(folderB.folderName)
                     )),
                     status: 'succeeded'
                 });
@@ -199,7 +161,9 @@ const folderSlice = createSlice({
                 });
             } else {
                 return Object.assign({}, state, {
-                    folders: state.folders.concat(payload),
+                    folders: state.folders.concat(payload).sort(
+                        (folderA, folderB) => folderA.folderName!.localeCompare(folderB.folderName!)
+                    ),
                     status: 'succeeded',
                     error: {
                         type: 'createFolder',

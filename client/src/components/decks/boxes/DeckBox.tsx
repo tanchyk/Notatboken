@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import {DeckData} from "../../../utils/types";
 import {
     Box,
@@ -14,6 +14,7 @@ import {
     Link as LinkPage
 } from 'react-router-dom';
 import {DeckMenu} from "../DeckMenu";
+import {LanguageContext} from "../../../App";
 
 interface DeckBoxProps {
     deck: DeckData;
@@ -21,11 +22,12 @@ interface DeckBoxProps {
 
 export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
     const styleStack = useStyleConfig("Stack");
+    const [language] = useContext(LanguageContext);
 
     const user = useSelector(userData);
 
     return (
-        <LinkPage to={`/decks/${deck.language!.languageName}/review/${deck.deckId}`}>
+        <LinkPage to={`/decks/${language}/review/${deck.deckId}`}>
             <Box
                 sx={styleStack}
                 h="150px"

@@ -1,7 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {
-    match
-} from 'react-router-dom';
+import {useRouteMatch} from 'react-router-dom';
 import {Box, Button, useToast} from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
 import {ContextApi, DeckSliceType} from "../../../utils/types";
@@ -13,11 +11,8 @@ import {addCard, cardsError} from "../../../store/cardSlice";
 import {decksStatus, singleDeck} from "../../../store/deckSlice";
 import {history} from "../../../App";
 
-export interface AdditionalDeckInfProps {
-    match: match<{deckId: string}>
-}
-
-export const CreateCard: React.FC<AdditionalDeckInfProps> = ({match}) => {
+export const CreateCard: React.FC = () => {
+    const match = useRouteMatch<{deckId: string}>();
     const toast = useToast();
     const deckId = Number.parseInt(match.params.deckId);
 

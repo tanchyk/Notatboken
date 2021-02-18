@@ -22,10 +22,11 @@ import {NoDataBox} from "../NoDataBox";
 import {SmallCardBox} from "./boxes/SmallCardBox";
 import {decksError, editDeck, clearDeckError, singleDeck, decksStatus, decksData} from "../../store/deckSlice";
 import {AddIcon} from "@chakra-ui/icons";
-import {Link as LinkPage} from "react-router-dom";
+import {Link as LinkPage, useRouteMatch} from "react-router-dom";
 import {history} from "../../App";
 
-export const EditDeck: React.FC<AdditionalDeckInfProps> = ({match}) => {
+export const EditDeck: React.FC = () => {
+    const match = useRouteMatch<{deckId: string}>();
     const deckId = Number.parseInt(match.params.deckId);
     const deck = useSelector((state: {decks: DeckSliceType}) => singleDeck(state, deckId));
 

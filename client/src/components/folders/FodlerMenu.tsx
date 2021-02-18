@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useContext, useRef} from "react";
 import {
     Link as LinkPage
 } from 'react-router-dom';
@@ -10,12 +10,15 @@ import {AlertForDelete} from "../AlertForDelete";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {deleteFolder} from "../../store/folderSlice";
+import {LanguageContext} from "../../App";
 
 interface FolderMenuProps {
     folder: FolderData;
 }
 
 export const FolderMenu: React.FC<FolderMenuProps> = ({folder}) => {
+    const [language] = useContext(LanguageContext);
+
     //Functions for confirmation page
     const [isOpen, setIsOpen] = React.useState(false);
     const onClose = () => setIsOpen(false);
@@ -42,7 +45,7 @@ export const FolderMenu: React.FC<FolderMenuProps> = ({folder}) => {
                     icon={<FaEllipsisV/>}
                 />
                 <MenuList>
-                    <LinkPage to={`/decks/${folder.language?.languageName}/${folder.language?.languageId}/edit-folder/${folder.folderId}`}>
+                    <LinkPage to={`/decks/${language}/${folder.language?.languageId}/edit-folder/${folder.folderId}`}>
                         <MenuItem icon={<EditIcon/>}>Edit</MenuItem>
                     </LinkPage>
                     <MenuItem icon={<DeleteIcon/>} onClick={() => setIsOpen(true)}>Delete</MenuItem>

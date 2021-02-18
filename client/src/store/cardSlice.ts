@@ -1,12 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {
-    CardDispatch,
-    CardSliceType,
-    CsrfSliceType,
-    ErrorDeleteCard,
-    Proficiency
-} from "../utils/types";
+import {CardDispatch, CardSliceType, ErrorDeleteCard, Proficiency } from "../utils/types";
 import {Card} from "../../../server/entities/Card";
+import {serverRequest} from "./requestFunction";
 
 const initialState = {
     cards: [],
@@ -47,16 +42,7 @@ export const fetchCardsForReview = createAsyncThunk<Array<Card>, {deckId: number
 export const addCard = createAsyncThunk<{message: string}, {card: CardDispatch}>(
     'cards/addCard',
     async (cardData, {getState}) => {
-        console.log(cardData);
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/cards/create-card', {
-            method: 'POST',
-            body: JSON.stringify(cardData.card),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        })
+        const response = await serverRequest(cardData.card, getState, '/api/cards/create-card', 'POST');
         return (await response.json()) as {message: string};
     }
 )
@@ -64,15 +50,7 @@ export const addCard = createAsyncThunk<{message: string}, {card: CardDispatch}>
 export const editCard = createAsyncThunk<Card, {card: CardDispatch}>(
     'cards/editCard',
     async (cardData, {getState}) => {
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/cards/edit-card', {
-            method: 'PUT',
-            body: JSON.stringify(cardData.card),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        });
+        const response = await serverRequest(cardData.card, getState, '/api/cards/edit-card', 'PUT');
         return (await response.json()) as Card;
     }
 )
@@ -80,16 +58,7 @@ export const editCard = createAsyncThunk<Card, {card: CardDispatch}>(
 export const editCardStatus = createAsyncThunk<Card, {cardId: number, proficiency: Proficiency}>(
     'cards/editCardStatus',
     async (cardData, {getState}) => {
-        const {csrfToken} = getState() as { csrfToken: CsrfSliceType };
-        const response = await fetch('/api/cards/change-status', {
-            method: 'PUT',
-            body: JSON.stringify(cardData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        });
-        // console.log(await response.json());
+        const response = await serverRequest(cardData, getState, '/api/cards/change-status', 'PUT');
         return (await response.json()) as Card;
     }
 )
@@ -97,15 +66,8 @@ export const editCardStatus = createAsyncThunk<Card, {cardId: number, proficienc
 export const deleteCard = createAsyncThunk<ErrorDeleteCard, {cardId: number}>(
     'cards/deleteCard',
     async (cardData, {getState}) => {
-        const {csrfToken} = getState() as {csrfToken: CsrfSliceType};
-        const response = await fetch('/api/cards/delete-card', {
-            method: 'DELETE',
-            body: JSON.stringify(cardData),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken.csrfToken}`
-            }
-        }).then(response => {
+        const response = await serverRequest(cardData, getState, '/api/cards/delete-card', 'DELETE')
+            .then(response => {
             if(response.status === 204) {
                 return {
                     message: 'Deleted',

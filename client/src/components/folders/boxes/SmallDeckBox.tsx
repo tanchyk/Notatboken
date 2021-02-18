@@ -1,12 +1,12 @@
 import React, {useRef} from "react";
 import {Flex, Stack, Heading, useStyleConfig, IconButton} from "@chakra-ui/react";
-import {DeckData} from "../../utils/types";
-import {DeckMenu} from "../decks/DeckMenu";
-import {AlertForDelete} from "../AlertForDelete";
+import {DeckData} from "../../../utils/types";
+import {DeckMenu} from "../../decks/DeckMenu";
+import {AlertForDelete} from "../../AlertForDelete";
 import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../store/store";
+import {AppDispatch} from "../../../store/store";
 import {MdDelete} from "react-icons/all";
-import {deleteDeckFromFolder} from "../../store/folderSlice";
+import {deleteDeckFromFolder} from "../../../store/folderSlice";
 
 interface SmallDeckBoxProps {
     deck: DeckData;

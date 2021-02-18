@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import {
     useDisclosure,
     Box,
@@ -25,7 +25,7 @@ export const ChoosePhoto: React.FC<ChoosePhotoProps> = ({nativeWord, isDisabled,
     const [imageError, setImageError] = useState<string | null>(null);
 
     //Load and prepare images
-    const loadImages = async () => {
+    const loadImages = useCallback(async () => {
         setImageError(null);
         const imagesFromFetch = await fetch(`https://api.pexels.com/v1/search?query=${nativeWord}`, {
                 headers: {
@@ -44,7 +44,7 @@ export const ChoosePhoto: React.FC<ChoosePhotoProps> = ({nativeWord, isDisabled,
                 imagesFromFetch.photos.slice(10, 15)
             ]);
         }
-    }
+    }, [nativeWord]);
 
     //Functions for user clicks
     const openModal = async () => {

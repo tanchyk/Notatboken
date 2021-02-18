@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useMemo, useState} from "react";
 import {
     Link as LinkPage,
-    match, Redirect, Route, Switch
+    Redirect, Route, Switch, useRouteMatch
 } from 'react-router-dom';
 import {Wrapper} from "../components/wrappers/Wrapper";
 import {
@@ -14,7 +14,7 @@ import {
     Divider,
     useStyleConfig, Icon
 } from "@chakra-ui/react";
-import {history} from '../App';
+import {history, LanguageContext} from '../App';
 import {useDispatch, useSelector} from "react-redux";
 import {userData} from "../store/userSlice";
 import {NavItemProfile} from "../components/profile/NavItemProfile";
@@ -28,27 +28,34 @@ import {EditDeck} from "../components/decks/EditDeck";
 import {CardsReview} from "../components/cards/reviewCards/CardsReview";
 import {EditCard} from "../components/cards/EditCard";
 import {Folders} from "../components/folders/Folders";
-import {AddDeckToFolder} from "../components/decks/AddDeckToFolder";
+import {ChooseFolder} from "../components/decks/ChooseFolder";
 import {EditFolder} from "../components/folders/EditFolder";
 import {flags} from "../utils/theme";
 import {DecksReview} from "../components/folders/DecksReview";
 
-interface DecksProps {
-    match: match<{language: string}>
-}
-
-const DecksPage: React.FC<DecksProps> = ({match}) => {
+const DecksPage: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
+    const match = useRouteMatch<{language: string}>();
     const [clicked, setClicked] = useState<'decks-home' | 'progress' | 'folders'>('decks-home');
-    const handleClick = (event: React.MouseEvent<HTMLParagraphElement>) => setClicked(event.currentTarget.id as 'decks-home' | 'progress' | 'folders');
 
+    const [_, setLanguage] = useContext(LanguageContext);
+    setLanguage(match.params.language);
     const language = match.params.language.charAt(0).toUpperCase() + match.params.language.slice(1);
     const [languageId, setLanguageId] = useState<number | null>(null);
-    const user = useSelector(userData);
 
     const dispatch = useDispatch<AppDispatch>();
-
+    const user = useSelector(userData);
     const deckStatus = useSelector(decksStatus);
+
+    useMemo(() => {
+        if(window.location.pathname.includes('folders')) {
+            setClicked('folders')
+        } else if(window.location.pathname.includes('progress')) {
+            setClicked('progress')
+        } else {
+            setClicked('decks-home')
+        }
+    }, [window.location.pathname])
 
     useEffect(() => {
         dispatch(clearDecks());
@@ -56,7 +63,7 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
         user.languages?.forEach(languageUser => {
             if (languageUser.languageName === language) {
                 check = true;
-                console.log('Loaded language', languageUser.languageId)
+                console.log('Loaded language', _)
                 setLanguageId(languageUser.languageId);
             }
         });
@@ -104,7 +111,6 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                     <LinkPage to={`${match.url}/home`}>
                                         <NavItemProfile
                                             id="decks-home"
-                                            handleClick={handleClick}
                                             clicked={clicked}
                                             icon={RiHome4Line}
                                         >
@@ -114,7 +120,6 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                     <LinkPage to={`${match.url}/progress`}>
                                         <NavItemProfile
                                             id="progress"
-                                            handleClick={handleClick}
                                             clicked={clicked}
                                             icon={GiProgression}
                                         >
@@ -124,7 +129,6 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                     <LinkPage to={`${match.url}/folders`}>
                                         <NavItemProfile
                                             id="folders"
-                                            handleClick={handleClick}
                                             clicked={clicked}
                                             icon={FaRegFolderOpen}
                                         >
@@ -155,13 +159,12 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                             path={`${match.url}/home`}
                                             render={() => <DecksHome language={language as Languages} languageId={languageId}/>}
                                         />
-                                        {/*<Route path={`${match.url}/progress`} component={ChangePassword}/>*/}
                                         <Route
                                             path={`${match.url}/folders`}
                                             render={() => <Folders language={language as Languages} languageId={languageId} />}
                                         />
                                         <Route path={`${match.url}/:languageId/edit-folder/:folderId`} component={EditFolder}/>
-                                        <Route path={`${match.url}/add-to-folder/:deckId`} component={AddDeckToFolder} />
+                                        <Route path={`${match.url}/add-to-folder/:deckId`} component={ChooseFolder} />
                                         <Route path={`${match.url}/add-card/:deckId`} component={CreateCard}/>
                                         <Route path={`${match.url}/edit-deck/:deckId`} component={EditDeck}/>
                                         <Route path={`${match.url}/edit-card/:deckId/:cardId`} component={EditCard} />
@@ -169,7 +172,6 @@ const DecksPage: React.FC<DecksProps> = ({match}) => {
                                         <Route path={`${match.url}/:languageId/folders/review/:folderId`} component={DecksReview}/>
                                         <Redirect to={`${match.url}/home`}/>
                                     </Switch>
-                                    {/*<DecksHome language={language as Languages} languageId={languageId}/>*/}
                                 </Box>
                             </>
                         ) : null

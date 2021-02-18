@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Flex, Stack, Box, useStyleConfig} from "@chakra-ui/react";
 import {Wrapper} from "../components/wrappers/Wrapper";
 import {DeleteAccount} from "../components/profile/DeleteAccount";
@@ -12,7 +12,16 @@ export const ProfilePage: React.FC<{}> = ({}) => {
     const match = useRouteMatch();
 
     const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete'>('basic');
-    const handleClick = (event: React.MouseEvent<HTMLParagraphElement>) => setClicked(event.currentTarget.id as 'basic' | 'change-p' | 'delete');
+
+    useMemo(() => {
+        if(window.location.pathname.includes('change-password')) {
+            setClicked('change-p')
+        } else if(window.location.pathname.includes('delete-account')) {
+            setClicked('delete')
+        } else {
+            setClicked('basic')
+        }
+    }, [window.location.pathname])
 
     return (
         <Flex justifyContent="center">
@@ -29,7 +38,6 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                     <LinkPage to={`${match.url}/basic-information`}>
                         <NavItemProfile
                             id="basic"
-                            handleClick={handleClick}
                             clicked={clicked}
                         >
                             Basic Information
@@ -38,7 +46,6 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                     <LinkPage to={`${match.url}/change-password`}>
                         <NavItemProfile
                             id="change-p"
-                            handleClick={handleClick}
                             clicked={clicked}
                         >
                             Change Password
@@ -47,7 +54,6 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                     <LinkPage to={`${match.url}/delete-account`}>
                         <NavItemProfile
                             id="delete"
-                            handleClick={handleClick}
                             clicked={clicked}
                         >
                             Delete Account

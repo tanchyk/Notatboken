@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useContext, useRef} from "react";
 import {IconButton, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import {FaEllipsisV} from "react-icons/all";
 import {AddIcon, AttachmentIcon, DeleteIcon, EditIcon} from "@chakra-ui/icons";
@@ -8,12 +8,15 @@ import {AlertForDelete} from "../AlertForDelete";
 import {deleteDeck} from "../../store/deckSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../store/store";
+import {LanguageContext} from "../../App";
 
 interface DeckMenuProps {
     deck: DeckData;
 }
 
 export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
+    const [language] = useContext(LanguageContext);
+
     //Functions for confirmation page
     const [isOpen, setIsOpen] = React.useState(false);
     const onClose = () => setIsOpen(false);
@@ -40,13 +43,13 @@ export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
                     icon={<FaEllipsisV/>}
                 />
                 <MenuList>
-                    <LinkPage to={`/decks/${deck.language?.languageName}/add-to-folder/${deck.deckId}`}>
+                    <LinkPage to={`/decks/${language}/add-to-folder/${deck.deckId}`}>
                         <MenuItem icon={<AttachmentIcon/>}>Save to folder</MenuItem>
                     </LinkPage>
-                    <LinkPage to={`/decks/${deck.language?.languageName}/add-card/${deck.deckId}`}>
+                    <LinkPage to={`/decks/${language}/add-card/${deck.deckId}`}>
                         <MenuItem icon={<AddIcon/>}>Add cards</MenuItem>
                     </LinkPage>
-                    <LinkPage to={`/decks/${deck.language?.languageName}/edit-deck/${deck.deckId}`}>
+                    <LinkPage to={`/decks/${language}/edit-deck/${deck.deckId}`}>
                         <MenuItem icon={<EditIcon/>}>Edit</MenuItem>
                     </LinkPage>
                     <MenuItem icon={<DeleteIcon/>} onClick={() => setIsOpen(true)}>Delete</MenuItem>

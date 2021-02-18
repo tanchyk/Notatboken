@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import {AdditionalDataBox} from "../boxes/AdditionalDataBox";
 import {BiMessageAdd} from "react-icons/all";
 import {
@@ -33,7 +33,7 @@ export const ChooseContext: React.FC<ChooseContextProps> = ({foreignWord, langua
     const [contextError, setContextError] = useState<string | null>(null);
     const csrfToken = useSelector(csrfData);
 
-    const fetchContext = async () => {
+    const fetchContext = useCallback(async () => {
         const response = await fetch(`/api/cards/search-context`, {
             method: 'POST',
             body: JSON.stringify({
@@ -52,7 +52,7 @@ export const ChooseContext: React.FC<ChooseContextProps> = ({foreignWord, langua
         }
 
         setContexts(response);
-    }
+    }, [foreignWord, languageName])
 
     //Functions for user clicks
     const openModal = async () => {

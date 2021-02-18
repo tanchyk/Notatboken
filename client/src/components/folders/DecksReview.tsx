@@ -5,12 +5,13 @@ import {AppDispatch} from "../../store/store";
 import {FolderSliceType} from "../../utils/types";
 import {fetchFolder, foldersStatus, singleFolder} from "../../store/folderSlice";
 import {history} from "../../App";
-import {EditFolderProps} from "./EditFolder";
 import {DeckBox} from "../decks/boxes/DeckBox";
 import {SimpleGrid} from "@chakra-ui/react";
 import {NoDataBox} from "../NoDataBox";
+import {useRouteMatch} from "react-router-dom";
 
-export const DecksReview: React.FC<EditFolderProps> = ({match}) => {
+export const DecksReview: React.FC = () => {
+    const match = useRouteMatch<{folderId: string, languageId: string}>();
     const folderId = Number.parseInt(match.params.folderId);
     const languageId = Number.parseInt(match.params.languageId);
 
