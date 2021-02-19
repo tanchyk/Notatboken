@@ -81,7 +81,7 @@ export const DeleteAccount: React.FC<{}> = () => {
                         <Button
                             width="130px"
                             onClick={() => setIsOpen(true)}
-                            variantсolor='teal'
+                            size="lg"
                             _hover={{bg: "red.100"}}
                         >
                             Delete Account

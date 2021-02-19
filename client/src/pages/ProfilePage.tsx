@@ -6,18 +6,21 @@ import {Link as LinkPage, Redirect, Route, Switch, useRouteMatch} from "react-ro
 import {BasicInformation} from "../components/profile/BasicInformation";
 import {ChangePassword} from "../components/profile/ChangePassword";
 import {NavItemProfile} from "../components/profile/NavItemProfile";
+import {UserGoal} from "../components/profile/UserGoal";
 
 export const ProfilePage: React.FC<{}> = ({}) => {
     const styleStack = useStyleConfig("Stack");
     const match = useRouteMatch();
 
-    const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete'>('basic');
+    const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete' | 'goal'>('basic');
 
     useMemo(() => {
         if(window.location.pathname.includes('change-password')) {
             setClicked('change-p')
         } else if(window.location.pathname.includes('delete-account')) {
             setClicked('delete')
+        } else if(window.location.pathname.includes('goal')) {
+            setClicked('goal')
         } else {
             setClicked('basic')
         }
@@ -33,7 +36,7 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                     paddingBottom={8}
                     marginTop={["0px", "0px", "30px", "30px"]}
                     spacing={8}
-                    maxH="188.4px"
+                    maxH="241.2px"
                 >
                     <LinkPage to={`${match.url}/basic-information`}>
                         <NavItemProfile
@@ -41,6 +44,14 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                             clicked={clicked}
                         >
                             Basic Information
+                        </NavItemProfile>
+                    </LinkPage>
+                    <LinkPage to={`${match.url}/goal`}>
+                        <NavItemProfile
+                            id="goal"
+                            clicked={clicked}
+                        >
+                            Set User Goal
                         </NavItemProfile>
                     </LinkPage>
                     <LinkPage to={`${match.url}/change-password`}>
@@ -63,6 +74,7 @@ export const ProfilePage: React.FC<{}> = ({}) => {
                 <Box w={["100%", "90%", "55%", "66%"]}>
                     <Switch>
                         <Route path={`${match.url}/basic-information`} component={BasicInformation}/>
+                        <Route path={`${match.url}/goal`} component={UserGoal}/>
                         <Route path={`${match.url}/change-password`} component={ChangePassword}/>
                         <Route path={`${match.url}/delete-account`} component={DeleteAccount}/>
                         <Redirect to={`${match.url}/basic-information`}/>

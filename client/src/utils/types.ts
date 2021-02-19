@@ -48,6 +48,7 @@ export interface UserAuth {
     username: string | null;
     email: string | null;
     languages: Array<Language> | null;
+    userGoal: number | null;
 }
 
 export interface BasicUser {
@@ -160,7 +161,8 @@ export interface ErrorFromServer extends Object {
         'login' | 'register' | 'update' | 'deleteUser'
         | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks'
         | 'loadCards' | 'createCard' | 'failedCreateCard' | 'editCard'
-        | 'loadFolders' | 'createFolder' | 'failedCreateFolder' | 'editFolder' | 'deleteFolder' | 'failedAddDeckToFolder' | null,
+        | 'loadFolders' | 'createFolder' | 'failedCreateFolder' | 'editFolder' | 'deleteFolder' | 'failedAddDeckToFolder'
+        | 'goal' | 'failGoal' | null,
     message: string | SerializedError | null
 }
 

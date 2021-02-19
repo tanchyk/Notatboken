@@ -30,6 +30,9 @@ export class User extends BaseEntity {
     @Column({unique: true, length: 320})
     email!: string;
 
+    @Column({default: 5})
+    userGoal: number;
+
     @Column()
     @CreateDateColumn()
     createdAt: Date;

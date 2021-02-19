@@ -19,6 +19,7 @@ import {
 import {ProgressDataBox} from "./boxes/ProgressDataBox";
 import {foldersData} from "../../store/folderSlice";
 import {ProgressFolderBox} from "./boxes/ProgressFolderBox";
+import {NoDataBox} from "../NoDataBox";
 
 export const Progress: React.FC<DecksHomeProps> = () => {
     const styleStack = useStyleConfig("Stack");
@@ -52,11 +53,15 @@ export const Progress: React.FC<DecksHomeProps> = () => {
                             </Stack>
                         </TabPanel>
                         <TabPanel sx={styleProgress}>
-                            <SimpleGrid columns={2} spacing={4}>
-                                {
-                                    folders.map((folder, index) => <ProgressFolderBox folder={folder} key={index} />)
-                                }
-                            </SimpleGrid>
+                            {
+                                folders.length === 0 ? <NoDataBox type="folders" /> : (
+                                    <SimpleGrid columns={2} spacing={4}>
+                                        {
+                                            folders.map((folder, index) => <ProgressFolderBox folder={folder} key={index} />)
+                                        }
+                                    </SimpleGrid>
+                                )
+                            }
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

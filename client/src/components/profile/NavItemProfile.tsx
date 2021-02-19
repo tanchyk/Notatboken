@@ -3,8 +3,8 @@ import {Text, Flex, Icon} from "@chakra-ui/react";
 import {IconType} from "react-icons";
 
 interface NavItemProps {
-    id: 'basic' | 'change-p' | 'delete';
-    clicked: 'basic' | 'change-p' | 'delete';
+    id: 'basic' | 'change-p' | 'delete' | 'goal';
+    clicked: 'basic' | 'change-p' | 'delete' | 'goal';
     icon?: IconType | null;
 }
 

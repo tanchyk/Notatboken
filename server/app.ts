@@ -18,6 +18,7 @@ import decksRouter from "./routes/decksRouter";
 import cardsRouter from "./routes/cardRoutes";
 import {Folder} from "./entities/Folder";
 import foldersRouter from "./routes/folderRoutes";
+import statisticsRouter from "./routes/statisticsRoutes";
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -68,6 +69,7 @@ createConnection({
     app.use('/decks', decksRouter);
     app.use('/cards', cardsRouter);
     app.use('/folders', foldersRouter);
+    app.use('/statistics', statisticsRouter);
 
     const PORT = 5000;
 

@@ -63,18 +63,15 @@ class DecksController {
 
         await deckRepository.save(deck);
 
-        const deckSend: Deck = await deckRepository.findOneOrFail({
-            relations: ["language", "user"], where: {
-                deckName,
-                user: {
-                    id: userId
-                },
-                language: {
-                    languageId
-                }
-            }
-        });
-
+        const deckSend: Deck = await deckRepository.createQueryBuilder("deck")
+            .leftJoinAndSelect("deck.user", "user")
+            .leftJoinAndSelect("deck.language", "language")
+            .leftJoinAndSelect("deck.folder", "folder")
+            .loadRelationCountAndMap("deck.amountOfCards", "deck.cards" )
+            .where("user.id = :id", { id: userId })
+            .where("language.languageId = :languageId", {languageId})
+            .where("deck.deckName = :deckName", {deckName})
+            .getOneOrFail();
 
         return res.status(200).send(deckSend);
     }

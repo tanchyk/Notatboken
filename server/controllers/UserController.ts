@@ -19,7 +19,8 @@ class UserController {
                     name: user.name,
                     username: user.username,
                     email: user.email,
-                    languages: user.userLanguages
+                    languages: user.userLanguages,
+                    userGoal: user.userGoal
                 });
             } else {
                 throw new Error('User not found')
@@ -32,7 +33,7 @@ class UserController {
     static editUser = async (req: Request, res: Response) => {
         const userId = res.locals.userId;
 
-        const { name, username, email } = req.body;
+        const { name, username, email} = req.body;
 
         //Try to find user on database
         const userRepository = getRepository(User);
@@ -75,6 +76,26 @@ class UserController {
             username: user.username,
             email: user.email
         });
+    }
+
+    static editGoal = async (req: Request, res: Response) => {
+        const userId = res.locals.userId;
+
+        const {userGoal} = req.body;
+
+        //Try to find user on database
+        const userRepository = getRepository(User);
+        let user: User;
+        try {
+            user = await userRepository.findOneOrFail({where: {id: userId}});
+        } catch (err) {
+            return res.status(404).send({message: "User not found"});
+        }
+
+        user.userGoal = userGoal;
+        await userRepository.save(user);
+
+        return res.status(204).send();
     }
 
     static changeUserPassword = async (req: Request, res: Response, next: NextFunction) => {

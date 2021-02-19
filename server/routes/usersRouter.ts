@@ -27,6 +27,7 @@ usersRouter.put(
     testEmail,
     testUsername,
     UserController.editUser);
+usersRouter.put('/update-goal', authenticationJwt, getUserId, UserController.editGoal);
 usersRouter.post('/change-password', authenticationJwt, getUserId, UserController.changeUserPassword);
 usersRouter.delete('/delete-user', authenticationJwt, getUserId, UserController.deleteUser);
 

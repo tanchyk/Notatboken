@@ -3,7 +3,9 @@ import {
     Text,
     Box,
     Button,
-    useToast, Heading, Flex
+    useToast,
+    Heading,
+    Flex
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../../utils/types";
@@ -44,7 +46,7 @@ export const BasicInformation: React.FC<{}> = () => {
         } else if (status === 'succeeded' && error.message === 'updated') {
             toast({
                 position: 'bottom',
-                title: "Account updated.",
+                title: "Account is updated.",
                 description: "We've updated your account for you.",
                 status: "success",
                 duration: 9000,
@@ -125,9 +127,9 @@ export const BasicInformation: React.FC<{}> = () => {
                             </Field>
                         </Box>
                         <Button
-                            width="120px"
+                            width="130px"
                             type="submit"
-                            variantсolor='teal'
+                            size="lg"
                         >
                             Update Profile
                         </Button>

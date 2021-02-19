@@ -123,9 +123,9 @@ export const ChangePassword: React.FC<{}> = () => {
                             </Field>
                         </Box>
                         <Button
-                            width="130px"
+                            width="150px"
                             type="submit"
-                            variantсolor='teal'
+                            size="lg"
                         >
                             Update Password
                         </Button>

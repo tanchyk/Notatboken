@@ -8,7 +8,8 @@ const initialState = {
         name: null,
         username: null,
         email: null,
-        languages: null
+        languages: null,
+        userGoal: null
     },
     status: 'idle',
     error: {
@@ -56,6 +57,21 @@ export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
     async (updateData, {getState}) => {
         const response = await serverRequest(updateData, getState, '/api/users/update-user', 'PUT');
         return (await response.json()) as UserAuth;
+    }
+)
+
+export const updateGoal = createAsyncThunk<{message: string, userGoal: number}, {userGoal: number}>(
+    'user/updateGoal',
+    async (updateData, {getState}) => {
+        const response = await serverRequest(updateData, getState, '/api/users/update-goal', 'PUT')
+            .then(response => {
+            if(response.status === 204) {
+                return {message: 'Updated', userGoal: updateData.userGoal};
+            } else {
+                return response.json()
+            }
+        });
+        return response as {message: string, userGoal: number};
     }
 )
 
@@ -172,6 +188,29 @@ const userSlice = createSlice({
             }
         })
         builder.addCase(updateUser.rejected, fetchUserRejected)
+
+        //Update goal
+        builder.addCase(updateGoal.pending, fetchUserPending)
+        builder.addCase(updateGoal.fulfilled, (state: UserSliceType, { payload} : {payload: {message: string, userGoal: number}}) => {
+            if(payload.message === 'Updated') {
+                return Object.assign({}, state, {
+                    user: {
+                      ...state.user,
+                        userGoal: payload.userGoal
+                    },
+                    error: {type: 'goal'}
+                });
+            } else {
+                return Object.assign({}, state, {
+                    status: 'failed',
+                    error: {
+                        message: payload['message'],
+                        type: 'failGoal'
+                    }
+                });
+            }
+        })
+        builder.addCase(updateGoal.rejected, fetchUserRejected)
 
         //Delete
         builder.addCase(deleteUser.pending, fetchUserPending)
