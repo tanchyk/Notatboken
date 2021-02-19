@@ -3,6 +3,7 @@ import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
 import {Card} from "../../../server/entities/Card";
 import {Language} from "../../../server/entities/Language";
 import {Deck} from "../../../server/entities/Deck";
+import {Folder} from "../../../server/entities/Folder";
 
 //Slice Types
 
@@ -81,6 +82,8 @@ export interface DeckData {
     updatedAt: Date | null;
     language: Language | null;
     cards: Card[] | null;
+    folder: Folder | null;
+    amountOfCards: number | null;
 }
 
 export interface ErrorDelete extends Object {

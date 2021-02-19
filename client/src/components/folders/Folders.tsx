@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext} from "react";
 import {
     Link as LinkPage,
 } from 'react-router-dom';
@@ -7,39 +7,18 @@ import {CreateFolder} from "./CreateFolder";
 import {DecksHomeProps} from "../decks/DecksHome";
 import {CloseContextFolders, LanguageContext} from "../../App";
 import {AddIcon} from "@chakra-ui/icons";
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch} from "../../store/store";
-import {fetchFolder, foldersData, foldersStatus, clearFolders} from "../../store/folderSlice";
+import {useSelector} from "react-redux";
+import {foldersData} from "../../store/folderSlice";
 import {NoDataBox} from "../NoDataBox";
 import {FolderBox} from "./boxes/FolderBox";
-import {Languages} from "../../utils/types";
 
-export interface FoldersProps extends DecksHomeProps {
-    language: Languages;
-    languageId: number;
-}
-
-export const Folders: React.FC<FoldersProps> = ({language, languageId}) => {
+export const Folders: React.FC<DecksHomeProps> = ({language, languageId}) => {
     const [languageLowercase] = useContext(LanguageContext);
     const [closeCreate, setCloseCreate] = useContext(CloseContextFolders);
     const closeCreateComponent = () => setCloseCreate(true);
     const openCreateComponent = () => setCloseCreate(false);
 
-    const dispatch = useDispatch<AppDispatch>();
     const folderData = useSelector(foldersData);
-    const folderStatus = useSelector(foldersStatus);
-
-    useEffect(() => {
-        if(folderData[0]?.language?.languageId !== languageId) {
-            dispatch(clearFolders());
-        }
-    }, [])
-
-    useEffect(() => {
-        if(folderStatus === 'idle') {
-            dispatch(fetchFolder({languageId}))
-        }
-    }, [folderStatus])
 
     return (
         <Stack
@@ -64,8 +43,8 @@ export const Folders: React.FC<FoldersProps> = ({language, languageId}) => {
                         <SimpleGrid columns={3} spacing={4} marginTop={4} marginBottom={4}>
                             {
                                 folderData.map((folder, index) => (
-                                    <LinkPage to={`/decks/${languageLowercase}/${folder.language?.languageId}/folders/review/${folder.folderId}`}>
-                                        <FolderBox folder={folder} from="folders" key={index}/>
+                                    <LinkPage to={`/decks/${languageLowercase}/${languageId}/folders/review/${folder.folderId}`} key={index}>
+                                        <FolderBox folder={folder} from="folders"/>
                                     </LinkPage>
                                     )
                                 )

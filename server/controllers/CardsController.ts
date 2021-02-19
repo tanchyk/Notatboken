@@ -34,7 +34,6 @@ class CardsController {
                 cards = await cardRepository.createQueryBuilder("card")
                     .leftJoinAndSelect("card.deck", "deck")
                     .where("deck.deckId = :deckId", {deckId})
-                    // .where("card.reviewDate is null")
                     .andWhere(new Brackets(qb => {
                         qb.where("card.reviewDate is null")
                             .orWhere(`card.reviewDate < :reviewDate`, {reviewDate: new Date()})

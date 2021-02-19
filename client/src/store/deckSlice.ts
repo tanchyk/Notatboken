@@ -1,6 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {DeckSliceType, ErrorDelete} from "../utils/types";
-import {Deck} from "../../../server/entities/Deck";
+import {DeckData, DeckSliceType, ErrorDelete} from "../utils/types";
 import {serverRequest} from "./requestFunction";
 
 const initialState = {
@@ -13,7 +12,7 @@ const initialState = {
 } as DeckSliceType;
 
 //Async reducers
-export const fetchDecks = createAsyncThunk<Array<Deck>, {languageId: number}>(
+export const fetchDecks = createAsyncThunk<Array<DeckData>, {languageId: number}>(
     'decks/fetchDecks',
     async (deckData) => {
         const response = await fetch(`/api/decks/find-decks/${deckData.languageId}`, {
@@ -22,23 +21,23 @@ export const fetchDecks = createAsyncThunk<Array<Deck>, {languageId: number}>(
                 'Content-Type': 'application/json'
             }
         });
-        return (await response.json()) as Array<Deck>;
+        return (await response.json()) as Array<DeckData>;
     }
 );
 
-export const addDeck = createAsyncThunk<Deck, {deckName: string, languageId: number}>(
+export const addDeck = createAsyncThunk<DeckData, {deckName: string, languageId: number}>(
     'decks/addDeck',
     async (deckData, {getState}) => {
         const response = await serverRequest(deckData, getState, '/api/decks/create-deck', 'POST');
-        return (await response.json()) as Deck;
+        return (await response.json()) as DeckData;
     }
 );
 
-export const editDeck = createAsyncThunk<Deck, {deckName: string, deckId: number, languageId: number}>(
+export const editDeck = createAsyncThunk<DeckData, {deckName: string, deckId: number, languageId: number}>(
     'decks/editDeck',
         async (deckData, {getState}) => {
             const response = await serverRequest(deckData, getState, '/api/decks/edit-deck', 'PUT');
-            return (await response.json()) as Deck;
+            return (await response.json()) as DeckData;
         }
 )
 
@@ -90,7 +89,7 @@ const deckSlice = createSlice({
     extraReducers: builder => {
         //Fetch
         builder.addCase(fetchDecks.pending, fetchDeckPending)
-        builder.addCase(fetchDecks.fulfilled, (state: DeckSliceType, { payload }: { payload: Array<Deck> }) => {
+        builder.addCase(fetchDecks.fulfilled, (state: DeckSliceType, { payload }: { payload: Array<DeckData> }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -102,7 +101,7 @@ const deckSlice = createSlice({
             } else {
                 return Object.assign({}, state, {
                     decks: state.decks.concat(payload.sort(
-                        (deckA, deckB) => deckA.deckName.localeCompare(deckB.deckName)
+                        (deckA, deckB) => deckA.deckName!.localeCompare(deckB.deckName!)
                     )),
                     status: 'succeeded'
                 });
@@ -138,7 +137,7 @@ const deckSlice = createSlice({
 
         //Update
         builder.addCase(editDeck.pending, fetchDeckPending)
-        builder.addCase(editDeck.fulfilled, (state: DeckSliceType, { payload }: { payload: Deck | {message: string} }) => {
+        builder.addCase(editDeck.fulfilled, (state: DeckSliceType, { payload }: { payload: DeckData | {message: string} }) => {
             if("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',

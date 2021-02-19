@@ -32,6 +32,8 @@ import {ChooseFolder} from "../components/decks/ChooseFolder";
 import {EditFolder} from "../components/folders/EditFolder";
 import {flags} from "../utils/theme";
 import {DecksReview} from "../components/folders/DecksReview";
+import {Progress} from "../components/progress/Progress";
+import {clearFolders, fetchFolder, foldersStatus} from "../store/folderSlice";
 
 const DecksPage: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -46,6 +48,7 @@ const DecksPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector(userData);
     const deckStatus = useSelector(decksStatus);
+    const folderStatus = useSelector(foldersStatus);
 
     useMemo(() => {
         if(window.location.pathname.includes('folders')) {
@@ -59,6 +62,7 @@ const DecksPage: React.FC = () => {
 
     useEffect(() => {
         dispatch(clearDecks());
+        dispatch(clearFolders());
         let check = false;
         user.languages?.forEach(languageUser => {
             if (languageUser.languageName === language) {
@@ -73,8 +77,14 @@ const DecksPage: React.FC = () => {
     }, [])
 
     useEffect(() => {
+        if(folderStatus === 'idle' && languageId !== null) {
+            dispatch(fetchFolder({languageId}))
+        }
+    }, [folderStatus, languageId])
+
+    useEffect(() => {
         if (deckStatus === 'idle' && languageId !== null) {
-            dispatch(fetchDecks({languageId: languageId}));
+            dispatch(fetchDecks({languageId}));
         }
     }, [deckStatus, languageId]);
 
@@ -163,6 +173,7 @@ const DecksPage: React.FC = () => {
                                             path={`${match.url}/folders`}
                                             render={() => <Folders language={language as Languages} languageId={languageId} />}
                                         />
+                                        <Route path={`${match.url}/progress`} component={Progress} />
                                         <Route path={`${match.url}/:languageId/edit-folder/:folderId`} component={EditFolder}/>
                                         <Route path={`${match.url}/add-to-folder/:deckId`} component={ChooseFolder} />
                                         <Route path={`${match.url}/add-card/:deckId`} component={CreateCard}/>

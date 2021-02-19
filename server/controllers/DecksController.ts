@@ -1,6 +1,7 @@
 import {Response, Request, NextFunction} from 'express';
-import {getRepository} from "typeorm";
+import {Brackets, getRepository} from "typeorm";
 import {Deck} from "../entities/Deck";
+import {Card} from "../entities/Card";
 
 class DecksController {
     static findDecks = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,12 +12,14 @@ class DecksController {
         let decks: Deck[];
         if(languageId) {
             try {
-                decks = await deckRepository.find({
-                    relations: ["language", "user"], where: {
-                        user: {id: userId},
-                        language: {languageId: languageId}
-                    }
-                });
+                decks = await deckRepository.createQueryBuilder("deck")
+                    .leftJoinAndSelect("deck.user", "user")
+                    .leftJoinAndSelect("deck.language", "language")
+                    .leftJoinAndSelect("deck.folder", "folder")
+                    .loadRelationCountAndMap("deck.amountOfCards", "deck.cards" )
+                    .where("user.id = :id", { id: userId })
+                    .where("language.languageId = :languageId", {languageId})
+                    .getMany();
             } catch (err) {
                 return res.status(404).send({message: "You have no decks"});
             }
@@ -89,7 +92,13 @@ class DecksController {
 
         //Finding deck
         try {
-            deck = await deckRepository.findOne({ relations: ["language", "user"],where: {deckId}});
+            deck = await deckRepository.createQueryBuilder("deck")
+                .leftJoinAndSelect("deck.user", "user")
+                .leftJoinAndSelect("deck.language", "language")
+                .leftJoinAndSelect("deck.folder", "folder")
+                .loadRelationCountAndMap("deck.amountOfCards", "deck.cards" )
+                .where("deck.deckId = :deckId", {deckId})
+                .getOne();
         } catch (err) {
             next(err);
         }
@@ -102,11 +111,10 @@ class DecksController {
         }
 
         const deckCheck = await deckRepository.findOne({
-            relations: ["language", "user"],
-            where: {
-                user: {id: userId},
-                language: {languageId: languageId},
-                deckName
+            relations: ["language", "user"], where: {
+                deckName,
+                language: {languageId},
+                user: {id: userId}
             }
         });
 
@@ -122,7 +130,7 @@ class DecksController {
     }
 
     static deleteDeck = async (req: Request, res: Response, next: NextFunction) => {
-        const {deckId} = req.body
+        const {deckId} = req.body;
 
         const deckRepository = getRepository(Deck);
 
@@ -132,6 +140,57 @@ class DecksController {
             next(err);
         }
         return res.status(204).send();
+    }
+
+    static progressDeck = async (req: Request, res: Response, next: NextFunction) => {
+        const deckId = Number.parseInt(req.params.deckId);
+
+        const cardRepository = getRepository(Card);
+
+        const forToday = await cardRepository
+            .createQueryBuilder("card")
+            .leftJoin("card.deck", "deck")
+            .where("deck.deckId = :deckId", {deckId})
+            .andWhere(new Brackets(qb => {
+                qb.where("card.reviewDate is null")
+                    .orWhere(`card.reviewDate < :reviewDate`, {reviewDate: new Date()})
+            }))
+            .getCount()
+
+        const notStudied = await cardRepository
+            .createQueryBuilder("card")
+            .leftJoin("card.deck", "deck")
+            .where("deck.deckId = :deckId", {deckId})
+            .andWhere(new Brackets(qb => {
+                qb.where("proficiency = :v1", {v1: 'fail'})
+                    .orWhere("proficiency = :v2", {v2: 'repeat'})
+            }))
+            .getCount();
+
+        const stillLearning = await cardRepository
+            .createQueryBuilder("card")
+            .leftJoin("card.deck", "deck")
+            .where("card.deckDeckId = :deckId", {deckId})
+            .andWhere(new Brackets(qb => {
+                qb.where("proficiency = :v1", {v1: '1d'})
+                    .orWhere("proficiency = :v2", {v2: '3d'})
+                    .orWhere("proficiency = :v3", {v3: '7d'})
+                    .orWhere("proficiency = :v4", {v4: '21d'})
+                    .orWhere("proficiency = :v5", {v5: '31d'})
+            }))
+            .getCount();
+
+        const mastered = await cardRepository
+            .createQueryBuilder("card")
+            .leftJoin("card.deck", "deck")
+            .where("deck.deckId = :deckId", {deckId})
+            .andWhere(new Brackets(qb => {
+                qb.where("proficiency = :v1", {v1: '90d'})
+                    .orWhere("proficiency = :v2", {v2: 'learned'})
+            }))
+            .getCount();
+
+        return res.status(200).send({forToday, notStudied, stillLearning, mastered});
     }
 }
 

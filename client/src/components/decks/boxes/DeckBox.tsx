@@ -9,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import {useSelector} from "react-redux";
 import {userData} from "../../../store/userSlice";
-
 import {
     Link as LinkPage
 } from 'react-router-dom';
@@ -41,6 +40,7 @@ export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
                 <Flex direction="column" justifyContent="space-between" h="100%">
                     <Box>
                         <Heading as="h1" fontSize="21px">{deck.deckName}</Heading>
+                        <Text fontSize="md" fontWeight="600" color="gray.500">{`${deck.amountOfCards} cards`}</Text>
                     </Box>
                     <Flex justifyContent="space-between">
                         <Text fontSize="16px">{user.username}</Text>

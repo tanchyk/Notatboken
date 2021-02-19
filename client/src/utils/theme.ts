@@ -10,6 +10,15 @@ const Stack = {
     })
 }
 
+const Progress = {
+    baseStyle: (props: GlobalStyleProps) => ({
+        width: "100%",
+        padding: "28px",
+        paddingLeft: "35px",
+        backgroundColor: mode("gray.50", "#374358")(props)
+    })
+}
+
 const Card = {
     baseStyle: (props: GlobalStyleProps) => ({
         ...Stack.baseStyle(props),
@@ -54,7 +63,8 @@ export const theme = extendTheme({
     components: {
         Stack,
         Card,
-        BackCard
+        BackCard,
+        Progress
     }
 })
 

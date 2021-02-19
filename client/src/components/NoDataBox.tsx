@@ -14,6 +14,7 @@ export const NoDataBox: React.FC<NoDataBoxProps> = ({type}) => {
             mt={5}
             padding={10}
             spacing={5}
+            minH={type === 'decks' ? "148px" : ''}
         >
             <Flex h="100%" alignItems="center" justifyContent="center" direction="column">
                 <Heading as="h1" size="lg">{`You have no ${type} yet`}</Heading>

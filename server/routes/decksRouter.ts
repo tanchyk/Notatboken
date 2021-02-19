@@ -12,4 +12,6 @@ decksRouter.delete('/delete-deck', authenticationJwt, DecksController.deleteDeck
 
 decksRouter.put('/edit-deck', authenticationJwt, getUserId, DecksController.editDeck);
 
+decksRouter.get('/progress/:deckId', authenticationJwt, DecksController.progressDeck);
+
 export default  decksRouter;
