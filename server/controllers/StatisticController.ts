@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {Brackets, getRepository} from "typeorm";
 import {Card} from "../entities/Card";
 import {User} from "../entities/User";
+import {DayChecked} from "../entities/DayChecked";
 
 class StatisticController {
     static getLanguageStats = async (req: Request, res: Response, next: NextFunction) => {
@@ -58,6 +59,40 @@ class StatisticController {
             .getCount();
 
         return res.status(200).send({amountOfCards, amountOfCardsLearned});
+    }
+
+    static getUserStreak = async (req: Request, res: Response, next: NextFunction) => {
+        const userId = res.locals.userId;
+
+        const dayCheckedRepository = getRepository(DayChecked);
+
+        let streak = 0;
+        let today = false;
+
+        const checkDays = await dayCheckedRepository.createQueryBuilder("day_checked")
+            .leftJoin("day_checked.user", "user")
+            .where("user.id = :id", {id: userId})
+            .getMany()
+
+        let date = new Date();
+
+        if(checkDays[checkDays.length - 1].createdAt.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
+            today = true;
+            streak++;
+            checkDays.pop();
+        }
+        date.setDate(date.getDate() - 1);
+
+        for(let i = checkDays.length - 1; i >= 0; i--) {
+            if(checkDays[i].createdAt.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
+                date.setDate(date.getDate() - 1);
+                streak++;
+            } else {
+                break;
+            }
+        }
+
+        return res.status(200).send({streak, today});
     }
 }
 

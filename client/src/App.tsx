@@ -16,6 +16,7 @@ import {theme} from "./utils/theme";
 import DecksPage from "./pages/DecksPage";
 import {ErrorPage} from "./pages/ErrorPage";
 import {createContext} from 'react';
+import {fetchStreak} from "./store/streakSlice";
 
 export const CloseContextHome = createContext<any>([]);
 export const CloseContextFolders = createContext<any>([]);
@@ -45,6 +46,12 @@ const App: React.FC<{}> = () => {
         dispatch(loadUser());
     }, [dispatch]);
 
+    useEffect(() => {
+        if(status === 'succeeded') {
+            dispatch(fetchStreak());
+        }
+    }, [status])
+
     let routes;
 
     if (!!user.userId) {
@@ -68,6 +75,7 @@ const App: React.FC<{}> = () => {
                 <Route exact path="/error" component={ErrorPage}/>
                 <Route exact path="/login" component={LoginPage}/>
                 <Route exact path="/register" component={RegisterPage}/>
+                <Redirect to="/" />
             </Switch>
         );
     }

@@ -34,6 +34,7 @@ import {flags} from "../utils/theme";
 import {DecksReview} from "../components/folders/DecksReview";
 import {Progress} from "../components/progress/Progress";
 import {clearFolders, fetchFolder, foldersStatus} from "../store/folderSlice";
+import {StreakBox} from "../components/statistics/StreakBox";
 
 const DecksPage: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -93,15 +94,17 @@ const DecksPage: React.FC = () => {
             <Flex
                 justifyContent="center"
                 backgroundColor="cyan.600"
-                paddingTop={9}
-                paddingBottom={9}
+                paddingTop={8}
+                paddingBottom={8}
             >
                 <Wrapper variant="regular">
-                    <Flex direction="row">
-                        <Heading color="white" fontSize="38px" mr={3}>{language}</Heading>
-                        <Image src={flags[language.toLowerCase() as keyof typeof flags]} w="40px" pt={2}/>
+                    <Flex alignItems="center" justifyContent="space-between" w="100%">
+                        <Flex direction="row">
+                            <Heading color="white" fontSize="38px" mr={3}>{language}</Heading>
+                            <Image src={flags[language.toLowerCase() as keyof typeof flags]} w="40px" pt={2}/>
+                        </Flex>
+                        <StreakBox />
                     </Flex>
-                    <Text color="white">here you will se stats</Text>
                 </Wrapper>
             </Flex>
             <Flex justifyContent="center">

@@ -3,11 +3,12 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne,
+    ManyToOne, OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {Deck} from "./Deck";
+import {CardChecked} from "./CardChecked";
 
 export type ProficiencyType = 'fail' | 'repeat' | '1d' | '3d' | '7d' | '21d' | '31d' | '90d' | 'learned'
 
@@ -54,4 +55,7 @@ export class Card extends BaseEntity {
 
     @ManyToOne(() => Deck, deck => deck.cards, { onDelete: 'CASCADE' })
     deck: Deck;
+
+    @OneToMany(() => CardChecked, cardsChecked => cardsChecked.card, { cascade: true})
+    cardsChecked: CardChecked[];
 }

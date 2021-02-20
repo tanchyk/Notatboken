@@ -2,9 +2,10 @@ import React, {useMemo, useState} from "react";
 import {API_PEXELS, CardData, Proficiency} from "../../../utils/types";
 import {Stack, Image, Flex, Heading, Text, Button, useStyleConfig} from "@chakra-ui/react";
 import ReactCardFlip from "react-card-flip";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../store/store";
 import {editCardStatus} from "../../../store/cardSlice";
+import {userData} from "../../../store/userSlice";
 
 interface CardBoxProps {
     card: CardData;
@@ -19,6 +20,7 @@ export const CardBox: React.FC<CardBoxProps> = ({card, setCardId}) => {
 
     //Card state
     const dispatch = useDispatch<AppDispatch>();
+    const user = useSelector(userData);
     const [isFlipped, setIsFlipped] = useState<boolean>(false);
     const [photo, setPhoto] = useState<any>(null);
     const [profStatus, setProfStatus] = useState<Array<Proficiency>>([])
@@ -31,7 +33,7 @@ export const CardBox: React.FC<CardBoxProps> = ({card, setCardId}) => {
     const sendStatus = (prof: Proficiency) => {
         setPhoto(null);
         setIsFlipped(false);
-        dispatch(editCardStatus({cardId: card.cardId!, proficiency: prof}));
+        dispatch(editCardStatus({cardId: card.cardId!, proficiency: prof, userGoal: user.userGoal!}));
     }
 
     const loadImage = async () => {

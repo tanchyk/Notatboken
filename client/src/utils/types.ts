@@ -35,9 +35,9 @@ export interface CardSliceType {
     error: ErrorFromServer;
 }
 
-export interface CardsFetch {
-    cards: Array<Card>;
-    count: number;
+export interface StreakSliceType {
+    streak: number | null;
+    today: boolean;
 }
 
 //User types

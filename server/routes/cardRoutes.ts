@@ -17,6 +17,6 @@ cardsRouter.post('/search-context', authenticationJwt, CardsController.searchCon
 
 cardsRouter.put('/edit-card', authenticationJwt, getUserId, testCard, CardsController.changeCard);
 
-cardsRouter.put('/change-status', authenticationJwt, CardsController.changeCardStatus);
+cardsRouter.put('/change-status', authenticationJwt, getUserId, CardsController.changeCardStatus);
 
 export default  cardsRouter;

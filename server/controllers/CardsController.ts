@@ -1,6 +1,8 @@
 import {Response, Request, NextFunction} from 'express';
 import {Brackets, getRepository} from "typeorm";
 import {Card} from "../entities/Card";
+import {CardChecked} from "../entities/CardChecked";
+import {DayChecked} from "../entities/DayChecked";
 
 const Reverso = require('reverso-api');
 
@@ -146,9 +148,12 @@ class CardsController {
     }
 
     static changeCardStatus = async (req: Request, res: Response, next: NextFunction) => {
-        const {cardId, proficiency} = req.body;
+        const userId = res.locals.userId;
+        const {cardId, proficiency, userGoal, today} = req.body;
 
         const cardRepository = getRepository(Card);
+        const cardCheckedRepository = getRepository(CardChecked);
+        const dayCheckedRepository = getRepository(DayChecked);
         let card: Card;
 
         //Finding card
@@ -161,9 +166,32 @@ class CardsController {
         } else if(proficiency.length === 2) {
             amountOfDays = Number.parseInt(proficiency.charAt(0));
         } else if(proficiency.length === 3) {
-            amountOfDays = Number.parseInt(proficiency.splice(0, 1));
+            amountOfDays = Number.parseInt(proficiency.substring(0,2));
         }
 
+        //Saving Statistics
+        if(amountOfDays !== 0) {
+            const cardChecked = new CardChecked();
+            cardChecked.card = cardId;
+            cardChecked.user = userId;
+            await cardCheckedRepository.save(cardChecked);
+        }
+
+        if(today === false) {
+            const checkAmountGoal = await cardCheckedRepository.createQueryBuilder("card_checked")
+                .leftJoin("card_checked.user", "user")
+                .where("user.id = :id", {id: userId})
+                .where("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {createdAt: new Date().toISOString().split('T')[0]})
+                .getCount()
+
+            if(checkAmountGoal === userGoal) {
+                const dayChecked = new DayChecked();
+                dayChecked.user = userId;
+                await dayCheckedRepository.save(dayChecked);
+            }
+        }
+
+        //Saving new card state
         let date = new Date();
         date.setDate(date.getDate() + amountOfDays);
 

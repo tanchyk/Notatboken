@@ -8,4 +8,6 @@ statisticsRouter.get('/get-language-stats', authenticationJwt, getUserId, Statis
 
 statisticsRouter.get('/get-user-progress', authenticationJwt, getUserId, StatisticController.getUserProgress);
 
+statisticsRouter.get('/get-streak', authenticationJwt, getUserId, StatisticController.getUserStreak);
+
 export default  statisticsRouter;

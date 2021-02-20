@@ -11,6 +11,8 @@ import {
 import {Language} from "./Language";
 import {Deck} from "./Deck";
 import {Folder} from "./Folder";
+import {DayChecked} from "./DayChecked";
+import {CardChecked} from "./CardChecked";
 
 @Entity()
 @Unique(["username", "email"])
@@ -43,6 +45,12 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Deck, deck => deck.user, { cascade: true})
     decks: Deck[];
+
+    @OneToMany(() => DayChecked, dayChecked => dayChecked.user, { cascade: true})
+    daysChecked: DayChecked[];
+
+    @OneToMany(() => CardChecked, cardsChecked => cardsChecked.user, { cascade: true})
+    cardsChecked: CardChecked[];
 
     @OneToMany(() => Folder, folder => folder.user, { cascade: true})
     folders: Folder[];
