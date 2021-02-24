@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from "react";
 import {Link as LinkPage} from "react-router-dom";
-import {NavItemProfile} from "../profile/NavItemProfile";
+import {NavItemProfile} from "../profile/navigation/NavItemProfile";
 import {FaRegFolderOpen, GiProgression, IoLanguageOutline, RiHome4Line} from "react-icons/all";
 import {Divider, Flex, Icon, Text, Stack} from "@chakra-ui/react";
 

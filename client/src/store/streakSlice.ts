@@ -21,7 +21,11 @@ const streakSlice = createSlice({
     name: 'streak',
     initialState,
     reducers: {
-
+        complete: (state: StreakSliceType) => {
+            console.log(state.streak)
+            state.streak = state.streak! + 1;
+            state.today = true;
+        }
     },
     extraReducers: builder => {
         builder.addCase(fetchStreak.fulfilled, (state: StreakSliceType, { payload }) => {
@@ -33,5 +37,7 @@ const streakSlice = createSlice({
 
 export const streakData = (state: {streak: StreakSliceType}) => state.streak.streak;
 export const todayStreak = (state: {streak: StreakSliceType}) => state.streak.today;
+
+export const {complete} = streakSlice.actions;
 
 export default streakSlice.reducer;

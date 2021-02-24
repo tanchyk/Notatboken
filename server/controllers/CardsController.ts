@@ -150,7 +150,6 @@ class CardsController {
     static changeCardStatus = async (req: Request, res: Response, next: NextFunction) => {
         const userId = res.locals.userId;
         const {cardId, proficiency, userGoal, today} = req.body;
-        console.log({cardId, proficiency, userGoal, today})
 
         const cardRepository = getRepository(Card);
         const cardCheckedRepository = getRepository(CardChecked);
@@ -178,6 +177,8 @@ class CardsController {
             await cardCheckedRepository.save(cardChecked);
         }
 
+        let notification = null;
+
         if(today === false) {
             const checkAmountGoal = await cardCheckedRepository.createQueryBuilder("card_checked")
                 .leftJoin("card_checked.user", "user")
@@ -189,6 +190,7 @@ class CardsController {
                 const dayChecked = new DayChecked();
                 dayChecked.user = userId;
                 await dayCheckedRepository.save(dayChecked);
+                notification = 'Goal Set';
             }
         }
 
@@ -209,7 +211,8 @@ class CardsController {
             next(err);
         }
 
-        return res.status(200).send(card);
+        console.log(notification)
+        return res.status(200).send({card, notification});
     }
 
     static deleteCard = async (req: Request, res: Response, next: NextFunction) => {

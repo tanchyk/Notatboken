@@ -80,7 +80,8 @@ export const CardsReview: React.FC = () => {
                     {
                         cards.length === 0 ? null : (
                             <>
-                                <LinkPage to={`/decks/${deck?.language?.languageName}/edit-card/${deck?.deckId}/${cardId}`}>
+                                <LinkPage
+                                    to={`/decks/${deck?.language?.languageName}/edit-card/${deck?.deckId}/${cardId}`}>
                                     <IconButton
                                         aria-label="Edit Card"
                                         size="md"
@@ -98,7 +99,7 @@ export const CardsReview: React.FC = () => {
                             </>
                         )
                     }
-                    <IconButton aria-label="Go Back" size="md" icon={<BsArrowLeft />} onClick={goBack}/>
+                    <IconButton aria-label="Go Back" size="md" icon={<BsArrowLeft/>} onClick={goBack}/>
                 </Flex>
             </Flex>
 

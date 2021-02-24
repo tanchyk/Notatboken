@@ -38,36 +38,36 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
     }, [])
 
     return (
-        <Stack
-            marginTop={8}
-            spacing={8}
-        >
-            {
-                closeCreate ? null : (
-                    <CreateDeck language={language} languageId={languageId} closeCreateComponent={closeCreateComponent}/>
-                )
-            }
-            <Box>
-                <Flex>
-                    <Heading as="h1" size="lg">Decks</Heading>
-                    {
-                        closeCreate ? (
-                            <IconButton  ml={3} aria-label="Close create deck" size="md" icon={<AddIcon/>} onClick={openCreateComponent}/>
-                        ) : null
-                    }
-                </Flex>
+            <Stack
+                marginTop={8}
+                spacing={8}
+            >
                 {
-                    decks.length === 0 ? (
-                        <NoDataBox type="decks" />
-                    ) : (
-                        <SimpleGrid columns={[1,1,2,2]} spacing={4} marginTop={4} marginBottom={4}>
-                            {
-                                decks.map((deck, key) => <DeckBox deck={deck} key={key}/>)
-                            }
-                        </SimpleGrid>
+                    closeCreate ? null : (
+                        <CreateDeck language={language} languageId={languageId} closeCreateComponent={closeCreateComponent}/>
                     )
                 }
-            </Box>
-        </Stack>
+                <Box>
+                    <Flex>
+                        <Heading as="h1" size="lg">Decks</Heading>
+                        {
+                            closeCreate ? (
+                                <IconButton  ml={3} aria-label="Close create deck" size="md" icon={<AddIcon/>} onClick={openCreateComponent}/>
+                            ) : null
+                        }
+                    </Flex>
+                    {
+                        decks.length === 0 ? (
+                            <NoDataBox type="decks" />
+                        ) : (
+                            <SimpleGrid columns={[1,1,2,2]} spacing={4} marginTop={4} marginBottom={4}>
+                                {
+                                    decks.map((deck, key) => <DeckBox deck={deck} key={key}/>)
+                                }
+                            </SimpleGrid>
+                        )
+                    }
+                </Box>
+            </Stack>
     );
 }

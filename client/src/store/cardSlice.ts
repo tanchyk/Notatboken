@@ -61,12 +61,12 @@ export const editCard = createAsyncThunk<Card, {card: CardDispatch}>(
     }
 )
 
-export const editCardStatus = createAsyncThunk<Card, {cardId: number, proficiency: Proficiency, userGoal: number}>(
+export const editCardStatus = createAsyncThunk<{card: Card, notification: null | string}, {cardId: number, proficiency: Proficiency, userGoal: number}>(
     'cards/editCardStatus',
     async (cardData, {getState}) => {
         const check = getState() as {streak: StreakSliceType};
         const response = await serverRequest({...cardData, today: check.streak.today}, getState, '/api/cards/change-status', 'PUT');
-        return (await response.json()) as Card;
+        return (await response.json()) as {card: Card, notification: null | string};
     }
 )
 
@@ -206,8 +206,7 @@ const cardSlice = createSlice({
 
         //Edit status
         builder.addCase(editCardStatus.pending, fetchCardPending)
-        builder.addCase(editCardStatus.fulfilled, (state: CardSliceType, { payload }: { payload: Card }) => {
-            console.log('Payload', payload)
+        builder.addCase(editCardStatus.fulfilled, (state: CardSliceType, { payload }: { payload: {card: Card, notification: null | string} }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -217,13 +216,21 @@ const cardSlice = createSlice({
                     }
                 });
             } else {
-                const newState = {
-                    cards: state.cards.filter(card => card.cardId !== payload.cardId),
-                    status: 'succeeded'
+                const newState: CardSliceType = {
+                    cards: state.cards.filter(card => card.cardId !== payload.card.cardId),
+                    status: 'succeeded',
+                    error: {
+                        type: null,
+                        message: null
+                    }
                 }
 
-                if (new Date(payload.reviewDate).getDate() === new Date().getDate()) {
-                    newState.cards.push(payload);
+                if (new Date(payload.card.reviewDate).getDate() === new Date().getDate()) {
+                    newState.cards.push(payload.card);
+                }
+
+                if(payload.notification === 'Goal Set') {
+                    newState.error.message = payload.notification;
                 }
 
                 return Object.assign({}, state, newState);

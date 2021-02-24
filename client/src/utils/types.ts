@@ -85,7 +85,7 @@ export interface DeckData {
     language: Language | null;
     cards: Card[] | null;
     folder: Folder | null;
-    amountOfCards: number | null;
+    amountOfCards?: number | null;
 }
 
 export interface ErrorDelete extends Object {

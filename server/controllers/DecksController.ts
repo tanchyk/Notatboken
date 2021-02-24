@@ -21,7 +21,6 @@ class DecksController {
                     .where("user.id = :id", { id: userId })
                     .andWhere("language.languageId = :languageId", {languageId})
                     .getMany();
-                console.log(decks)
             } catch (err) {
                 return res.status(404).send({message: "You have no decks"});
             }

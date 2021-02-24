@@ -6,7 +6,7 @@ import {Redirect, Route, Switch, useRouteMatch} from "react-router-dom";
 import {BasicInformation} from "../../components/profile/BasicInformation";
 import {ChangePassword} from "../../components/profile/ChangePassword";
 import {UserGoal} from "../../components/profile/UserGoal";
-import {NavbarProfile} from "../../components/profile/NavbarProfile";
+import {NavbarProfile} from "../../components/profile/navigation/NavbarProfile";
 
 export const ProfilePage: React.FC<{}> = ({}) => {
     const styleStack = useStyleConfig("Stack");

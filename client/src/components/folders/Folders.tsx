@@ -40,7 +40,7 @@ export const Folders: React.FC<DecksHomeProps> = ({language, languageId}) => {
             </Flex>
                 {
                     folderData.length === 0 ? <NoDataBox type="folders"/> : (
-                        <SimpleGrid columns={3} spacing={4} marginTop={4} marginBottom={4}>
+                        <SimpleGrid columns={[2,2,3,3]} spacing={4} marginTop={4} marginBottom={4}>
                             {
                                 folderData.map((folder, index) => (
                                     <LinkPage to={`/decks/${languageLowercase}/${languageId}/folders/review/${folder.folderId}`} key={index}>

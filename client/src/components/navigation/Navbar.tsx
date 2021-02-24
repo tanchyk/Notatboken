@@ -22,7 +22,7 @@ import {Wrapper} from "../wrappers/Wrapper";
 import {ColorModeSwitcher} from "./ColorModeSwitcher";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
 import {HiMenu} from "react-icons/all";
-import {NavbarProfile} from "../profile/NavbarProfile";
+import {NavbarProfile} from "../profile/navigation/NavbarProfile";
 import {NavDecks} from "../decks/NavDecks";
 
 const NavBar: React.FC<{}> = ({}) => {

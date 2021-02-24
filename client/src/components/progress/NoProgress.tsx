@@ -18,7 +18,7 @@ export const NoProgress: React.FC = () => {
                         </LinkPage>
                     </Stack>
                 </Flex>
-                <Flex alignItems="center" justifyContent="center" mt={[6,6,4,0]}>
+                <Flex alignItems="center" justifyContent="center" mt={[8,8,6,0]}>
                     <Box boxSize={["180px","200px", "260px", "260px"]}>
                         <Image
                             src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613685173/notatboken/clipboard-2_yuae5n.png"
