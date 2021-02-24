@@ -8,7 +8,7 @@ export const NoProgress: React.FC = () => {
 
     return (
         <ProfileWrapper>
-            <SimpleGrid columns={2} rows={1} padding={6} minH="379.2px">
+            <SimpleGrid columns={[1,1,1,1,2,2]} padding={[2,3,6,6]} minH="379.2px">
                 <Flex alignItems="center" justifyContent="center">
                     <Stack spacing={5} w="80%">
                         <Heading size="lg">Progress with <Box color="cyan.400">Notatboken</Box></Heading>
@@ -18,11 +18,12 @@ export const NoProgress: React.FC = () => {
                         </LinkPage>
                     </Stack>
                 </Flex>
-                <Flex alignItems="center" justifyContent="center">
-                    <Image
-                        boxSize="260px"
-                        src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613685173/notatboken/clipboard-2_yuae5n.png"
-                    />
+                <Flex alignItems="center" justifyContent="center" mt={[6,6,4,0]}>
+                    <Box boxSize={["180px","200px", "260px", "260px"]}>
+                        <Image
+                            src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613685173/notatboken/clipboard-2_yuae5n.png"
+                        />
+                    </Box>
                 </Flex>
             </SimpleGrid>
         </ProfileWrapper>

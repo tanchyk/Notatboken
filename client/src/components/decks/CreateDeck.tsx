@@ -72,7 +72,7 @@ export const CreateDeck: React.FC<DecksCreateProps> = ({language, languageId, cl
         <>
             <Box
                 sx={styleStack}
-                padding={9}
+                padding={[5,5,9,9]}
                 spacing={5}
             >
                 <Flex direction="row" justifyContent="space-between">
@@ -81,7 +81,7 @@ export const CreateDeck: React.FC<DecksCreateProps> = ({language, languageId, cl
                             src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1612990212/notatboken/pen-full_pwu6cj.png"
                         />
                     </Box>
-                    <Box w="60%">
+                    <Box w="60%" marginLeft={[5,5,0,0]}>
                         <Heading size="lg">{`Create a study deck for the ${language} language.`}</Heading>
                         <Button
                             width="140px"

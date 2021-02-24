@@ -8,7 +8,7 @@ import {AdditionalDecksWrapper} from "../../wrappers/AdditionalDecksWrapper";
 import {CardInput} from "../../inputs/CardInput";
 import {AppDispatch} from "../../../store/store";
 import {addCard, cardsError} from "../../../store/cardSlice";
-import {decksStatus, singleDeck} from "../../../store/deckSlice";
+import {decksStatus, singleDeck, increaseCardAmount} from "../../../store/deckSlice";
 import {history} from "../../../App";
 
 export const CreateCard: React.FC = () => {
@@ -46,6 +46,7 @@ export const CreateCard: React.FC = () => {
         if(cardError.type === 'createCard') {
             formikRef.current!.resetForm();
             clear();
+            dispatch(increaseCardAmount(deckId));
             toast({
                 title: "Card is created.",
                 description: "We've created a card for you.",

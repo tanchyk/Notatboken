@@ -10,7 +10,7 @@ export const ProfileWrapper: React.FC<{}> = ({children}) => {
             sx={styleStack}
             padding={8}
             paddingLeft={10}
-            marginTop={["0px", "0px", "30px", "30px"]}
+            marginTop={8}
             spacing={6}
         >
             {children}

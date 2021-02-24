@@ -73,8 +73,8 @@ class CardsController {
             .leftJoinAndSelect("deck.user", "user")
             .leftJoinAndSelect("deck.language", "language")
             .where("user.id = :id", { id: userId })
-            .where("language.languageId = :languageId", {languageId})
-            .where("card.foreignWord = :foreignWord", {foreignWord})
+            .andWhere("language.languageId = :languageId", {languageId})
+            .andWhere("card.foreignWord = :foreignWord", {foreignWord})
             .getMany();
 
         if(cardCheck.length > 0) {
@@ -123,8 +123,8 @@ class CardsController {
                 .leftJoinAndSelect("deck.user", "user")
                 .leftJoinAndSelect("deck.language", "language")
                 .where("user.id = :id", { id: userId })
-                .where("language.languageId = :languageId", {languageId})
-                .where("card.foreignWord = :foreignWord", {foreignWord})
+                .andWhere("language.languageId = :languageId", {languageId})
+                .andWhere("card.foreignWord = :foreignWord", {foreignWord})
                 .getMany();
 
             if(cardCheck.length > 0) {
@@ -150,6 +150,7 @@ class CardsController {
     static changeCardStatus = async (req: Request, res: Response, next: NextFunction) => {
         const userId = res.locals.userId;
         const {cardId, proficiency, userGoal, today} = req.body;
+        console.log({cardId, proficiency, userGoal, today})
 
         const cardRepository = getRepository(Card);
         const cardCheckedRepository = getRepository(CardChecked);
@@ -162,7 +163,7 @@ class CardsController {
         let amountOfDays = 0;
 
         if(proficiency === 'learned') {
-            amountOfDays = Infinity;
+            amountOfDays = 1;
         } else if(proficiency.length === 2) {
             amountOfDays = Number.parseInt(proficiency.charAt(0));
         } else if(proficiency.length === 3) {
@@ -181,7 +182,7 @@ class CardsController {
             const checkAmountGoal = await cardCheckedRepository.createQueryBuilder("card_checked")
                 .leftJoin("card_checked.user", "user")
                 .where("user.id = :id", {id: userId})
-                .where("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {createdAt: new Date().toISOString().split('T')[0]})
+                .andWhere("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {createdAt: new Date().toISOString().split('T')[0]})
                 .getCount()
 
             if(checkAmountGoal === userGoal) {
@@ -195,8 +196,12 @@ class CardsController {
         let date = new Date();
         date.setDate(date.getDate() + amountOfDays);
 
-        card.proficiency = proficiency
-        card.reviewDate = date;
+        if(proficiency === 'learned') {
+            card.reviewDate = new Date(8640000000000000);
+        } else {
+            card.reviewDate = date;
+        }
+        card.proficiency = proficiency;
 
         try {
             await cardRepository.save(card);

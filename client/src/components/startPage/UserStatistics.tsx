@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
+import {Link as LinkPage} from 'react-router-dom';
 import {Box, Heading, Stack, Flex, Button, Text, useStyleConfig, Image} from "@chakra-ui/react";
 import {flags} from "../../utils/theme";
 import {ProgressBar} from "../statistics/ProgressBar";
 
-interface LangCards {
+export interface LangCards {
     languageName: string;
     amount: number;
 }
@@ -16,10 +17,7 @@ export const UserStatistics: React.FC = () => {
     const loadData = async () => {
         setLangCards(await fetch(
             "/api/statistics/get-language-stats", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                method: 'GET'
             }
         ).then(response => response.json()))
     }
@@ -29,7 +27,7 @@ export const UserStatistics: React.FC = () => {
     }, [])
 
     return (
-        <Box flexDirection="column" w="27%">
+        <Box flexDirection="column">
             <Heading as="h1" fontSize="22px" marginTop={8}>Statistics 📋</Heading>
             <Box
                 sx={styleStack}
@@ -59,7 +57,9 @@ export const UserStatistics: React.FC = () => {
                         }
                     </Stack>
                     <Button alignSelf="flex-end">
-                        More Statistics
+                        <LinkPage to="/statistics">
+                            More Statistics
+                        </LinkPage>
                     </Button>
                 </Stack>
             </Box>

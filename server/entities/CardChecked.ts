@@ -4,8 +4,8 @@ import {Card} from "./Card";
 
 @Entity()
 export class CardChecked extends BaseEntity {
-    @PrimaryColumn()
     @CreateDateColumn()
+    @PrimaryColumn()
     createdAt: Date;
 
     @ManyToOne(() => Card, card => card.cardsChecked, {primary: true, onDelete: 'CASCADE'})

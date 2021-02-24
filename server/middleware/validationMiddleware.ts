@@ -47,7 +47,7 @@ export const testName = (req: Request, res: Response, next: NextFunction): void 
 export const testCard = (req: Request, res: Response, next: NextFunction): void | Response => {
     const {foreignWord,nativeWord} = req.body;
 
-    const testCard = /^(?=.{1,84}$)[A-Za-z0-9äöüßÄÖÜæÆøØåÅ,;\s]+[A-Za-zäöüßÄÖÜæÆøØåÅ.?!]$/;
+    const testCard = /^(?=.{1,84}$)[A-ZА-ЯЁa-zа-яё0-9äöüßÄÖÜæÆøØåÅ,;\s]+[A-ZА-ЯЁa-zа-яё0-9äöüßÄÖÜæÆøØåÅ.?!]$/;
     if (!testCard.test(foreignWord) || !testCard.test(nativeWord)) {
         return res.status(400).send({message: "Please, enter a valid word or a sentence"});
     } else {

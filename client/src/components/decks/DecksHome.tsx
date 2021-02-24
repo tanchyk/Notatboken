@@ -60,7 +60,7 @@ export const DecksHome: React.FC<DecksHomeProps> = ({language, languageId}) => {
                     decks.length === 0 ? (
                         <NoDataBox type="decks" />
                     ) : (
-                        <SimpleGrid columns={2} spacing={4} marginTop={4} marginBottom={4}>
+                        <SimpleGrid columns={[1,1,2,2]} spacing={4} marginTop={4} marginBottom={4}>
                             {
                                 decks.map((deck, key) => <DeckBox deck={deck} key={key}/>)
                             }

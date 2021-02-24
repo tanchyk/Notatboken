@@ -14,10 +14,7 @@ export const ProgressBar: React.FC = () => {
     const loadData = async () => {
         setAmount(await fetch(
             "/api/statistics/get-user-progress", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                method: 'GET'
             }
         ).then(response => response.json()))
     }

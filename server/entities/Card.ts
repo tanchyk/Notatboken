@@ -56,6 +56,6 @@ export class Card extends BaseEntity {
     @ManyToOne(() => Deck, deck => deck.cards, { onDelete: 'CASCADE' })
     deck: Deck;
 
-    @OneToMany(() => CardChecked, cardsChecked => cardsChecked.card, { cascade: true})
+    @OneToMany(() => CardChecked, cardChecked => cardChecked.card, { cascade: true})
     cardsChecked: CardChecked[];
 }

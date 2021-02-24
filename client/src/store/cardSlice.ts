@@ -1,5 +1,11 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {CardDispatch, CardSliceType, ErrorDeleteCard, Proficiency, StreakSliceType} from "../utils/types";
+import {
+    CardDispatch,
+    CardSliceType,
+    ErrorDeleteCard,
+    Proficiency,
+    StreakSliceType
+} from "../utils/types";
 import {Card} from "../../../server/entities/Card";
 import {serverRequest} from "./requestFunction";
 
@@ -67,7 +73,7 @@ export const editCardStatus = createAsyncThunk<Card, {cardId: number, proficienc
 export const deleteCard = createAsyncThunk<ErrorDeleteCard, {cardId: number}>(
     'cards/deleteCard',
     async (cardData, {getState}) => {
-        const response = await serverRequest(cardData, getState, '/api/cards/delete-card', 'DELETE')
+        const response = await serverRequest({cardId: cardData.cardId}, getState, '/api/cards/delete-card', 'DELETE')
             .then(response => {
             if(response.status === 204) {
                 return {

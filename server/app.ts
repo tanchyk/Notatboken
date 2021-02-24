@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import {createConnection} from "typeorm";
+import { createConnection} from "typeorm";
 import express, {Errback, Request, Response, Application, NextFunction} from 'express';
 
 import bodyParser from 'body-parser';

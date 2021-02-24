@@ -8,6 +8,7 @@ import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../../store/store";
 import {deleteCard} from "../../../store/cardSlice";
 import {AlertForDelete} from "../../AlertForDelete";
+import {decreaseCardAmount} from "../../../store/deckSlice";
 
 interface EditDeckCardBoxProps {
     card: CardData;
@@ -26,8 +27,9 @@ export const SmallCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const deleteHandler = async () => {
-        if(card.cardId) {
+        if(card.cardId && deck.deckId) {
             await dispatch(deleteCard({cardId: card.cardId}))
+            await dispatch(decreaseCardAmount(deck.deckId));
         }
         onClose();
     }

@@ -20,7 +20,8 @@ class UserController {
                     username: user.username,
                     email: user.email,
                     languages: user.userLanguages,
-                    userGoal: user.userGoal
+                    userGoal: user.userGoal,
+                    createdAt: user.createdAt
                 });
             } else {
                 throw new Error('User not found')

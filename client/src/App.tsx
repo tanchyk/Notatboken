@@ -4,19 +4,20 @@ import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import {MainPage} from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
 import { createBrowserHistory } from 'history';
-import StartPage from "./pages/StartPage";
+import StartPage from "./pages/application/StartPage";
 import RegisterPage from "./pages/RegisterPage";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "./store/store";
 import {loadUser, userData, userError, userStatus} from "./store/userSlice";
 import {fetchToken} from "./store/csrfSlice";
-import NavBar from "./components/Navbar";
-import {ProfilePage} from "./pages/ProfilePage";
+import NavBar from "./components/navigation/Navbar";
+import {ProfilePage} from "./pages/application/ProfilePage";
 import {theme} from "./utils/theme";
-import DecksPage from "./pages/DecksPage";
-import {ErrorPage} from "./pages/ErrorPage";
+import DecksPage from "./pages/application/DecksPage";
+import {ErrorPage} from "./pages/application/ErrorPage";
 import {createContext} from 'react';
 import {fetchStreak} from "./store/streakSlice";
+import {StatisticsPage} from "./pages/application/StatisticsPage";
 
 export const CloseContextHome = createContext<any>([]);
 export const CloseContextFolders = createContext<any>([]);
@@ -61,7 +62,7 @@ const App: React.FC<{}> = () => {
                 <Switch>
                     <Route exact path="/" component={StartPage}/>
                     <Route exact path="/error" component={ErrorPage}/>
-                    <Route exact path="/user-page" component={StartPage}/>
+                    <Route path="/statistics" component={StatisticsPage}/>
                     <Route path="/decks/:language" component={DecksPage}/>
                     <Route path="/profile" component={ProfilePage} />
                     <Redirect to="/" />
@@ -75,7 +76,6 @@ const App: React.FC<{}> = () => {
                 <Route exact path="/error" component={ErrorPage}/>
                 <Route exact path="/login" component={LoginPage}/>
                 <Route exact path="/register" component={RegisterPage}/>
-                <Redirect to="/" />
             </Switch>
         );
     }

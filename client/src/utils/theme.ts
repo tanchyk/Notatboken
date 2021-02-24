@@ -76,3 +76,30 @@ export const flags = {
     spanish: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/spain_ojzd3t.png',
     french: 'https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613591994/flags/france_kt0j2q.png'
 }
+
+export const langColors = {
+    German: {
+        backgroundColor: 'rgba(45, 55, 72, 0.4)',
+        borderColor: 'rgba(45, 55, 72, 1)'
+    },
+    Polish: {
+        backgroundColor: 'rgba(155, 44, 44, 0.4)',
+        borderColor: 'rgba(155, 44, 44, 1)'
+    },
+    Norwegian: {
+        backgroundColor: 'rgba(44, 82, 130, 0.4)',
+        borderColor: 'rgba(44, 82, 130, 1)'
+    },
+    Russian: {
+        backgroundColor: 'rgba(226, 232, 240, 0.4)',
+        borderColor: 'rgba(226, 232, 240, 1)'
+    },
+    Spanish: {
+        backgroundColor: 'rgba(192, 86, 33, 0.4)',
+        borderColor: 'rgba(192, 86, 33, 1)'
+    },
+    French: {
+        backgroundColor: 'rgba(159, 122, 234, 0.4)',
+        borderColor: 'rgba(159, 122, 234, 1)'
+    }
+}

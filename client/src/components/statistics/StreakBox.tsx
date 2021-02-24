@@ -12,13 +12,14 @@ export const StreakBox: React.FC = () => {
         <Stack
             sx={styleStack}
             padding={3}
-            spacing={2}
-            direction="row"
+            justifyContent="center"
         >
-            <Heading size="md">🔥</Heading>
-            <Stack spacing="-2px">
-                <Heading size="md">{strak}</Heading>
-                <Text fontSize="lg" fontWeight="600" color="gray.500">Day streak</Text>
+            <Stack direction="row" spacing={2}>
+                <Heading size="md">🔥</Heading>
+                <Stack spacing="-2px">
+                    <Heading size="md">{strak}</Heading>
+                    <Text fontSize="lg" fontWeight="600" color="gray.500">Day streak</Text>
+                </Stack>
             </Stack>
         </Stack>
     )

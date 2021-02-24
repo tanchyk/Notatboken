@@ -1,8 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Link as LinkPage} from "react-router-dom";
+import {Link as LinkPage, useRouteMatch} from "react-router-dom";
 import {Stack, Heading, IconButton, Flex, useColorMode} from "@chakra-ui/react";
-import {AdditionalDeckInfProps} from "../createUpdateCards/CreateCard";
-import {clearDeckError, decksStatus, singleDeck} from "../../../store/deckSlice";
+import {clearDeckError, decreaseCardAmount, decksStatus, singleDeck} from "../../../store/deckSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {BsArrowLeft, MdDelete} from "react-icons/all";
 import {history} from "../../../App";
@@ -14,7 +13,8 @@ import {cardsData, clearCards, deleteCard, fetchCardsForReview} from "../../../s
 import {AppDispatch} from "../../../store/store";
 import {AlertForDelete} from "../../AlertForDelete";
 
-export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
+export const CardsReview: React.FC = () => {
+    const match = useRouteMatch<{deckId: string}>();
     const deckId = Number.parseInt(match.params.deckId);
     const { colorMode } = useColorMode();
 
@@ -31,7 +31,8 @@ export const CardsReview: React.FC<AdditionalDeckInfProps> = ({match}) => {
 
     const deleteHandler = async () => {
         if(cardId) {
-            await dispatch(deleteCard({cardId: cardId}))
+            await dispatch(deleteCard({cardId: cardId}));
+            await dispatch(decreaseCardAmount(deckId));
         }
         onClose();
     }

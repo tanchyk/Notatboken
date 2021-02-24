@@ -1,5 +1,5 @@
 import React from "react";
-import {Wrapper} from "../components/wrappers/Wrapper";
+import {Wrapper} from "../../components/wrappers/Wrapper";
 import {Stack, Box, Flex, Heading, Text, Link, Image, useStyleConfig} from "@chakra-ui/react";
 import {
     Link as LinkPage

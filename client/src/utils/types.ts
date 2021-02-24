@@ -49,6 +49,7 @@ export interface UserAuth {
     email: string | null;
     languages: Array<Language> | null;
     userGoal: number | null;
+    createdAt: Date | null;
 }
 
 export interface BasicUser {

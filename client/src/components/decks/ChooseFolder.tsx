@@ -75,7 +75,7 @@ export const  ChooseFolder: React.FC< AddDeckToFolderProps> = ({match}) => {
                                 </Flex>
                             ) : null
                         }
-                        <SimpleGrid columns={2} spacing={4} marginBottom={4}>
+                        <SimpleGrid columns={[1,1,2,2]} spacing={4} marginBottom={4}>
                             {
                                 folderData.map((folder, index) => (
                                         <Box

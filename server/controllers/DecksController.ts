@@ -12,14 +12,16 @@ class DecksController {
         let decks: Deck[];
         if(languageId) {
             try {
+                console.log(userId)
                 decks = await deckRepository.createQueryBuilder("deck")
                     .leftJoinAndSelect("deck.user", "user")
                     .leftJoinAndSelect("deck.language", "language")
                     .leftJoinAndSelect("deck.folder", "folder")
                     .loadRelationCountAndMap("deck.amountOfCards", "deck.cards" )
                     .where("user.id = :id", { id: userId })
-                    .where("language.languageId = :languageId", {languageId})
+                    .andWhere("language.languageId = :languageId", {languageId})
                     .getMany();
+                console.log(decks)
             } catch (err) {
                 return res.status(404).send({message: "You have no decks"});
             }
@@ -69,8 +71,8 @@ class DecksController {
             .leftJoinAndSelect("deck.folder", "folder")
             .loadRelationCountAndMap("deck.amountOfCards", "deck.cards" )
             .where("user.id = :id", { id: userId })
-            .where("language.languageId = :languageId", {languageId})
-            .where("deck.deckName = :deckName", {deckName})
+            .andWhere("language.languageId = :languageId", {languageId})
+            .andWhere("deck.deckName = :deckName", {deckName})
             .getOneOrFail();
 
         return res.status(200).send(deckSend);

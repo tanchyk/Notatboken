@@ -57,7 +57,7 @@ export const LanguagesList: React.FC = () => {
     }
 
     return (
-        <Box flexDirection="column" w="70%">
+        <Box flexDirection="column">
             <Heading as="h1" fontSize="22px" marginTop={8}>Languages 🎓</Heading>
             <Box
                 sx={styleStack}
@@ -67,7 +67,7 @@ export const LanguagesList: React.FC = () => {
                 spacing={5}
             >
                 <Flex direction="row" spacing={4} justifyContent="space-between">
-                    <Box w="78%">
+                    <Box flexGrow={1} marginRight={3}>
                         <Heading as="h1" size="md">Your Languages to study</Heading>
                         <Stack
                             spacing={2}

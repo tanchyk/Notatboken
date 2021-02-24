@@ -49,7 +49,7 @@ export class User extends BaseEntity {
     @OneToMany(() => DayChecked, dayChecked => dayChecked.user, { cascade: true})
     daysChecked: DayChecked[];
 
-    @OneToMany(() => CardChecked, cardsChecked => cardsChecked.user, { cascade: true})
+    @OneToMany(() => CardChecked, cardChecked => cardChecked.user, { cascade: true})
     cardsChecked: CardChecked[];
 
     @OneToMany(() => Folder, folder => folder.user, { cascade: true})

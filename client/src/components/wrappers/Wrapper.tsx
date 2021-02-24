@@ -7,7 +7,7 @@ interface WrapperProps {
 }
 
 export const Wrapper: React.FC<WrapperProps> = ({children, variant = 'regular', direction= 'row'}) => {
-    const width = variant === 'regular' ? ["100%", "90%", "80%", "70%"]:["100%", "90%", "70%", "50%"];
+    const width = variant === 'regular' ? ["90%", "90%", "80%", "70%"]:["90%", "90%", "70%", "50%"];
     return (
         <Flex direction={direction} justifyContent="space-between" width={width}>
             {children}

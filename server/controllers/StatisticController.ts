@@ -3,6 +3,7 @@ import {Brackets, getRepository} from "typeorm";
 import {Card} from "../entities/Card";
 import {User} from "../entities/User";
 import {DayChecked} from "../entities/DayChecked";
+import {CardChecked} from "../entities/CardChecked";
 
 class StatisticController {
     static getLanguageStats = async (req: Request, res: Response, next: NextFunction) => {
@@ -27,8 +28,10 @@ class StatisticController {
                 amountAry.push({
                     languageName: lang.languageName, amount: await cardRepository.createQueryBuilder("card")
                         .leftJoin("card.deck", "deck")
+                        .leftJoin("deck.user", "user")
                         .leftJoin("deck.language", "language")
-                        .where("language.languageId = :languageId", {languageId: lang.languageId})
+                        .where("user.id = :id", {id: userId})
+                        .andWhere("language.languageId = :languageId", {languageId: lang.languageId})
                         .getCount()
                 })
             }
@@ -74,6 +77,10 @@ class StatisticController {
             .where("user.id = :id", {id: userId})
             .getMany()
 
+        if(checkDays.length === 0) {
+            return res.status(200).send({streak, today});
+        }
+
         let date = new Date();
 
         if(checkDays[checkDays.length - 1].createdAt.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
@@ -93,6 +100,27 @@ class StatisticController {
         }
 
         return res.status(200).send({streak, today});
+    }
+
+    static getCardReviewWeek = async (req: Request, res: Response, next: NextFunction) => {
+        const userId = res.locals.userId;
+
+        const cardCheckedRepository = getRepository(CardChecked);
+
+        const daysAry = [];
+        let date = new Date();
+
+        for(let i = 0; i < 7; i++) {
+            daysAry.unshift(await cardCheckedRepository.createQueryBuilder("card_checked")
+                .leftJoin("card_checked.user", "user")
+                .where("user.id = :id", {id: userId})
+                .andWhere("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {createdAt: date.toISOString().split('T')[0]})
+                .getCount()
+            )
+            date.setDate(date.getDate() - 1);
+        }
+
+        return res.status(200).send(daysAry)
     }
 }
 

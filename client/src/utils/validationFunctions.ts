@@ -21,7 +21,7 @@ export const validateUsername = (value: string) => {
 
 export const validateCard = (value: string) => {
     let error;
-    const testCard = /^(?=.{1,84}$)[A-Za-z0-9äöüßÄÖÜæÆøØåÅ,;\s]+[A-Za-zäöüßÄÖÜæÆøØåÅ.?!]$/;
+    const testCard = /^(?=.{1,84}$)[A-ZА-ЯЁa-zа-яё0-9äöüßÄÖÜæÆøØåÅ,;\s]+[A-ZА-ЯЁa-zа-яё0-9äöüßÄÖÜæÆøØåÅ.?!]$/;
     if (!testCard.test(value)) {
         error = "Please, enter a valid word or a sentence";
     }

@@ -18,7 +18,7 @@ export const NavItemProfile: React.FC<NavItemProps | NavItemPropsDeck> = ({id, c
     return (
         <Flex
             direction="row"
-            paddingLeft={clicked === id ? 9 : 10}
+            paddingLeft={clicked === id ? [5,5,9,9] : [6,6,10,10]}
             borderLeft={clicked === id ? "4px solid #E2E8F0" : ""}
             id={id}
             alignItems="center"

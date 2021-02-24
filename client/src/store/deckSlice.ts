@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
 import {DeckData, DeckSliceType, ErrorDelete} from "../utils/types";
 import {serverRequest} from "./requestFunction";
 
@@ -69,10 +69,28 @@ const fetchDeckRejected = (state: DeckSliceType, {}) => {
     return Object.assign({}, state, {status: 'failed'});
 }
 
+const changeAmountCards = (state: DeckSliceType, action: PayloadAction<number>, number: number) => {
+    const deck = state.decks.find(deck => deck.deckId === action.payload);
+    deck!.amountOfCards = deck!.amountOfCards! + number;
+    Object.assign(state, state.decks.map(deckF => {
+        if(deckF.deckId === action.payload) {
+            return deck;
+        } else {
+            return deckF;
+        }
+    }))
+}
+
 const deckSlice = createSlice({
     name: 'decks',
     initialState,
     reducers: {
+        decreaseCardAmount: (state: DeckSliceType, action: PayloadAction<number>) => {
+            changeAmountCards(state,action,-1);
+        },
+        increaseCardAmount: (state: DeckSliceType, action: PayloadAction<number>) => {
+            changeAmountCards(state, action, 1);
+        },
         clearDeckError: (state: DeckSliceType) => {
             if(state.decks.length > 0) {
                 state.status = 'succeeded';
@@ -186,6 +204,6 @@ export const singleDeck = (state: {decks: DeckSliceType}, deckId: number) => sta
 export const decksStatus = (state: {decks: DeckSliceType}) => state.decks.status;
 export const decksError = (state: {decks: DeckSliceType}) => state.decks.error;
 
-export const {clearDeckError, clearDecks} = deckSlice.actions;
+export const {clearDeckError, clearDecks, increaseCardAmount, decreaseCardAmount} = deckSlice.actions;
 
 export default deckSlice.reducer;

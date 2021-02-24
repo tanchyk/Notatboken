@@ -28,12 +28,12 @@ export const AdditionalDecksWrapper: React.FC<DecksWrapperProps> = ({title, w="7
                 alignItems="center"
                 justifyContent="space-between"
                 mb={8}
-                w={w}
+                w={["100%", "100%", w, w]}
             >
                 <Heading as="h1" size="lg">{title}</Heading>
                 <IconButton aria-label="Go Back" size="sm" icon={<BsArrowLeft />} onClick={goBack}/>
             </Flex>
-            <Stack spacing={6} w={w}>
+            <Stack spacing={6} w={["100%", "100%", w, w]}>
                 {children}
             </Stack>
         </Stack>

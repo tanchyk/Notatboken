@@ -9,7 +9,8 @@ const initialState = {
         username: null,
         email: null,
         languages: null,
-        userGoal: null
+        userGoal: null,
+        createdAt: null
     },
     status: 'idle',
     error: {
