@@ -14,6 +14,7 @@ interface ProgressType {
 
 export const ProgressFolderBox: React.FC<ProgressFolderBoxProps> = ({folder}) => {
     const styleStack = useStyleConfig("Stack");
+    const bgText = useStyleConfig("BgText");
     const [progress, setProgress] = useState<ProgressType>({
         amountOfDecks: 0, amountOfCards: 0, amountOfCardsLearned: 0
     })
@@ -45,8 +46,8 @@ export const ProgressFolderBox: React.FC<ProgressFolderBoxProps> = ({folder}) =>
         >
             <Stack spacing={1}>
                 <Heading size="md">{folder.folderName}</Heading>
-                <Text fontSize="md" fontWeight="600" color="gray.500">{`${progress.amountOfDecks} decks`}</Text>
-                <Text fontSize="md" fontWeight="600" color="gray.500">{`${progress.amountOfCards} cards`}</Text>
+                <Text sx={bgText}>{`${progress.amountOfDecks} decks`}</Text>
+                <Text sx={bgText}>{`${progress.amountOfCards} cards`}</Text>
             </Stack>
             <Stack spacing={2} minW="40%">
                 <Text fontSize="md" fontWeight="600">Cards studied</Text>

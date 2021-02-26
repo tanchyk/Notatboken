@@ -93,9 +93,7 @@ class StatisticController {
         date.setDate(date.getDate() - 1);
 
         for(let i = checkDays.length - 1; i >= 0; i--) {
-            console.log(checkDays[i])
             if(checkDays[i].createdAt.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
-                console.log(date)
                 date.setDate(date.getDate() - 1);
                 streak++;
             } else {

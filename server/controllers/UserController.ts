@@ -1,7 +1,15 @@
+require('dotenv').config();
 import {Response, Request, NextFunction} from 'express';
 import {getRepository} from "typeorm";
 import {User} from "../entities/User";
 import argon2 from "argon2";
+
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET
+});
 
 class UserController {
     static singleUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -21,6 +29,7 @@ class UserController {
                     email: user.email,
                     languages: user.userLanguages,
                     userGoal: user.userGoal,
+                    avatar: user.avatar,
                     createdAt: user.createdAt
                 });
             } else {
@@ -34,13 +43,13 @@ class UserController {
     static editUser = async (req: Request, res: Response) => {
         const userId = res.locals.userId;
 
-        const { name, username, email} = req.body;
+        const { name, username, email, avatarData} = req.body;
 
         //Try to find user on database
         const userRepository = getRepository(User);
         let user: User;
         try {
-            user = await userRepository.findOneOrFail({where: {id: userId}});
+            user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {id: userId}});
         } catch (err) {
             return res.status(404).send({message: "User not found"});
         }
@@ -60,6 +69,19 @@ class UserController {
             return res.status(409).send({message: 'Email is already taken'});
         }
 
+        if(avatarData !== user.avatar) {
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(avatarData, {
+                    upload_presets: 'user_avatar', transformation: [
+                        {width: 400, height: 400, gravity: "face", crop: "thumb"}
+                    ]
+                })
+                user.avatar = uploadResponse.secure_url;
+            } catch (e) {
+                console.log('Error', e);
+            }
+        }
+
         user.name = name;
         user.email = email;
         user.username = username;
@@ -75,7 +97,11 @@ class UserController {
             userId: user.id,
             name: user.name,
             username: user.username,
-            email: user.email
+            email: user.email,
+            languages: user.userLanguages,
+            userGoal: user.userGoal,
+            avatar: user.avatar,
+            createdAt: user.createdAt
         });
     }
 

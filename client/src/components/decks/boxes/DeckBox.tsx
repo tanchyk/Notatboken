@@ -21,6 +21,7 @@ interface DeckBoxProps {
 
 export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
     const styleStack = useStyleConfig("Stack");
+    const bgText = useStyleConfig("BgText");
     const [language] = useContext(LanguageContext);
 
     const user = useSelector(userData);
@@ -40,7 +41,7 @@ export const DeckBox: React.FC<DeckBoxProps> = ({deck}) => {
                 <Flex direction="column" justifyContent="space-between" h="100%">
                     <Box>
                         <Heading as="h1" fontSize="21px">{deck.deckName}</Heading>
-                        <Text fontSize="md" fontWeight="600" color="gray.500">{`${deck.amountOfCards} cards`}</Text>
+                        <Text sx={bgText}>{`${deck.amountOfCards} cards`}</Text>
                     </Box>
                     <Flex justifyContent="space-between">
                         <Text fontSize="16px">{user.username}</Text>

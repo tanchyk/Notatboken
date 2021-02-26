@@ -23,6 +23,7 @@ export const Folders: React.FC<DecksHomeProps> = ({language, languageId}) => {
     return (
         <Stack
             marginTop={8}
+            marginBottom={8}
             spacing={6}
         >
             {

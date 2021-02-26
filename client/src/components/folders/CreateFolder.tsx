@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react";
-import {Box, Stack, Button, CloseButton, Flex, Heading, Image, useStyleConfig} from "@chakra-ui/react";
+import {Button, Heading, useStyleConfig} from "@chakra-ui/react";
 import {Formik, Form, Field, FormikProps} from "formik";
 import {DecksHomeProps} from "../decks/DecksHome";
 import {FieldProps} from "../../utils/types";
@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {addFolder, foldersError, clearFolderError} from "../../store/folderSlice";
+import {CreateWrapper} from "../wrappers/CreateWrapper";
 
 export const FolderNameSchema = Yup.object().shape({
     folderName: Yup.string()
@@ -51,41 +52,30 @@ export const CreateFolder: React.FC<CreateFolderProps> = ({language, languageId,
         >
             {() => (
                 <Form>
-                    <Box
-                        sx={styleStack}
-                        padding={9}
-                        spacing={5}
+                    <CreateWrapper
+                        src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613509613/notatboken/folder_pfdrsa.png"
+                        closeCreateComponent={closeCreateComponent}
                     >
-                        <Flex direction="row" justifyContent="space-between">
-                            <Box boxSize="170px">
-                                <Image
-                                    src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613509613/notatboken/folder_pfdrsa.png"
-                                />
-                            </Box>
-                            <Stack w="60%" spacing={5}>
-                                <Heading size="lg">{`Create a new folder for the ${language} language.`}</Heading>
-                                <Field name="folderName" >
-                                    {({field, form}: FieldProps) => (
-                                        <UserInput
-                                            size="lg"
-                                            name="folderName"
-                                            placeholder="Enter the folder name here"
-                                            field={field}
-                                            form={form}
-                                        />
-                                    )}
-                                </Field>
-                                <Button
-                                    width="140px"
+                        <Heading size="lg">{`Create a new folder for the ${language} language.`}</Heading>
+                        <Field name="folderName" >
+                            {({field, form}: FieldProps) => (
+                                <UserInput
                                     size="lg"
-                                    type="submit"
-                                >
-                                    Create Folder
-                                </Button>
-                            </Stack>
-                            <CloseButton onClick={closeCreateComponent}/>
-                        </Flex>
-                    </Box>
+                                    name="folderName"
+                                    placeholder="Enter the folder name here"
+                                    field={field}
+                                    form={form}
+                                />
+                            )}
+                        </Field>
+                        <Button
+                            width="140px"
+                            size="lg"
+                            type="submit"
+                        >
+                            Create Folder
+                        </Button>
+                    </CreateWrapper>
                 </Form>
             )}
         </Formik>

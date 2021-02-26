@@ -7,7 +7,7 @@ import {CardData, DeckData} from "../../../utils/types";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../../store/store";
 import {deleteCard} from "../../../store/cardSlice";
-import {AlertForDelete} from "../../AlertForDelete";
+import {DeleteAlert} from "../../DeleteAlert";
 import {decreaseCardAmount} from "../../../store/deckSlice";
 
 interface EditDeckCardBoxProps {
@@ -71,7 +71,7 @@ export const SmallCardBox: React.FC<EditDeckCardBoxProps> = ({card, deck}) => {
                 </Stack>
             </Flex>
 
-            <AlertForDelete
+            <DeleteAlert
                 header="Delete Card"
                 isOpen={isOpen}
                 onClose={onClose}

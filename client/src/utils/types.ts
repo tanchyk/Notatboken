@@ -49,6 +49,7 @@ export interface UserAuth {
     email: string | null;
     languages: Array<Language> | null;
     userGoal: number | null;
+    avatar: string | null;
     createdAt: Date | null;
 }
 
@@ -56,6 +57,7 @@ export interface BasicUser {
     name: string | null;
     email: string | null;
     username: string | null;
+    avatarData: any | null;
 }
 
 export interface Passwords {

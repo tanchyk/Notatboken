@@ -11,6 +11,7 @@ export interface LangCards {
 
 export const UserStatistics: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
+    const bgText = useStyleConfig("BgText");
 
     const [langCards, setLangCards] = useState<Array<LangCards> | null>(null);
 
@@ -50,10 +51,10 @@ export const UserStatistics: React.FC = () => {
                                 langCards?.map((stats, index) => (
                                     <Flex direction="row" key={index} mr={2}>
                                         <Image w="28px" src={flags[stats.languageName.toLowerCase() as keyof typeof flags]}/>
-                                        <Text fontSize="md" fontWeight="600" color="gray.500" ml={3}>{stats.amount + " cards"}</Text>
+                                        <Text sx={bgText} ml={3}>{stats.amount + " cards"}</Text>
                                     </Flex>
                                 ))
-                            ) : <Text fontSize="md" fontWeight="600" color="gray.500">No Languages</Text>
+                            ) : <Text sx={bgText}>No Languages</Text>
                         }
                     </Stack>
                     <Button alignSelf="flex-end">

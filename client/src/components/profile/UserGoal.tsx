@@ -43,11 +43,11 @@ export const UserGoal: React.FC<{}> = () => {
                 padding={8}
                 paddingTop={0}
             >
-                <Flex direction="row" wrap="wrap">
+                <Flex direction="row" wrap="wrap" justifyContent={["center", "", "", ""]}>
                     <Box minW="50%">
                         <Image boxSize="170px" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1613770970/notatboken/medal_c511pf.png"/>
                     </Box>
-                    <Stack spacing="0px" margin="auto" mt={8} minW="50%">
+                    <Stack spacing="0px" margin="auto" mt={8} minW={["80%", "60%", "80%", "50%"]}>
                         <Button
                             variant="outline"
                             colorScheme={goal === 5 ? "blue" : "gray"}

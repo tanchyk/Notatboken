@@ -16,7 +16,7 @@ interface AlertForDeleteProps {
     cancelRef: React.RefObject<HTMLButtonElement>;
 }
 
-export const AlertForDelete: React.FC<AlertForDeleteProps> = ({header, isOpen, onClose, onClick, cancelRef}) => {
+export const DeleteAlert: React.FC<AlertForDeleteProps> = ({header, isOpen, onClose, onClick, cancelRef}) => {
     return (
         <AlertDialog
             isOpen={isOpen}

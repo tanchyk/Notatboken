@@ -89,7 +89,7 @@ const DecksPage: React.FC = () => {
                                     sx={styleStack}
                                     w={["100%", "100%", "35%", "35%", "35%", "27%"]}
                                     display={["none", "none", "flex", "flex", "flex", "flex"]}
-                                    h="438.2px"
+                                    h="458.2px"
                                     paddingTop={8}
                                     paddingBottom={8}
                                     marginTop={8}

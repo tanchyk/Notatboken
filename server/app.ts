@@ -1,4 +1,5 @@
 import "reflect-metadata";
+require('dotenv').config();
 import { createConnection} from "typeorm";
 import express, {Errback, Request, Response, Application, NextFunction} from 'express';
 
@@ -47,7 +48,6 @@ createConnection({
     entities: [User, Deck, Folder, Language, Card, CardChecked, DayChecked]
 }).then(connection => {
     // setLanguages(connection);
-
     const app: Application = express();
 
     app.use(helmet());

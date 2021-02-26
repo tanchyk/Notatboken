@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {deleteUser, userError, userStatus} from "../../store/userSlice";
 import {SerializedError} from "@reduxjs/toolkit";
-import {AlertForDelete} from "../AlertForDelete";
+import {DeleteAlert} from "../DeleteAlert";
 
 export const DeleteAccount: React.FC<{}> = () => {
     //Functions for confirmation page
@@ -88,7 +88,7 @@ export const DeleteAccount: React.FC<{}> = () => {
                         </Button>
 
                         //Alert delete
-                        <AlertForDelete
+                        <DeleteAlert
                             header="Delete Account"
                             isOpen={isOpen}
                             onClose={onClose}

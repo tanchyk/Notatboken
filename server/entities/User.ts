@@ -35,6 +35,9 @@ export class User extends BaseEntity {
     @Column({default: 5})
     userGoal: number;
 
+    @Column({default: "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614327170/notatboken/default-avatar_uvgijy.png"})
+    avatar: string;
+
     @Column()
     @CreateDateColumn()
     createdAt: Date;

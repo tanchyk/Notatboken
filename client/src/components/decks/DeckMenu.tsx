@@ -4,7 +4,7 @@ import {FaEllipsisV} from "react-icons/all";
 import {AddIcon, AttachmentIcon, DeleteIcon, EditIcon} from "@chakra-ui/icons";
 import {Link as LinkPage} from "react-router-dom";
 import {DeckData} from "../../utils/types";
-import {AlertForDelete} from "../AlertForDelete";
+import {DeleteAlert} from "../DeleteAlert";
 import {deleteDeck} from "../../store/deckSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../store/store";
@@ -56,7 +56,7 @@ export const DeckMenu: React.FC<DeckMenuProps> = ({deck}) => {
                 </MenuList>
             </Menu>
 
-            <AlertForDelete
+            <DeleteAlert
                 header={`Delete Deck ${deck.deckName}`}
                 isOpen={isOpen}
                 onClose={onClose}

@@ -5,7 +5,7 @@ import {
     Button,
     useToast,
     Heading,
-    Flex
+    Flex,
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../../utils/types";
@@ -15,6 +15,7 @@ import {errorNull, updateUser, userData, userError, userStatus} from "../../stor
 import {AppDispatch} from "../../store/store";
 import {ProfileWrapper} from "../wrappers/ProfileWrapper";
 import {UserInput} from "../inputs/UserInput";
+import {AvatarZone} from "./AvatarZone";
 
 const validateName = (value: string) => {
     let error;
@@ -60,10 +61,11 @@ export const BasicInformation: React.FC<{}> = () => {
             initialValues={{
                 name: user.name,
                 email: user.email,
-                username: user.username
+                username: user.username,
+                avatarData: user.avatar
             } as BasicUser}
             onSubmit={async (values) => {
-                if(values.name === user.name && values.email === user.email && values.username === user.username) {
+                if(values.name === user.name && values.email === user.email && values.username === user.username && values.avatarData === null) {
                     toast({
                         position: 'bottom',
                         title: "Account is not updated.",
@@ -73,12 +75,13 @@ export const BasicInformation: React.FC<{}> = () => {
                         isClosable: true,
                     })
                 } else {
+                    console.log(values.avatarData)
                     await dispatch(updateUser(values));
                     await dispatch(errorNull());
                 }
             }}
         >
-            {() => (
+            {({values}) => (
                 <Form>
                     <ProfileWrapper>
                         <Flex direction="row">
@@ -125,6 +128,10 @@ export const BasicInformation: React.FC<{}> = () => {
                                     />
                                 )}
                             </Field>
+                        </Box>
+                        <Box>
+                            <Text fontSize="lg" marginBottom={3} fontWeight="bold">Avatar</Text>
+                            <AvatarZone avatar={values.avatarData} username={user.username!} />
                         </Box>
                         <Button
                             width="130px"

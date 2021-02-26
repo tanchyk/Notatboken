@@ -6,7 +6,7 @@ import {IconButton, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react
 import {FaEllipsisV} from "react-icons/all";
 import {DeleteIcon, EditIcon} from "@chakra-ui/icons";
 import {FolderData} from "../../utils/types";
-import {AlertForDelete} from "../AlertForDelete";
+import {DeleteAlert} from "../DeleteAlert";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {deleteFolder} from "../../store/folderSlice";
@@ -52,7 +52,7 @@ export const FolderMenu: React.FC<FolderMenuProps> = ({folder}) => {
                 </MenuList>
             </Menu>
 
-            <AlertForDelete
+            <DeleteAlert
                 header={`Delete Folder ${folder.folderName}`}
                 isOpen={isOpen}
                 onClose={onClose}

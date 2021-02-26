@@ -11,7 +11,7 @@ import {EditIcon} from "@chakra-ui/icons";
 import {CardsCarousel} from "./CardsCarousel";
 import {cardsData, clearCards, deleteCard, fetchCardsForReview} from "../../../store/cardSlice";
 import {AppDispatch} from "../../../store/store";
-import {AlertForDelete} from "../../AlertForDelete";
+import {DeleteAlert} from "../../DeleteAlert";
 
 export const CardsReview: React.FC = () => {
     const match = useRouteMatch<{deckId: string}>();
@@ -105,7 +105,7 @@ export const CardsReview: React.FC = () => {
 
             <CardsCarousel setCardId={setCardId}/>
 
-            <AlertForDelete
+            <DeleteAlert
                 header="Delete Card"
                 isOpen={isOpen}
                 onClose={onClose}

@@ -87,7 +87,7 @@ export const CardInput: React.FC<CardInputProps> = (
                 ) : null
             }
             {
-                deck?.language?.languageId === 6 ? <Heading as="h1" size="sm">😔 Sorry, Notatboken can't add context for Norwegian language</Heading> : (
+                deck?.language?.languageId === 4 ? <Heading as="h1" size="sm">😔 Sorry, Notatboken can't add context for Norwegian language</Heading> : (
                     <>
                         <Flex direction="row">
                             <ChooseContext

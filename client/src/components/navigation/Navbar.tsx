@@ -6,13 +6,14 @@ import {
 import {
     Box,
     Button,
+    Avatar,
     Flex,
     Heading,
     Image,
     IconButton,
     Stack,
     useColorModeValue,
-    useDisclosure
+    useDisclosure, Menu, MenuDivider, MenuButton, MenuItem, MenuList
 } from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../../store/userSlice";
@@ -20,8 +21,8 @@ import {AppDispatch} from "../../store/store";
 import {history, LanguageContext} from '../../App';
 import {Wrapper} from "../wrappers/Wrapper";
 import {ColorModeSwitcher} from "./ColorModeSwitcher";
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
-import {HiMenu} from "react-icons/all";
+import {CloseIcon } from '@chakra-ui/icons'
+import { FaUser, HiMenu, IoLanguageOutline, MdExitToApp} from "react-icons/all";
 import {NavbarProfile} from "../profile/navigation/NavbarProfile";
 import {NavDecks} from "../decks/NavDecks";
 
@@ -65,22 +66,31 @@ const NavBar: React.FC<{}> = ({}) => {
                         />
                     ) : null
                 }
-                <LinkPage to="/profile">
-                    <Button
-                        width="80px"
-                        variant="ghost"
+                <Menu placement="bottom-end">
+                    <MenuButton
+                        size="md"
+                        variant="outline"
+                        borderRadius="full"
                     >
-                        Profile
-                    </Button>
-                </LinkPage>
-                <Button
-                    width="80px"
-                    type="submit"
-                    variant="outline"
-                    onClick={logoutHandler}
-                >
-                    Log out
-                </Button>
+                        <Avatar size="md" name={user.username!} src={user.avatar!} />
+                    </MenuButton>
+                    <MenuList w="260px">
+                        <LinkPage to="/profile">
+                            <MenuItem icon={<FaUser/>}>
+                                Profile
+                            </MenuItem>
+                        </LinkPage>
+                        <LinkPage to="/">
+                            <MenuItem icon={<IoLanguageOutline/>}>
+                                Languages
+                            </MenuItem>
+                        </LinkPage>
+                        <MenuDivider/>
+                        <MenuItem icon={<MdExitToApp />} onClick={logoutHandler}>
+                            Log out
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
             </>
         );
     } else {
@@ -126,7 +136,7 @@ const NavBar: React.FC<{}> = ({}) => {
                             </Heading>
                         </Stack>
                     </LinkPage>
-                    <Stack direction="row" spacing={2}>
+                    <Stack direction="row" spacing={2} alignItems="center">
                         <ColorModeSwitcher/>
                         {body}
                     </Stack>

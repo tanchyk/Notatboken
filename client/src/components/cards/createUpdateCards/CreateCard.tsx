@@ -7,7 +7,7 @@ import {Form, Formik, FormikProps} from "formik";
 import {AdditionalDecksWrapper} from "../../wrappers/AdditionalDecksWrapper";
 import {CardInput} from "../../inputs/CardInput";
 import {AppDispatch} from "../../../store/store";
-import {addCard, cardsError} from "../../../store/cardSlice";
+import {addCard, cardsError, clearCardError} from "../../../store/cardSlice";
 import {decksStatus, singleDeck, increaseCardAmount} from "../../../store/deckSlice";
 import {history} from "../../../App";
 
@@ -54,7 +54,7 @@ export const CreateCard: React.FC = () => {
                 duration: 9000,
                 isClosable: true,
             })
-
+            dispatch(clearCardError())
         } else if(cardError.type === 'failedCreateCard'){
             formikRef.current!.setFieldError('foreignWord', cardError.message as string);
             toast({

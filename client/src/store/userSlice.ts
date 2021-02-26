@@ -10,6 +10,7 @@ const initialState = {
         email: null,
         languages: null,
         userGoal: null,
+        avatar: null,
         createdAt: null
     },
     status: 'idle',

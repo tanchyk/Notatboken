@@ -50,7 +50,10 @@ class AuthController {
             name: user.name,
             username: user.username,
             email: user.email,
-            languages: user.userLanguages
+            languages: user.userLanguages,
+            userGoal: user.userGoal,
+            avatar: user.avatar,
+            createdAt: user.createdAt
         });
     }
 
@@ -102,7 +105,10 @@ class AuthController {
             userId: user.id,
             name: user.name,
             username: user.username,
-            email: user.email
+            email: user.email,
+            userGoal: user.userGoal,
+            avatar: user.avatar,
+            createdAt: user.createdAt
         });
     }
 

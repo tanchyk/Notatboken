@@ -8,6 +8,7 @@ interface Amount {
 
 export const ProgressBar: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
+    const bgText = useStyleConfig("BgText");
 
     const [amount, setAmount] = useState<Amount | null>(null)
 
@@ -35,7 +36,7 @@ export const ProgressBar: React.FC = () => {
                 hasStripe
                 value={amount && amount.amountOfCards !== 0 ? amount.amountOfCardsLearned / amount.amountOfCards * 100 : 0}
             />
-            <Text fontSize="md" fontWeight="600" color="gray.500">cards studied</Text>
+            <Text sx={bgText}>cards studied</Text>
         </Stack>
     );
 }

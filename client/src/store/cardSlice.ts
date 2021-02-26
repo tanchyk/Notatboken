@@ -101,8 +101,16 @@ const cardSlice = createSlice({
     name: 'cards',
     initialState,
     reducers: {
-        clearCards:(state: CardSliceType) => {
+        clearCards: (state: CardSliceType) => {
             return Object.assign({}, state, initialState);
+        },
+        clearCardError: (state: CardSliceType) => {
+            return Object.assign({}, state, {
+                error: {
+                    type: null,
+                    message: null
+                }
+            });
         }
     },
     extraReducers: builder => {
@@ -259,6 +267,6 @@ export const singleCard = (state: {cards: CardSliceType}, cardId: number) => sta
 export const cardsStatus = (state: {cards: CardSliceType}) => state.cards.status;
 export const cardsError = (state: {cards: CardSliceType}) => state.cards.error;
 
-export const {clearCards} = cardSlice.actions;
+export const {clearCards, clearCardError} = cardSlice.actions;
 
 export default cardSlice.reducer;

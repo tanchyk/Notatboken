@@ -11,6 +11,7 @@ export const ProfileWrapper: React.FC<{}> = ({children}) => {
             padding={8}
             paddingLeft={10}
             marginTop={8}
+            marginBottom={8}
             spacing={6}
         >
             {children}

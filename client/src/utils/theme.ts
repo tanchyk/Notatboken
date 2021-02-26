@@ -10,6 +10,16 @@ const Stack = {
     })
 }
 
+const Dropzone = {
+    baseStyle: (props: GlobalStyleProps) => ({
+        ...Stack.baseStyle(props),
+        h: "100%",
+        w: "100%",
+        justifyContent: "center",
+        alignItems: "center"
+    })
+}
+
 const Progress = {
     baseStyle: (props: GlobalStyleProps) => ({
         width: "100%",
@@ -38,6 +48,14 @@ const BackCard = {
     }
 }
 
+const BgText = {
+    baseStyle: {
+        fontSize: "md",
+        fontWeight: "600",
+        color: "gray.500"
+    }
+}
+
 export const theme = extendTheme({
     styles: {
         global: (props) => ({
@@ -62,9 +80,11 @@ export const theme = extendTheme({
     },
     components: {
         Stack,
+        Dropzone,
         Card,
         BackCard,
-        Progress
+        Progress,
+        BgText
     }
 })
 

@@ -2,7 +2,7 @@ import React, {useRef} from "react";
 import {Flex, Stack, Heading, useStyleConfig, IconButton} from "@chakra-ui/react";
 import {DeckData} from "../../../utils/types";
 import {DeckMenu} from "../../decks/DeckMenu";
-import {AlertForDelete} from "../../AlertForDelete";
+import {DeleteAlert} from "../../DeleteAlert";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../../store/store";
 import {MdDelete} from "react-icons/all";
@@ -61,7 +61,7 @@ export const SmallDeckBox: React.FC<SmallDeckBoxProps> = ({deck, folderId}) => {
                 </Stack>
             </Flex>
 
-            <AlertForDelete
+            <DeleteAlert
                 header="Delete deck from folder"
                 isOpen={isOpen}
                 onClose={onClose}
