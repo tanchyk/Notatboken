@@ -29,10 +29,10 @@ export class Card extends BaseEntity {
     @Column({nullable: true})
     voiceId: number;
 
-    @Column({nullable: true, length: 120})
+    @Column({nullable: true, length: 220})
     foreignContext: string;
 
-    @Column({nullable: true, length: 120})
+    @Column({nullable: true, length: 220})
     nativeContext: string;
 
     @Column({

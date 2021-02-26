@@ -6,8 +6,12 @@ import {ProgressBar} from "../../components/statistics/ProgressBar";
 import {StreakBox} from "../../components/statistics/StreakBox";
 import {WeekCardsReview} from "../../components/statistics/WeekCardsReview";
 import {CardsPieChart} from "../../components/statistics/CardsPieChart";
+import {useSelector} from "react-redux";
+import {userData} from "../../store/userSlice";
 
 export const StatisticsPage: React.FC = () => {
+    const user = useSelector(userData);
+
     return (
         <Flex justifyContent="center">
             <Wrapper variant="regular">
@@ -29,12 +33,18 @@ export const StatisticsPage: React.FC = () => {
                             <ProgressBar/>
                         </SimpleGrid>
                     </GridItem>
-                    <GridItem colSpan={[2, 2, 1, 1]}>
-                        <CardsPieChart/>
-                    </GridItem>
-                    <GridItem colSpan={[2, 2, 1, 1]}>
-                        <WeekCardsReview/>
-                    </GridItem>
+                    {
+                        user.languages && user.languages.length === 0 ? null : (
+                            <>
+                                <GridItem colSpan={[2, 2, 1, 1]}>
+                                    <CardsPieChart/>
+                                </GridItem>
+                                <GridItem colSpan={[2, 2, 1, 1]}>
+                                    <WeekCardsReview/>
+                                </GridItem>
+                            </>
+                        )
+                    }
                 </Grid>
             </Wrapper>
         </Flex>

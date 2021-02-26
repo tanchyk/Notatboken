@@ -32,6 +32,9 @@ export class User extends BaseEntity {
     @Column({unique: true, length: 320})
     email!: string;
 
+    @Column({default: false})
+    confirmed: boolean;
+
     @Column({default: 5})
     userGoal: number;
 
@@ -60,5 +63,5 @@ export class User extends BaseEntity {
 
     @ManyToMany(() => Language, (language: Language) => language.users,{ cascade: true })
     @JoinTable({name: "userLanguages"})
-    userLanguages: Language[]
+    userLanguages: Language[];
 }

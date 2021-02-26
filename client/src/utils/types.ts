@@ -161,7 +161,7 @@ export type Proficiency = 'fail' | 'repeat' | '1d' | '3d' | '7d' | '21d' | '31d'
 
 export interface ErrorFromServer extends Object {
     type:
-        'login' | 'register' | 'update' | 'deleteUser'
+        'login' | 'register' | 'confirmEmail' | 'update' | 'deleteUser'
         | 'deleteDeck' | 'notCreateDeck' | 'createDeck' | 'editDeck' | 'loadDecks'
         | 'loadCards' | 'createCard' | 'failedCreateCard' | 'editCard'
         | 'loadFolders' | 'createFolder' | 'failedCreateFolder' | 'editFolder' | 'deleteFolder' | 'failedAddDeckToFolder'

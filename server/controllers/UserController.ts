@@ -5,11 +5,6 @@ import {User} from "../entities/User";
 import argon2 from "argon2";
 
 const cloudinary = require("cloudinary").v2;
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_KEY,
-    api_secret: process.env.CLOUDINARY_SECRET
-});
 
 class UserController {
     static singleUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -71,6 +66,12 @@ class UserController {
 
         if(avatarData !== user.avatar) {
             try {
+                await cloudinary.config({
+                    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                    api_key: process.env.CLOUDINARY_KEY,
+                    api_secret: process.env.CLOUDINARY_SECRET
+                });
+
                 const uploadResponse = await cloudinary.uploader.upload(avatarData, {
                     upload_presets: 'user_avatar', transformation: [
                         {width: 400, height: 400, gravity: "face", crop: "thumb"}

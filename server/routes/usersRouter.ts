@@ -16,6 +16,7 @@ usersRouter.put(
 );
 usersRouter.post('/login', AuthController.login);
 usersRouter.post('/logout', authenticationJwt, AuthController.logout);
+usersRouter.get('/confirmation/:token', AuthController.verifyRegistration);
 
 //User operations
 usersRouter.get('/single-user', authenticationJwt, getUserId, UserController.singleUser);

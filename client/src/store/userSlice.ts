@@ -136,18 +136,25 @@ const userSlice = createSlice({
         builder.addCase(createUser.pending, fetchUserPending)
         builder.addCase(createUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
             if ("message" in payload) {
-                return Object.assign({}, state, {
-                    status: 'failed',
-                    error: {
-                        message: payload['message'],
-                        type:'register'
-                    }
-                });
+                if(payload['message'] === 'Created') {
+                    return Object.assign({}, state, {
+                        status: 'idle',
+                        error: {
+                            message: payload['message'],
+                            type: 'confirmEmail'
+                        }
+                    });
+                } else {
+                    return Object.assign({}, state, {
+                        status: 'failed',
+                        error: {
+                            message: payload['message'],
+                            type:'register'
+                        }
+                    });
+                }
             } else {
-                return Object.assign({}, state, {
-                    user: {...payload, languages: null},
-                    status: 'succeeded',
-                });
+                return;
             }
         })
         builder.addCase(createUser.rejected, fetchUserRejected)

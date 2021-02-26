@@ -75,7 +75,6 @@ export const BasicInformation: React.FC<{}> = () => {
                         isClosable: true,
                     })
                 } else {
-                    console.log(values.avatarData)
                     await dispatch(updateUser(values));
                     await dispatch(errorNull());
                 }
