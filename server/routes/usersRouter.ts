@@ -18,6 +18,9 @@ usersRouter.post('/login', AuthController.login);
 usersRouter.post('/logout', authenticationJwt, AuthController.logout);
 usersRouter.get('/confirmation/:token', AuthController.verifyRegistration);
 
+usersRouter.post('/forgot-password', AuthController.forgotPassword);
+usersRouter.post('/change-forgot-password',testPassword, AuthController.setForgot);
+
 //User operations
 usersRouter.get('/single-user', authenticationJwt, getUserId, UserController.singleUser);
 usersRouter.put(

@@ -18,6 +18,8 @@ import {ErrorPage} from "./pages/application/ErrorPage";
 import {createContext} from 'react';
 import {fetchStreak} from "./store/streakSlice";
 import {StatisticsPage} from "./pages/application/StatisticsPage";
+import {ChangeForgotPassword} from "./pages/ChangeForgotPassword";
+import {ForgotPassword} from "./pages/ForgotPassword";
 
 export const CloseContextHome = createContext<any>([]);
 export const CloseContextFolders = createContext<any>([]);
@@ -76,6 +78,8 @@ const App: React.FC<{}> = () => {
                 <Route exact path="/error" component={ErrorPage}/>
                 <Route exact path="/login" component={LoginPage}/>
                 <Route exact path="/register" component={RegisterPage}/>
+                <Route exact path="/forgot-password" component={ForgotPassword} />
+                <Route exact path="/change-forgot-password/:token" component={ChangeForgotPassword} />
             </Switch>
         );
     }

@@ -9,8 +9,8 @@ import {history} from "../App";
 
 //Page component
 const RegisterPage: React.FC<{}> = () => {
-    const dispatch = useDispatch<AppDispatch>();
     const toast = useToast();
+    const dispatch = useDispatch<AppDispatch>();
     const error = useSelector(userError);
 
     const registerHandler = async (values: RegisterData) => {

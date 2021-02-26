@@ -51,7 +51,7 @@ module.exports = function(env, argv) {
         devServer: {
             contentBase: path.resolve(__dirname, 'dist'),
             port: 4020,
-            historyApiFallback: true,
+            historyApiFallback: {disableDotRule: true,},
             open: true,
             proxy: {
                 "/api": {

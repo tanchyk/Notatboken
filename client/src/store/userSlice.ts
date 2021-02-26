@@ -29,14 +29,25 @@ export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
     }
 );
 
-export const createUser = createAsyncThunk<UserAuth, RegisterData>(
+//Registration
+export const createUser = createAsyncThunk<{message: string}, RegisterData>(
     'user/createUser',
     async (registerData, {getState}) => {
         const response = await serverRequest(registerData, getState, '/api/users/register', 'PUT');
-        return (await response.json()) as UserAuth;
+        return (await response.json()) as {message: string};
     }
 );
 
+//Send email for password change
+export const requestChangePassword = createAsyncThunk<{message: string}, {email: string}>(
+    'user/requestChangePassword',
+    async (data, {getState}) => {
+        const response = await serverRequest(data, getState, '/api/users/forgot-password', 'POST');
+        return (await response.json()) as {message: string};
+    }
+)
+
+//Loading user from token
 export const loadUser = createAsyncThunk<UserAuth, void>(
     'user/loadUser',
     async () => {
@@ -101,6 +112,26 @@ const fetchUserRejected = (state: UserSliceType, {}) => {
     return Object.assign({}, state, {status: 'failed'});
 }
 
+const nodemailer = (state: UserSliceType, {payload}: { payload: { message: string } }) => {
+    if (payload['message'] === 'Created') {
+        return Object.assign({}, state, {
+            status: 'idle',
+            error: {
+                message: payload['message'],
+                type: 'confirmEmail'
+            }
+        });
+    } else {
+        return Object.assign({}, state, {
+            status: 'failed',
+            error: {
+                message: payload['message'],
+                type: 'register'
+            }
+        });
+    }
+}
+
 //User Slice
 const userSlice = createSlice({
     name: 'user',
@@ -134,30 +165,13 @@ const userSlice = createSlice({
 
         //Create
         builder.addCase(createUser.pending, fetchUserPending)
-        builder.addCase(createUser.fulfilled, (state: UserSliceType, { payload }: { payload: UserAuth }) => {
-            if ("message" in payload) {
-                if(payload['message'] === 'Created') {
-                    return Object.assign({}, state, {
-                        status: 'idle',
-                        error: {
-                            message: payload['message'],
-                            type: 'confirmEmail'
-                        }
-                    });
-                } else {
-                    return Object.assign({}, state, {
-                        status: 'failed',
-                        error: {
-                            message: payload['message'],
-                            type:'register'
-                        }
-                    });
-                }
-            } else {
-                return;
-            }
-        })
+        builder.addCase(createUser.fulfilled, nodemailer)
         builder.addCase(createUser.rejected, fetchUserRejected)
+
+        //Create
+        builder.addCase(requestChangePassword.pending, fetchUserPending)
+        builder.addCase(requestChangePassword.fulfilled, nodemailer)
+        builder.addCase(requestChangePassword.rejected, fetchUserRejected)
 
         //Load
         builder.addCase(loadUser.pending, fetchUserPending)

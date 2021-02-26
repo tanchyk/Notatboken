@@ -12,7 +12,6 @@ import {
 import {Field, Form, Formik} from "formik";
 import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
 import {DeckSliceType, FieldProps} from "../../utils/types";
-import {AdditionalDeckInfProps} from "../cards/createUpdateCards/CreateCard";
 import {UserInput} from "../inputs/UserInput";
 import {DeckNameSchema} from "./CreateDeck";
 import {useDispatch, useSelector} from "react-redux";

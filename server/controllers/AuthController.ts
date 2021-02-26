@@ -66,14 +66,6 @@ class AuthController {
 
     static register = async (req: Request, res: Response) => {
         const {username, email, password} = req.body;
-        const user = new User();
-
-        //Creating User
-        const hashedPassword = await argon2.hash(password);
-
-        user.username = username;
-        user.email = email;
-        user.password = hashedPassword;
 
         const userRepository = getRepository(User);
 
@@ -90,6 +82,12 @@ class AuthController {
         } else if(checkExisting && checkExisting!.email === email) {
             return res.status(409).send({message: 'Email is already taken'});
         }
+
+        const user = new User();
+
+        user.username = username;
+        user.email = email;
+        user.password = await argon2.hash(password);
 
         try {
             await userRepository.save(user);
@@ -128,29 +126,9 @@ class AuthController {
         );
 
         return res.status(200).send({message: 'Created'})
-
-        // //If everything is fine, send 200 response
-        // const token = jwt.sign(
-        //     {userId: user.id},
-        //     `${process.env.redis}`,
-        //     {
-        //         expiresIn: '24h',
-        //         algorithm: "HS256"
-        //     }
-        // )
-        //
-        // res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
-        // return res.status(200).json({
-        //     userId: user.id,
-        //     name: user.name,
-        //     username: user.username,
-        //     email: user.email,
-        //     userGoal: user.userGoal,
-        //     avatar: user.avatar,
-        //     createdAt: user.createdAt
-        // });
     }
 
+    //Verify
     static verifyRegistration = async (req: Request, res: Response) => {
         try {
             const decoded = jwt.verify(req.params.token, `${process.env.CONF_SECRET}`);
@@ -166,6 +144,71 @@ class AuthController {
         } catch (e) {
             res.send('error');
         }
+    }
+
+    //forgot password
+    static forgotPassword = async (req: Request, res: Response) => {
+        const {email} = req.body;
+        console.log(email)
+
+        const userRepository = getRepository(User);
+
+        try {
+            await userRepository.findOneOrFail({where: {email}});
+        } catch (e) {
+            return res.status(404).send();
+        }
+
+        jwt.sign(
+            {
+                email
+            },
+            `${process.env.FORGOT_PASSWORD}`,
+            {
+                expiresIn: '1d',
+            },
+            (err, emailToken) => {
+                const url = `http://localhost:4020/change-forgot-password/${emailToken}`;
+
+                transporter.sendMail({
+                    from: `${process.env.GMAIL_USER}`,
+                    to: email,
+                    subject: 'Confirm Your Email',
+                    html: `
+                    <div style="margin: 40px; padding: 40px; border: 1px solid #4A5568; border-radius: 0.5rem; display: flex; flex-direction: row; flex-wrap: wrap;">
+                        <div style="padding: 40px;">
+                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614356300/notatboken/send-email_zzsha9.png" />
+                        </div>
+                        <div style="padding: 40px;">
+                            <h1>Please click this link to change your password: </h1>
+                            <a href="${url}">${url}</a>
+                        </div>
+                    </div>
+                    `,
+                });
+            },
+        );
+
+        return res.status(200).send({message: 'Created'})
+    }
+
+    static setForgot = async (req: Request, res: Response) => {
+        const {password, token} = req.body;
+
+        try {
+            const decoded = jwt.verify(token, `${process.env.FORGOT_PASSWORD}`);
+
+            const userRepository = getRepository(User);
+            let user: User;
+
+            user = await userRepository.findOneOrFail({where: {email: (<any>decoded).email}});
+            user.password = await argon2.hash(password);
+            await userRepository.save(user);
+        } catch (e) {
+            return res.status(404).send();
+        }
+
+        return res.status(204).send();
     }
 
     //Logout
