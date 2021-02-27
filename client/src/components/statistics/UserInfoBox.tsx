@@ -13,7 +13,7 @@ export const UserInfoBox: React.FC = () => {
 
     return (
         <Box>
-            <Heading as="h1" fontSize="22px">User 💌</Heading>
+            <Heading as="h1" fontSize="22px">User</Heading>
             <Stack
                 sx={styleStack}
                 padding={9}

@@ -40,7 +40,7 @@ export const CardsPieChart: React.FC = () => {
 
     return (
         <Box>
-            <Heading as="h1" fontSize="22px">All Cards 🔎</Heading>
+            <Heading as="h1" fontSize="22px">All Cards</Heading>
             <Stack
                 sx={styleStack}
                 padding={4}

@@ -27,7 +27,7 @@ export const StatisticsPage: React.FC = () => {
                         <UserInfoBox/>
                     </GridItem>
                     <GridItem colSpan={[2, 2, 1, 1]}  h="242.7px">
-                        <Heading as="h1" fontSize="22px">Statistics 📈</Heading>
+                        <Heading as="h1" fontSize="22px">Statistics</Heading>
                         <SimpleGrid columns={2} spacing={4} marginTop={5}>
                             <StreakBox/>
                             <ProgressBar/>

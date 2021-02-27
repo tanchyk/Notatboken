@@ -1,5 +1,5 @@
 import React from "react";
-import {Flex, Heading, GridItem} from "@chakra-ui/react";
+import {Flex, Stack, Heading, Text, Image, GridItem} from "@chakra-ui/react";
 import {Wrapper} from "../../components/wrappers/Wrapper";
 import {useSelector} from "react-redux";
 import {userData} from "../../store/userSlice";
@@ -14,7 +14,17 @@ const StartPage: React.FC = () => {
     return (
         <>
             <AppWrapper>
-                <Heading color="white" fontSize="38px">{user.name ? user.name : user.username}</Heading>
+                <Flex direction="row" alignItems="center">
+                    <Image
+                        src={user.avatar!}
+                        borderRadius="full"
+                           boxSize="100px"
+                    />
+                    <Stack ml={6} spacing={1}>
+                        <Heading color="white" size="xl">{user.name ? user.name : user.username}</Heading>
+                        <Text color="white" fontSize="lg" fontWeight="600">Notatboken member</Text>
+                    </Stack>
+                </Flex>
             </AppWrapper>
             <Flex justifyContent="center">
                 <Wrapper variant="regular">

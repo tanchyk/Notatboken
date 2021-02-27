@@ -113,7 +113,7 @@ class AuthController {
                     html: `
                     <div style="margin: 40px; padding: 40px; border: 1px solid #4A5568; border-radius: 0.5rem; display: flex; flex-direction: row; flex-wrap: wrap;">
                         <div style="padding: 40px;">
-                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614341776/notatboken/speaker_ojkkan.png" />
+                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614424748/mainpage/forgot_password_pcnkfd.png" />
                         </div>
                         <div style="padding: 40px;">
                             <h1>Please click this link to confirm your email: </h1>
@@ -177,7 +177,7 @@ class AuthController {
                     html: `
                     <div style="margin: 40px; padding: 40px; border: 1px solid #4A5568; border-radius: 0.5rem; display: flex; flex-direction: row; flex-wrap: wrap;">
                         <div style="padding: 40px;">
-                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614356300/notatboken/send-email_zzsha9.png" />
+                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614425565/mainpage/change_password_mr16nb.png" />
                         </div>
                         <div style="padding: 40px;">
                             <h1>Please click this link to change your password: </h1>

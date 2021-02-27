@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Stack, Progress, useStyleConfig, Text} from "@chakra-ui/react";
+import {Stack, Progress, useStyleConfig, Text, CircularProgressLabel, CircularProgress} from "@chakra-ui/react";
+
+interface ProgressBarProps {
+    type?: 'bar' | 'circle';
+}
 
 interface Amount {
     amountOfCards: number;
     amountOfCardsLearned: number;
 }
 
-export const ProgressBar: React.FC = () => {
+export const ProgressBar: React.FC<ProgressBarProps> = ({type ='bar'}) => {
     const styleStack = useStyleConfig("Stack");
     const bgText = useStyleConfig("BgText");
 
@@ -24,7 +28,7 @@ export const ProgressBar: React.FC = () => {
         loadData()
     }, [])
 
-    return (
+    return type === 'bar' ? (
         <Stack
             sx={styleStack}
             padding={4}
@@ -38,5 +42,9 @@ export const ProgressBar: React.FC = () => {
             />
             <Text sx={bgText}>cards studied</Text>
         </Stack>
-    );
+    ) : (
+        <CircularProgress value={amount && amount.amountOfCards !== 0 ? amount.amountOfCardsLearned / amount.amountOfCards * 100 : 0} color="#6ee3ff">
+            <CircularProgressLabel>{`${Math.round(amount && amount.amountOfCards !== 0 ? amount.amountOfCardsLearned / amount.amountOfCards * 100 : 0)}%`}</CircularProgressLabel>
+        </CircularProgress>
+    )
 }

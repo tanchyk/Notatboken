@@ -10,6 +10,8 @@ statisticsRouter.get('/get-user-progress', authenticationJwt, getUserId, Statist
 
 statisticsRouter.get('/get-streak', authenticationJwt, getUserId, StatisticController.getUserStreak);
 
+statisticsRouter.get('/get-card-day-review', authenticationJwt, getUserId, StatisticController.getCardReviewDay);
+
 statisticsRouter.get('/get-card-week-review', authenticationJwt, getUserId, StatisticController.getCardReviewWeek);
 
 export default  statisticsRouter;

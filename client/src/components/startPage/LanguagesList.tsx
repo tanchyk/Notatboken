@@ -8,6 +8,7 @@ import {flags} from "../../utils/theme";
 import {Link as LinkPage} from "react-router-dom";
 import {loadUser, userData} from "../../store/userSlice";
 import {AppDispatch} from "../../store/store";
+import {LanguagesHeader} from "./LanguagesHeader";
 
 export const LanguagesList: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -58,60 +59,54 @@ export const LanguagesList: React.FC = () => {
 
     return (
         <Box flexDirection="column">
-            <Heading as="h1" fontSize="22px" marginTop={8}>Languages 🎓</Heading>
-            <Box
+            <Heading as="h1" fontSize="22px" marginTop={8}>Languages</Heading>
+            <Stack
                 sx={styleStack}
                 marginRight={0}
                 padding={9}
                 marginTop={5}
-                spacing={5}
+                spacing={4}
             >
-                <Flex direction="row" spacing={4} justifyContent="space-between">
-                    <Box flexGrow={1} marginRight={3}>
-                        <Heading as="h1" size="md">Your Languages to study</Heading>
-                        <Stack
-                            spacing={2}
-                            marginTop={5}
-                            marginBottom={5}
-                            marginLeft={5}
-                        >
-                            {
-                                user.languages?.map((language, index) => (
-                                        <LinkPage to={`/decks/${language.languageName.toLowerCase()}`} key={index}>
-                                            <Button
-                                                w="100%"
-                                                variant="ghost"
-                                                justifyContent="left"
-                                                flexDirection="row"
-                                                rightIcon={<ChevronRightIcon/>}
-                                            >
-                                                <Image w="28px" src={flags[language.languageName.toLowerCase() as keyof typeof flags]}/>
-                                                <Text fontSize="lg" ml={2}>{language.languageName}</Text>
-                                            </Button>
-                                        </LinkPage>
-                                    )
-                                )
-                            }
-                        </Stack>
-                        <Select variant="filled" size="md" onChange={changeHandler}>
-                            <option value="Norwegian">Norwegian</option>
-                            <option value="German">German</option>
-                            <option value="Polish">Polish</option>
-                            <option value="Russian">Russian</option>
-                            <option value="French">French</option>
-                            <option value="Spanish">Spanish</option>
-                        </Select>
-                    </Box>
+                <LanguagesHeader/>
+                {
+                    user.languages?.map((language, index) => (
+                            <LinkPage to={`/decks/${language.languageName.toLowerCase()}`} key={index}>
+                                <Button
+                                    w="100%"
+                                    size="lg"
+                                    variant="outline"
+                                    justifyContent="space-between"
+                                    rightIcon={<ChevronRightIcon/>}
+                                >
+                                    <Flex alignItems="center">
+                                        <Image w="28px" src={flags[language.languageName.toLowerCase() as keyof typeof flags]}/>
+                                        <Text fontSize="lg" ml={6}>{language.languageName}</Text>
+                                    </Flex>
+                                </Button>
+                            </LinkPage>
+                        )
+                    )
+                }
+                <Flex justifyContent="space-between">
+                    <Select variant="filled" size="lg" onChange={changeHandler}>
+                        <option value="Norwegian">Norwegian</option>
+                        <option value="German">German</option>
+                        <option value="Polish">Polish</option>
+                        <option value="Russian">Russian</option>
+                        <option value="French">French</option>
+                        <option value="Spanish">Spanish</option>
+                    </Select>
                     <Button
-                        width="140px"
+                        minW="140px"
+                        ml={3}
+                        size="lg"
                         type="submit"
                         onClick={addHandler}
-                        marginTop="auto"
                     >
                         Add Language
                     </Button>
                 </Flex>
-            </Box>
+            </Stack>
         </Box>
     );
 }

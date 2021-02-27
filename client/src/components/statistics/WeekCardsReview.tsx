@@ -58,7 +58,7 @@ export const WeekCardsReview: React.FC = () => {
 
     return (
         <Box>
-            <Heading as="h1" fontSize="22px">Week Activity 📊</Heading>
+            <Heading as="h1" fontSize="22px">Week Activity</Heading>
             <Stack
                 sx={styleStack}
                 padding={4}

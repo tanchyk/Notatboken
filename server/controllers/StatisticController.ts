@@ -104,6 +104,22 @@ class StatisticController {
         return res.status(200).send({streak, today});
     }
 
+    static getCardReviewDay = async (req: Request, res: Response, next: NextFunction) => {
+        const userId = res.locals.userId;
+
+        const cardCheckedRepository = getRepository(CardChecked);
+
+        const amount = await cardCheckedRepository.createQueryBuilder("card_checked")
+            .leftJoin("card_checked.user", "user")
+            .where("user.id = :id", {id: userId})
+            .andWhere("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {createdAt: new Date().toISOString().split('T')[0]})
+            .getCount()
+
+        console.log(amount)
+
+        return res.status(200).send({amount})
+    }
+
     static getCardReviewWeek = async (req: Request, res: Response, next: NextFunction) => {
         const userId = res.locals.userId;
 

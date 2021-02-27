@@ -6,13 +6,13 @@ import {
 import {
     Box,
     Button,
-    Avatar,
     Flex,
     Heading,
     Image,
     IconButton,
     Stack,
-    useDisclosure, Menu, MenuDivider, MenuButton, MenuItem, MenuList, useStyleConfig
+    useDisclosure,
+    useStyleConfig
 } from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../../store/userSlice";
@@ -21,9 +21,11 @@ import {history, LanguageContext} from '../../App';
 import {Wrapper} from "../wrappers/Wrapper";
 import {ColorModeSwitcher} from "./ColorModeSwitcher";
 import {CloseIcon } from '@chakra-ui/icons'
-import { FaUser, HiMenu, IoLanguageOutline, MdExitToApp} from "react-icons/all";
+import {HiMenu} from "react-icons/all";
 import {NavbarProfile} from "../profile/navigation/NavbarProfile";
 import {NavDecks} from "../decks/NavDecks";
+import {StreakNavbar} from "./StreakNavbar";
+import {UserIcon} from "./UserIcon";
 
 const NavBar: React.FC<{}> = ({}) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -65,31 +67,8 @@ const NavBar: React.FC<{}> = ({}) => {
                         />
                     ) : null
                 }
-                <Menu placement="bottom-end">
-                    <MenuButton
-                        size="md"
-                        variant="outline"
-                        borderRadius="full"
-                    >
-                        <Avatar size="md" name={user.username!} src={user.avatar!} />
-                    </MenuButton>
-                    <MenuList w="260px">
-                        <LinkPage to="/profile">
-                            <MenuItem icon={<FaUser/>}>
-                                Profile
-                            </MenuItem>
-                        </LinkPage>
-                        <LinkPage to="/">
-                            <MenuItem icon={<IoLanguageOutline/>}>
-                                Languages
-                            </MenuItem>
-                        </LinkPage>
-                        <MenuDivider/>
-                        <MenuItem icon={<MdExitToApp />} onClick={logoutHandler}>
-                            Log out
-                        </MenuItem>
-                    </MenuList>
-                </Menu>
+                <StreakNavbar />
+                <UserIcon logoutHandler={logoutHandler} />
             </>
         );
     } else {
