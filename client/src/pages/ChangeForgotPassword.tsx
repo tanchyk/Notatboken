@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Button, Heading, Image, Stack, Text} from "@chakra-ui/react";
+import {Box, Button, Text} from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {validatePassword} from "../utils/validationFunctions";
 import {FieldProps} from "../utils/types";
@@ -42,52 +42,47 @@ export const ChangeForgotPassword: React.FC = () => {
         >
             {() => (
                 <Form>
-                    <AuthWrapper>
-                        <Box boxSize={["sm", "sm", "sm", "md"]}>
-                            <Image
-                                src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614362319/notatboken/change-password_xmdugh.png"
-                            />
+                    <AuthWrapper
+                        page="Change Password"
+                        src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614425565/mainpage/change_password_mr16nb.png"
+                        to="/register"
+                        text="If you dont have account yet, sign up"
+                    >
+                        <Box>
+                            <Text fontSize="lg" marginBottom={3} fontWeight="bold">New Password</Text>
+                            <Field name="newPassword" validate={validatePassword}>
+                                {({field, form}: FieldProps) => (
+                                    <PasswordInput
+                                        size="lg"
+                                        name="newPassword"
+                                        placeholder="Enter new password"
+                                        field={field}
+                                        form={form}
+                                    />
+                                )}
+                            </Field>
                         </Box>
-                        <Stack spacing={5}>
-                            <Heading as="h1" size="xl">
-                                Change Password
-                            </Heading>
-                            <Box>
-                                <Text fontSize="lg" marginBottom={3} fontWeight="bold">New Password</Text>
-                                <Field name="newPassword" validate={validatePassword}>
-                                    {({field, form}: FieldProps) => (
-                                        <PasswordInput
-                                            size="lg"
-                                            name="newPassword"
-                                            placeholder="Enter new password"
-                                            field={field}
-                                            form={form}
-                                        />
-                                    )}
-                                </Field>
-                            </Box>
-                            <Box>
-                                <Text fontSize="lg" marginBottom={3} fontWeight="bold">Confirm New Password</Text>
-                                <Field name="confirmPassword" validate={validatePassword}>
-                                    {({field, form}: FieldProps) => (
-                                        <PasswordInput
-                                            size="lg"
-                                            name="confirmPassword"
-                                            placeholder="Confirm new password"
-                                            field={field}
-                                            form={form}
-                                        />
-                                    )}
-                                </Field>
-                            </Box>
-                            <Button
-                                width="150px"
-                                type="submit"
-                                size="lg"
-                            >
-                                Change Password
-                            </Button>
-                        </Stack>
+                        <Box>
+                            <Text fontSize="lg" marginBottom={3} fontWeight="bold">Confirm New Password</Text>
+                            <Field name="confirmPassword" validate={validatePassword}>
+                                {({field, form}: FieldProps) => (
+                                    <PasswordInput
+                                        size="lg"
+                                        name="confirmPassword"
+                                        placeholder="Confirm new password"
+                                        field={field}
+                                        form={form}
+                                    />
+                                )}
+                            </Field>
+                        </Box>
+                        <Button
+                            width="150px"
+                            type="submit"
+                            size="lg"
+                        >
+                            Change Password
+                        </Button>
                     </AuthWrapper>
                 </Form>
             )}

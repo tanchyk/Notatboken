@@ -12,8 +12,7 @@ import {
     Image,
     IconButton,
     Stack,
-    useColorModeValue,
-    useDisclosure, Menu, MenuDivider, MenuButton, MenuItem, MenuList
+    useDisclosure, Menu, MenuDivider, MenuButton, MenuItem, MenuList, useStyleConfig
 } from "@chakra-ui/react";
 import {useDispatch, useSelector} from "react-redux";
 import {logoutUser, userData} from "../../store/userSlice";
@@ -118,10 +117,11 @@ const NavBar: React.FC<{}> = ({}) => {
         );
     }
 
-    const bgNavbar = useColorModeValue("#fff", "gray.700");
+    const main = useStyleConfig("NavbarMain");
+    const auth = useStyleConfig("NavbarAuth");
 
     return (
-        <Flex bg={bgNavbar} p={3} justifyContent="center" borderBottom="1px">
+        <Flex sx={!!user.userId ? auth : main} p={3} justifyContent="center">
             <Wrapper variant='regular' direction="column">
                 <Flex justifyContent="space-between">
                     <LinkPage to="/">

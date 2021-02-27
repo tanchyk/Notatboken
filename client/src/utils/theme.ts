@@ -10,6 +10,24 @@ const Stack = {
     })
 }
 
+const NavbarAuth = {
+    baseStyle: (props: GlobalStyleProps) => ({
+        backgroundColor: mode("#fff", "gray.700")(props),
+        borderBottom: "1px",
+        position: "initial"
+    })
+}
+
+const NavbarMain = {
+    baseStyle: (props: GlobalStyleProps) => ({
+        backgroundColor: mode("#fff", "gray.700")(props),
+        position: "fixed",
+        transition: "box-shadow 0.2s",
+        w: "100%",
+        zIndex: 3
+    })
+}
+
 const Dropzone = {
     baseStyle: (props: GlobalStyleProps) => ({
         ...Stack.baseStyle(props),
@@ -80,6 +98,8 @@ export const theme = extendTheme({
     },
     components: {
         Stack,
+        NavbarAuth,
+        NavbarMain,
         Dropzone,
         Card,
         BackCard,
