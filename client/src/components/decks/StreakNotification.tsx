@@ -47,7 +47,7 @@ export const StreakNotification: React.FC<StreakNotificationProps> = ({isOpen, o
                 </AlertDialogBody>
                 <AlertDialogFooter>
                     <Button ref={cancelRef} onClick={onClose} size="lg">
-                        Back to learning 🚀
+                        Back to learning
                     </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>

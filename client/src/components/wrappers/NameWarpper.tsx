@@ -2,7 +2,7 @@ import React from "react";
 import {Wrapper} from "./Wrapper";
 import {Flex} from "@chakra-ui/react";
 
-export const AppWrapper: React.FC<{}> = ({children}) => {
+export const NameWrapper: React.FC<{}> = ({children}) => {
     return (
         <Flex
             justifyContent="center"

@@ -1,5 +1,7 @@
 //Validation functions
 
+import * as Yup from "yup";
+
 export const validateUsernameOrEmail = (value: string) => {
     let error;
     if (value.includes('@')) {
@@ -45,3 +47,10 @@ export const validatePassword = (value: string) => {
     }
     return error
 }
+
+export const DeckNameSchema = Yup.object().shape({
+    deckName: Yup.string()
+        .min(3, 'Too Short, name should be longer than 3.')
+        .max(40, 'Too Long, name should be shorter than 40.')
+        .required('Required')
+});

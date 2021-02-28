@@ -7,11 +7,11 @@ import {AppDispatch} from "../../store/store";
 import {FieldProps, FolderSliceType} from "../../utils/types";
 import {editFolder, fetchFolder, foldersError, foldersStatus, singleFolder, clearFolderError} from "../../store/folderSlice";
 import {Alert, AlertDescription, AlertIcon, Box, Button, Heading, SimpleGrid, Stack} from "@chakra-ui/react";
-import {DeckNameSchema} from "../decks/CreateDeck";
 import {UserInput} from "../inputs/UserInput";
 import {history} from "../../App";
 import {NoDataBox} from "../NoDataBox";
 import {SmallDeckBox} from "./boxes/SmallDeckBox";
+import {DeckNameSchema} from "../../utils/validationFunctions";
 
 export const EditFolder: React.FC = () => {
     const match = useRouteMatch<{folderId: string, languageId: string}>();
@@ -47,7 +47,7 @@ export const EditFolder: React.FC = () => {
             }}
         >
             {() => (
-                <AdditionalDecksWrapper title={`Edit folder ${folder?.folderName} 📁`}>
+                <AdditionalDecksWrapper title={`Edit folder ${folder?.folderName}`} type="folder">
                     <Form>
                         <Stack spacing={5} mt={3}>
                             <Heading size="md">{`Change the name of your folder ${folder?.folderName}`}</Heading>

@@ -13,7 +13,6 @@ import {Field, Form, Formik} from "formik";
 import {AdditionalDecksWrapper} from "../wrappers/AdditionalDecksWrapper";
 import {DeckSliceType, FieldProps} from "../../utils/types";
 import {UserInput} from "../inputs/UserInput";
-import {DeckNameSchema} from "./CreateDeck";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {cardsData, fetchCards, clearCards} from "../../store/cardSlice";
@@ -23,6 +22,7 @@ import {decksError, editDeck, clearDeckError, singleDeck, decksStatus, decksData
 import {AddIcon} from "@chakra-ui/icons";
 import {Link as LinkPage, useRouteMatch} from "react-router-dom";
 import {history} from "../../App";
+import {DeckNameSchema} from "../../utils/validationFunctions";
 
 export const EditDeck: React.FC = () => {
     const match = useRouteMatch<{deckId: string}>();
@@ -58,7 +58,7 @@ export const EditDeck: React.FC = () => {
             }}
         >
             {() => (
-                <AdditionalDecksWrapper title={`Edit deck ${deck?.deckName} 🗃️`}>
+                <AdditionalDecksWrapper title={`Edit deck ${deck?.deckName}`} type="deck">
                     <Form>
                         <Stack spacing={5} mt={3}>
                             <Heading size="md">{`Change the name of your deck  ${deck?.deckName}`}</Heading>

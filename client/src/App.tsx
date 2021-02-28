@@ -20,6 +20,7 @@ import {fetchStreak} from "./store/streakSlice";
 import {StatisticsPage} from "./pages/application/StatisticsPage";
 import {ChangeForgotPassword} from "./pages/ChangeForgotPassword";
 import {ForgotPassword} from "./pages/ForgotPassword";
+import {LoadingPage} from "./pages/LoadingPage";
 
 export const CloseContextHome = createContext<any>([]);
 export const CloseContextFolders = createContext<any>([]);
@@ -90,9 +91,13 @@ const App: React.FC<{}> = () => {
                 <CloseContextHome.Provider value={[closeCreateHome, setCloseCreateHome]}>
                     <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
                         <LanguageContext.Provider value={[language, setLanguage]}>
-                            <Router history={history}>
-                                {routes}
-                            </Router>
+                            {
+                                status === 'loading' ? <LoadingPage /> : (
+                                    <Router history={history}>
+                                        {routes}
+                                    </Router>
+                                )
+                            }
                         </LanguageContext.Provider>
                     </CloseContextFolders.Provider>
                 </CloseContextHome.Provider>

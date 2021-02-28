@@ -5,7 +5,7 @@ import {useSelector} from "react-redux";
 import {userData} from "../../store/userSlice";
 import {LanguagesList} from "../../components/startPage/LanguagesList";
 import {UserStatistics} from "../../components/startPage/UserStatistics";
-import {AppWrapper} from "../../components/wrappers/AppWarpper";
+import {NameWrapper} from "../../components/wrappers/NameWarpper";
 import {Grid} from "@chakra-ui/core";
 
 const StartPage: React.FC = () => {
@@ -13,7 +13,7 @@ const StartPage: React.FC = () => {
 
     return (
         <>
-            <AppWrapper>
+            <NameWrapper>
                 <Flex direction="row" alignItems="center">
                     <Image
                         src={user.avatar!}
@@ -25,7 +25,7 @@ const StartPage: React.FC = () => {
                         <Text color="white" fontSize="lg" fontWeight="600">Notatboken member</Text>
                     </Stack>
                 </Flex>
-            </AppWrapper>
+            </NameWrapper>
             <Flex justifyContent="center">
                 <Wrapper variant="regular">
                     <Grid
@@ -35,7 +35,6 @@ const StartPage: React.FC = () => {
                         paddingTop={8}
                         paddingBottom={8}
                         w="100%"
-
                     >
                         <GridItem colSpan={[5,5,3,3]}>
                             <LanguagesList/>

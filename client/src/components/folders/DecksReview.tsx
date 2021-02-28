@@ -29,7 +29,7 @@ export const DecksReview: React.FC = () => {
     }, [folderStatus])
 
     return (
-        <AdditionalDecksWrapper title={`Decks in ${folder?.folderName} folder 🗂`} w="100%">
+        <AdditionalDecksWrapper type="folder" title={`Decks in ${folder?.folderName} folder`} w="100%">
             {
                 folder && folder.decks?.length !== 0 ? (
                     <SimpleGrid columns={[1,1,2,2]} spacing={4} marginTop={2} marginBottom={2}>

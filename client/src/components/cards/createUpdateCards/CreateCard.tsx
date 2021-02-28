@@ -93,7 +93,7 @@ export const CreateCard: React.FC = () => {
         >
             {({}) => (
                 <Form>
-                    <AdditionalDecksWrapper title={`Create card for ${deck?.deckName} 🗳️`}>
+                    <AdditionalDecksWrapper title={`Create card for ${deck?.deckName}`} type="deck">
                         <CardInput
                             photo={photo}
                             setPhoto={setPhoto}

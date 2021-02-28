@@ -56,7 +56,7 @@ export const  ChooseFolder: React.FC< AddDeckToFolderProps> = ({match}) => {
     }, [deckStatus])
 
     return (
-        <AdditionalDecksWrapper title={`Choose Folder for ${deck?.deckName} deck 🗄️️`}>
+        <AdditionalDecksWrapper title={`Choose Folder for ${deck?.deckName} deck`} type="deck">
             {
                 folderData.length === 0 ? <NoDataBox type="folders"/> : (
                     <Stack spacing={5}>

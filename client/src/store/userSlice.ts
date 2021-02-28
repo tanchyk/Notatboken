@@ -168,7 +168,7 @@ const userSlice = createSlice({
         builder.addCase(createUser.fulfilled, nodemailer)
         builder.addCase(createUser.rejected, fetchUserRejected)
 
-        //Create
+        //Change Password
         builder.addCase(requestChangePassword.pending, fetchUserPending)
         builder.addCase(requestChangePassword.fulfilled, nodemailer)
         builder.addCase(requestChangePassword.rejected, fetchUserRejected)
@@ -221,6 +221,7 @@ const userSlice = createSlice({
                       ...state.user,
                         userGoal: payload.userGoal
                     },
+                    status: 'succeeded',
                     error: {type: 'goal'}
                 });
             } else {

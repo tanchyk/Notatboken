@@ -12,7 +12,7 @@ import {
 import {history, LanguageContext} from '../../App';
 import {useDispatch, useSelector} from "react-redux";
 import {userData} from "../../store/userSlice";
-import {DecksHome} from "../../components/decks/DecksHome";
+import {Decks} from "../../components/decks/Decks";
 import {Languages} from "../../utils/types";
 import {CreateCard} from "../../components/cards/createUpdateCards/CreateCard";
 import {decksStatus, fetchDecks, clearDecks} from "../../store/deckSlice";
@@ -27,7 +27,7 @@ import {flags} from "../../utils/theme";
 import {DecksReview} from "../../components/folders/DecksReview";
 import {Progress} from "../../components/progress/Progress";
 import {clearFolders, fetchFolder, foldersStatus} from "../../store/folderSlice";
-import {AppWrapper} from "../../components/wrappers/AppWarpper";
+import {NameWrapper} from "../../components/wrappers/NameWarpper";
 import {NavDecks} from "../../components/decks/NavDecks";
 
 const DecksPage: React.FC = () => {
@@ -74,12 +74,12 @@ const DecksPage: React.FC = () => {
 
     return (
         <>
-            <AppWrapper>
+            <NameWrapper>
                 <Flex direction="row">
                     <Heading color="white" fontSize={language === 'Norwegian' ? ["28px", "32px", "38px", "38px"] : "38px"} mr={3}>{language}</Heading>
                     <Image src={flags[language.toLowerCase() as keyof typeof flags]} w="40px" pt={[0,0,2,2]}/>
                 </Flex>
-            </AppWrapper>
+            </NameWrapper>
             <Flex justifyContent="center">
                 <Wrapper variant="regular">
                     {
@@ -89,7 +89,7 @@ const DecksPage: React.FC = () => {
                                     sx={styleStack}
                                     w={["100%", "100%", "35%", "35%", "35%", "27%"]}
                                     display={["none", "none", "flex", "flex", "flex", "flex"]}
-                                    h="458.2px"
+                                    h="65vh"
                                     paddingTop={8}
                                     paddingBottom={8}
                                     marginTop={8}
@@ -100,7 +100,7 @@ const DecksPage: React.FC = () => {
                                     <Switch>
                                         <Route
                                             path={`${match.url}/home`}
-                                            render={() => <DecksHome language={language as Languages} languageId={languageId}/>}
+                                            render={() => <Decks language={language as Languages} languageId={languageId}/>}
                                         />
                                         <Route
                                             path={`${match.url}/folders`}
