@@ -5,7 +5,7 @@ import {
     Button,
     useToast,
     Heading,
-    Flex,
+    Flex
 } from "@chakra-ui/react";
 import {Field, Form, Formik} from "formik";
 import {BasicUser, FieldProps} from "../../utils/types";
@@ -80,7 +80,7 @@ export const BasicInformation: React.FC<{}> = () => {
                 }
             }}
         >
-            {({values}) => (
+            {() => (
                 <Form>
                     <ProfileWrapper>
                         <Flex direction="row">
@@ -130,7 +130,25 @@ export const BasicInformation: React.FC<{}> = () => {
                         </Box>
                         <Box>
                             <Text fontSize="lg" marginBottom={3} fontWeight="bold">Avatar</Text>
-                            <AvatarZone avatar={values.avatarData} username={user.username!} />
+                            <Field name="avatarData">
+                                {({field, form}: FieldProps) => (
+                                    <>
+                                        <AvatarZone avatar={field.value} username={user.username!} />
+                                        {
+                                            form.errors.avatarData ? (
+                                                <Text
+                                                    fontWeight="600"
+                                                    fontSize="lg"
+                                                    color="red.500"
+                                                    mt={3}
+                                                >
+                                                    {form.errors.avatarData}
+                                                </Text>
+                                            ) : null
+                                        }
+                                    </>
+                                )}
+                            </Field>
                         </Box>
                         <Button
                             width="130px"

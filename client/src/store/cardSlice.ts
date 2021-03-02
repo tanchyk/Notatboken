@@ -1,12 +1,12 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {
+    CardData,
     CardDispatch,
     CardSliceType,
     ErrorDeleteCard,
     Proficiency,
     StreakSliceType
 } from "../utils/types";
-import {Card} from "../../../server/entities/Card";
 import {serverRequest} from "./requestFunction";
 
 const initialState = {
@@ -19,7 +19,7 @@ const initialState = {
 } as CardSliceType;
 
 //Async reducers
-export const fetchCards = createAsyncThunk<Array<Card>, {deckId: number}>(
+export const fetchCards = createAsyncThunk<Array<CardData>, {deckId: number}>(
     'cards/fetchCards',
     async (cardData) => {
         const response = await fetch(`/api/cards/find-cards/${cardData.deckId}`, {
@@ -28,11 +28,11 @@ export const fetchCards = createAsyncThunk<Array<Card>, {deckId: number}>(
                 'Content-Type': 'application/json'
             }
         });
-        return (await response.json()) as Array<Card>;
+        return (await response.json()) as Array<CardData>;
     }
 )
 
-export const fetchCardsForReview = createAsyncThunk<Array<Card>, {deckId: number}>(
+export const fetchCardsForReview = createAsyncThunk<Array<CardData>, {deckId: number}>(
     'cards/fetchCardsForReview',
     async (cardData) => {
         const response = await fetch(`/api/cards/find-review/${cardData.deckId}`, {
@@ -41,7 +41,7 @@ export const fetchCardsForReview = createAsyncThunk<Array<Card>, {deckId: number
                 'Content-Type': 'application/json'
             }
         });
-        return (await response.json()) as Array<Card>;
+        return (await response.json()) as Array<CardData>;
     }
 )
 
@@ -53,20 +53,20 @@ export const addCard = createAsyncThunk<{message: string}, {card: CardDispatch}>
     }
 )
 
-export const editCard = createAsyncThunk<Card, {card: CardDispatch}>(
+export const editCard = createAsyncThunk<CardData, {card: CardDispatch}>(
     'cards/editCard',
     async (cardData, {getState}) => {
         const response = await serverRequest(cardData.card, getState, '/api/cards/edit-card', 'PUT');
-        return (await response.json()) as Card;
+        return (await response.json()) as CardData;
     }
 )
 
-export const editCardStatus = createAsyncThunk<{card: Card, notification: null | string}, {cardId: number, proficiency: Proficiency, userGoal: number}>(
+export const editCardStatus = createAsyncThunk<{card: CardData, notification: null | string}, {cardId: number, proficiency: Proficiency, userGoal: number}>(
     'cards/editCardStatus',
     async (cardData, {getState}) => {
         const check = getState() as {streak: StreakSliceType};
         const response = await serverRequest({...cardData, today: check.streak.today}, getState, '/api/cards/change-status', 'PUT');
-        return (await response.json()) as {card: Card, notification: null | string};
+        return (await response.json()) as {card: CardData, notification: null | string};
     }
 )
 
@@ -116,7 +116,7 @@ const cardSlice = createSlice({
     extraReducers: builder => {
         //Fetch
         builder.addCase(fetchCards.pending, fetchCardPending)
-        builder.addCase(fetchCards.fulfilled, (state: CardSliceType, { payload }: { payload: Array<Card> }) => {
+        builder.addCase(fetchCards.fulfilled, (state: CardSliceType, { payload }: { payload: Array<CardData> }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -128,7 +128,7 @@ const cardSlice = createSlice({
             } else {
                 return Object.assign({}, state, {
                     cards: state.cards.concat(payload.sort(
-                        (cardA, cardB) => new Date(cardA.reviewDate).getTime() - new Date(cardB.reviewDate).getTime()
+                        (cardA, cardB) => new Date(cardA.reviewDate!).getTime() - new Date(cardB.reviewDate!).getTime()
                         )
                     ),
                     status: 'succeeded'
@@ -139,7 +139,7 @@ const cardSlice = createSlice({
 
         //Fetch for review
         builder.addCase(fetchCardsForReview.pending, fetchCardPending)
-        builder.addCase(fetchCardsForReview.fulfilled, (state: CardSliceType, { payload }: { payload: Array<Card> }) => {
+        builder.addCase(fetchCardsForReview.fulfilled, (state: CardSliceType, { payload }: { payload: Array<CardData> }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -151,7 +151,7 @@ const cardSlice = createSlice({
             } else {
                 return Object.assign({}, state, {
                     cards: state.cards.concat(payload.sort(
-                        (cardA, cardB) => new Date(cardA.reviewDate).getTime() - new Date(cardB.reviewDate).getTime()
+                        (cardA, cardB) => new Date(cardA.reviewDate!).getTime() - new Date(cardB.reviewDate!).getTime()
                         )
                     ),
                     status: 'succeeded'
@@ -185,7 +185,7 @@ const cardSlice = createSlice({
 
         //Edit
         builder.addCase(editCard.pending, fetchCardPending)
-        builder.addCase(editCard.fulfilled, (state: CardSliceType, { payload }: { payload: Card }) => {
+        builder.addCase(editCard.fulfilled, (state: CardSliceType, { payload }: { payload: CardData }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -214,7 +214,7 @@ const cardSlice = createSlice({
 
         //Edit status
         builder.addCase(editCardStatus.pending, fetchCardPending)
-        builder.addCase(editCardStatus.fulfilled, (state: CardSliceType, { payload }: { payload: {card: Card, notification: null | string} }) => {
+        builder.addCase(editCardStatus.fulfilled, (state: CardSliceType, { payload }: { payload: {card: CardData, notification: null | string} }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -233,7 +233,7 @@ const cardSlice = createSlice({
                     }
                 }
 
-                if (new Date(payload.card.reviewDate).getDate() === new Date().getDate()) {
+                if (new Date(payload.card.reviewDate!).getDate() === new Date().getDate()) {
                     newState.cards.push(payload.card);
                 }
 

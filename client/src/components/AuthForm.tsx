@@ -100,7 +100,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({action, actionHandler}) => {
             {() => (
                 <Form>
                     <AuthWrapper
-                        page={action === "login" ? "Login":"Sign in"}
+                        page={action === "login" ? "Login":"Sign up"}
                         src={action === "login" ?
                             "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614424865/mainpage/login_f0ccax.png" :
                             "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614424866/mainpage/register_aamjpe.png"}

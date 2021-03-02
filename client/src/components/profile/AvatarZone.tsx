@@ -12,7 +12,7 @@ export const AvatarZone: React.FC<AvatarZoneProps> = ({avatar, username}) => {
     const dropzone = useStyleConfig("Dropzone");
     const bgText = useStyleConfig("BgText");
 
-    const {setFieldValue} = useFormikContext();
+    const {setFieldValue, setFieldError} = useFormikContext();
 
     const onDrop = useCallback(acceptedFiles => {
         acceptedFiles.forEach(async (acceptedFile: any) => {
@@ -23,10 +23,18 @@ export const AvatarZone: React.FC<AvatarZoneProps> = ({avatar, username}) => {
             }
         })
     }, [])
+
+    const onDropRejected = useCallback(() => {
+        console.log(1)
+        return setFieldError('avatarData', "File size is too large");
+    }, [])
+
     const {getRootProps, getInputProps, isDragActive} = useDropzone({
         onDrop,
+        onDropRejected,
         accept: 'image/*',
-        multiple: false
+        multiple: false,
+        maxSize: 102400
     })
 
     return (

@@ -1,9 +1,8 @@
 import {SerializedError} from "@reduxjs/toolkit";
 import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
-import {Card} from "../../../server/entities/Card";
-import {Language} from "../../../server/entities/Language";
-import {Deck} from "../../../server/entities/Deck";
-import {Folder} from "../../../server/entities/Folder";
+// import {Card} from "../../../server/entities/Card";
+// import {Deck} from "../../../server/entities/Deck";
+// import {Folder} from "../../../server/entities/Folder";
 
 //Slice Types
 
@@ -47,7 +46,7 @@ export interface UserAuth {
     name: string | null;
     username: string | null;
     email: string | null;
-    languages: Array<Language> | null;
+    languages: Array<LanguageData> | null;
     userGoal: number | null;
     avatar: string | null;
     createdAt: Date | null;
@@ -77,6 +76,12 @@ export interface RegisterData {
     password: string;
 }
 
+//
+export interface LanguageData {
+    languageId: number;
+    languageName: string;
+}
+
 //Deck types
 
 export interface DeckData {
@@ -84,9 +89,9 @@ export interface DeckData {
     deckName: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    language: Language | null;
-    cards: Card[] | null;
-    folder: Folder | null;
+    language: LanguageData | null;
+    cards: CardData[] | null;
+    folder: FolderData | null;
     amountOfCards?: number | null;
 }
 
@@ -102,8 +107,8 @@ export interface FolderData {
     folderName: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    language: Language | null;
-    decks: Deck[] | null;
+    language: LanguageData | null;
+    decks: DeckData[] | null;
 }
 
 export interface ErrorDeleteFolder extends Object {
@@ -125,7 +130,7 @@ export interface CardData {
     reviewDate: Date | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    deck: Deck | DeckData | null;
+    deck: DeckData | null;
 }
 
 export interface ErrorDeleteCard extends Object {

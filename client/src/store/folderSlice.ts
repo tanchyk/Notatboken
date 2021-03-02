@@ -1,6 +1,5 @@
-import {ErrorDeleteFolder, FolderSliceType} from "../utils/types";
+import {ErrorDeleteFolder, FolderData, FolderSliceType} from "../utils/types";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {Folder} from "../../../server/entities/Folder";
 import {serverRequest} from "./requestFunction";
 
 const initialState = {
@@ -13,7 +12,7 @@ const initialState = {
 } as FolderSliceType;
 
 //Async reducers
-export const fetchFolder = createAsyncThunk<Array<Folder>, {languageId: number}>(
+export const fetchFolder = createAsyncThunk<Array<FolderData>, {languageId: number}>(
     'folders/fetchFolders',
     async (folderData) => {
         const response = await fetch(`/api/folders/find-folders/${folderData.languageId}`, {
@@ -22,39 +21,39 @@ export const fetchFolder = createAsyncThunk<Array<Folder>, {languageId: number}>
                 'Content-Type': 'application/json'
             }
         });
-        return (await response.json()) as Array<Folder>;
+        return (await response.json()) as Array<FolderData>;
     }
 );
 
-export const addFolder = createAsyncThunk<Folder, {folderName: string, languageId: number}>(
+export const addFolder = createAsyncThunk<FolderData, {folderName: string, languageId: number}>(
     'folders/addFolder',
     async (folderData, {getState}) => {
         const response = await serverRequest(folderData, getState, '/api/folders/create-folder', 'POST');
-        return (await response.json()) as Folder;
+        return (await response.json()) as FolderData;
     }
 );
 
-export const editFolder = createAsyncThunk<Folder, {folderId: number, folderName: string}>(
+export const editFolder = createAsyncThunk<FolderData, {folderId: number, folderName: string}>(
     'folders/editFolder',
     async (folderData, {getState}) => {
         const response = await serverRequest(folderData, getState, '/api/folders/edit-folder', 'PUT');
-        return (await response.json()) as Folder;
+        return (await response.json()) as FolderData;
     }
 )
 
-export const addDeckToFolder = createAsyncThunk<{folder: Folder}, {folderId: number, deckId: number}>(
+export const addDeckToFolder = createAsyncThunk<{folder: FolderData}, {folderId: number, deckId: number}>(
     'folders/addDeckToFolder',
     async (folderData, {getState}) => {
         const response = await serverRequest(folderData, getState, '/api/folders/add-deck-folder', 'PUT');
-        return (await response.json()) as {folder: Folder};
+        return (await response.json()) as {folder: FolderData};
     }
 );
 
-export const deleteDeckFromFolder = createAsyncThunk<{folder: Folder}, {folderId: number, deckId: number}>(
+export const deleteDeckFromFolder = createAsyncThunk<{folder: FolderData}, {folderId: number, deckId: number}>(
     'folders/deleteDeckFromFolder',
     async (folderData, {getState}) => {
         const response = await serverRequest(folderData, getState, '/api/folders/delete-deck-folder', 'PUT');
-        return (await response.json()) as {folder: Folder};
+        return (await response.json()) as {folder: FolderData};
     }
 );
 
@@ -85,7 +84,7 @@ const fetchFolderRejected = (state: FolderSliceType, {}) => {
     return Object.assign({}, state, {status: 'failed'});
 }
 
-const decksOperations = (state: FolderSliceType, { payload }: { payload: {folder: Folder} }) => {
+const decksOperations = (state: FolderSliceType, { payload }: { payload: {folder: FolderData} }) => {
     if ("message" in payload) {
         return Object.assign({}, state, {
             status: 'failed',
@@ -128,7 +127,7 @@ const folderSlice = createSlice({
     extraReducers: builder => {
         //Fetch
         builder.addCase(fetchFolder.pending, fetchFolderPending)
-        builder.addCase(fetchFolder.fulfilled, (state: FolderSliceType, { payload }: { payload: Array<Folder> }) => {
+        builder.addCase(fetchFolder.fulfilled, (state: FolderSliceType, { payload }: { payload: Array<FolderData> }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',
@@ -140,7 +139,7 @@ const folderSlice = createSlice({
             } else {
                 return Object.assign({}, state, {
                     folders: state.folders.concat(payload.sort(
-                        (folderA, folderB) => folderA.folderName.localeCompare(folderB.folderName)
+                        (folderA, folderB) => folderA.folderName!.localeCompare(folderB.folderName!)
                     )),
                     status: 'succeeded'
                 });
@@ -176,7 +175,7 @@ const folderSlice = createSlice({
 
         //Edit folder
         builder.addCase(editFolder.pending, fetchFolderPending)
-        builder.addCase(editFolder.fulfilled, (state: FolderSliceType, { payload }: { payload: Folder }) => {
+        builder.addCase(editFolder.fulfilled, (state: FolderSliceType, { payload }) => {
             if ("message" in payload) {
                 return Object.assign({}, state, {
                     status: 'failed',

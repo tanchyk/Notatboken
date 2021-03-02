@@ -59,7 +59,7 @@ export const CardsReview: React.FC = () => {
             bg={colorMode === "light" ? "#fff" : "transparent"}
             spacing={8}
             marginTop={8}
-            marginBottom={1}
+            marginBottom={8}
             padding={6}
             borderWidth="1px"
             borderRadius="lg"
