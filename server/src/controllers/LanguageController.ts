@@ -1,7 +1,7 @@
 import {Response, Request, NextFunction} from 'express';
 import {getRepository} from "typeorm";
-import {User} from "../entities/User";
-import {Language} from "../entities/Language";
+import {User} from "../entity/User";
+import {Language} from "../entity/Language";
 
 class LanguageController {
     static addLanguage = async (req: Request, res: Response, next: NextFunction) => {

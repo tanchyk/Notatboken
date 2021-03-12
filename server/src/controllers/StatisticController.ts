@@ -1,9 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import {Brackets, getRepository} from "typeorm";
-import {Card} from "../entities/Card";
-import {User} from "../entities/User";
-import {DayChecked} from "../entities/DayChecked";
-import {CardChecked} from "../entities/CardChecked";
+import {Card} from "../entity/Card";
+import {User} from "../entity/User";
+import {DayChecked} from "../entity/DayChecked";
+import {CardChecked} from "../entity/CardChecked";
 
 class StatisticController {
     static getLanguageStats = async (req: Request, res: Response, next: NextFunction) => {
@@ -114,8 +114,6 @@ class StatisticController {
             .where("user.id = :id", {id: userId})
             .andWhere("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {createdAt: new Date().toISOString().split('T')[0]})
             .getCount()
-
-        console.log(amount)
 
         return res.status(200).send({amount})
     }

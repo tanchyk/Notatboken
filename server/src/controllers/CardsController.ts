@@ -1,8 +1,8 @@
 import {Response, Request, NextFunction} from 'express';
 import {Brackets, getRepository} from "typeorm";
-import {Card} from "../entities/Card";
-import {CardChecked} from "../entities/CardChecked";
-import {DayChecked} from "../entities/DayChecked";
+import {Card} from "../entity/Card";
+import {CardChecked} from "../entity/CardChecked";
+import {DayChecked} from "../entity/DayChecked";
 
 const Reverso = require('reverso-api');
 
@@ -211,7 +211,6 @@ class CardsController {
             next(err);
         }
 
-        console.log(notification)
         return res.status(200).send({card, notification});
     }
 

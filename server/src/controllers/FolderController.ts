@@ -1,8 +1,8 @@
 import {NextFunction, Request, Response} from "express";
 import {Brackets, getRepository} from "typeorm";
-import {Folder} from "../entities/Folder";
-import {Deck} from "../entities/Deck";
-import {Card} from "../entities/Card";
+import {Folder} from "../entity/Folder";
+import {Deck} from "../entity/Deck";
+import {Card} from "../entity/Card";
 
 class FolderController {
     static findFolders = async (req: Request, res: Response, next: NextFunction) => {
@@ -80,7 +80,8 @@ class FolderController {
     }
 
     static editFolder = async (req: Request, res: Response, next: NextFunction) => {
-        const {folderId, folderName} = req.body;
+        const userId = res.locals.userId;
+        const {folderId, folderName, languageId} = req.body;
 
         if(folderName.length < 3 || folderName.length > 40) {
             return res.status(400).send({message: 'Invalid Folder name'});
@@ -105,8 +106,11 @@ class FolderController {
             return res.status(400).send({message: 'Please change name of the folder'});
         }
 
-        const checkFolder: Folder = await folderRepository.findOneOrFail({ where: {
-                folderName
+        const checkFolder: Folder | undefined = await folderRepository.findOne({ relations: ["language", "user"],
+            where: {
+                folderName,
+                language: {languageId},
+                user: {id: userId}
             }
         });
 

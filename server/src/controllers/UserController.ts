@@ -1,7 +1,7 @@
 require('dotenv').config();
 import {Response, Request, NextFunction} from 'express';
 import {getRepository} from "typeorm";
-import {User} from "../entities/User";
+import {User} from "../entity/User";
 import argon2 from "argon2";
 
 const cloudinary = require("cloudinary").v2;
@@ -64,7 +64,7 @@ class UserController {
             return res.status(409).send({message: 'Email is already taken'});
         }
 
-        if(avatarData !== user.avatar) {
+        if(avatarData && avatarData !== user.avatar) {
             try {
                 await cloudinary.config({
                     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

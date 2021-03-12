@@ -2,7 +2,7 @@ import {transporter} from "../middleware/nodemailer";
 
 require('dotenv').config();
 import {Response, Request} from 'express';
-import {User} from "../entities/User";
+import {User} from "../entity/User";
 import argon2 from "argon2";
 import {getRepository} from "typeorm";
 import jwt from 'jsonwebtoken';
@@ -149,7 +149,6 @@ class AuthController {
     //forgot password
     static forgotPassword = async (req: Request, res: Response) => {
         const {email} = req.body;
-        console.log(email)
 
         const userRepository = getRepository(User);
 

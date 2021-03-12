@@ -33,7 +33,7 @@ export const addFolder = createAsyncThunk<FolderData, {folderName: string, langu
     }
 );
 
-export const editFolder = createAsyncThunk<FolderData, {folderId: number, folderName: string}>(
+export const editFolder = createAsyncThunk<FolderData, {folderId: number, folderName: string, languageId: number}>(
     'folders/editFolder',
     async (folderData, {getState}) => {
         const response = await serverRequest(folderData, getState, '/api/folders/edit-folder', 'PUT');

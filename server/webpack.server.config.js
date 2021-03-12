@@ -3,9 +3,10 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
     name: "server",
+    mode: 'development',
 
     entry: {
-        server: ["@babel/polyfill" , './app.ts'],
+        server: ["@babel/polyfill" , './src/app.ts'],
     },
 
     output: {

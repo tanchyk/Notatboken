@@ -1,8 +1,5 @@
 import {SerializedError} from "@reduxjs/toolkit";
 import {FieldInputProps, FieldMetaProps, FormikProps} from "formik";
-// import {Card} from "../../../server/entities/Card";
-// import {Deck} from "../../../server/entities/Deck";
-// import {Folder} from "../../../server/entities/Folder";
 
 //Slice Types
 

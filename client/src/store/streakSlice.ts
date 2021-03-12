@@ -2,7 +2,7 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {StreakSliceType} from "../utils/types";
 
 const initialState = {
-    streak: null,
+    streak: 0,
     today: false
 } as StreakSliceType;
 

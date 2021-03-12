@@ -1,7 +1,7 @@
 import {Response, Request, NextFunction} from 'express';
 import {Brackets, getRepository} from "typeorm";
-import {Deck} from "../entities/Deck";
-import {Card} from "../entities/Card";
+import {Deck} from "../entity/Deck";
+import {Card} from "../entity/Card";
 
 class DecksController {
     static findDecks = async (req: Request, res: Response, next: NextFunction) => {

@@ -43,7 +43,7 @@ export const EditFolder: React.FC = () => {
                 folderName: ''
             }}
             onSubmit={async (values) => {
-                dispatch(editFolder({folderId, folderName: values.folderName}));
+                dispatch(editFolder({folderId, folderName: values.folderName, languageId}));
             }}
         >
             {() => (
