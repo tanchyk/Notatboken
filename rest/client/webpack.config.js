@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config()
 
 module.exports = function(env, argv) {
+    console.log(process.env.NODE_ENV)
     return {
         mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
