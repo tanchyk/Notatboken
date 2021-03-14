@@ -3,6 +3,7 @@ import {Button, Flex, Heading, Image, Stack, Text, useStyleConfig} from "@chakra
 import {Link as LinkPage} from "react-router-dom";
 import {flags} from "../../utils/theme";
 import {LangCards} from "./UserStatistics";
+import {getRequest} from "../../store/requestFunction";
 
 export const LanguageStats: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -11,11 +12,7 @@ export const LanguageStats: React.FC = () => {
     const [langCards, setLangCards] = useState<Array<LangCards> | null>(null);
 
     const loadData = async () => {
-        setLangCards(await fetch(
-            "/api/statistics/get-language-stats", {
-                method: 'GET'
-            }
-        ).then(response => response.json()))
+        setLangCards(await getRequest("/statistics/get-language-stats").then(response => response.json()))
     }
 
     useEffect(() => {

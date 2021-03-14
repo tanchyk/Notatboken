@@ -78,7 +78,6 @@ const NavBar: React.FC<{}> = ({}) => {
                     <Button
                         width="80px"
                         variant="ghost"
-                        mr={2}
                     >
                         Log in
                     </Button>

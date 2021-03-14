@@ -9,6 +9,7 @@ import {AuthWrapper} from "../components/wrappers/AuthWrapper";
 import {useSelector} from "react-redux";
 import {csrfData} from "../store/csrfSlice";
 import {history} from "../App";
+import {ppdRequest} from "../store/requestFunction";
 
 export const ChangeForgotPassword: React.FC = () => {
     const match = useRouteMatch<{token: string}>();
@@ -26,16 +27,11 @@ export const ChangeForgotPassword: React.FC = () => {
                 if(values.newPassword !== values.confirmPassword) {
                     setFieldError('newPassword', "Passwords don't match");
                 } else {
-                    const response = await fetch('/api/users/change-forgot-password', {
-                        method: 'POST',
-                        body: JSON.stringify({password: values.newPassword, token}),
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'CSRF-Token': `${csrfToken}`
+                    if(csrfToken) {
+                        const response = await ppdRequest(csrfToken, {password: values.newPassword, token}, '/users/change-forgot-password', 'POST');
+                        if(response.status === 204) {
+                            history.push('/login');
                         }
-                    })
-                    if(response.status === 204) {
-                        history.push('/login');
                     }
                 }
             }}

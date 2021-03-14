@@ -5,6 +5,7 @@ import {useSelector} from "react-redux";
 import {userData} from "../../store/userSlice";
 import {langColors} from "../../utils/theme";
 import {LangCards} from "../startPage/UserStatistics";
+import {getRequest} from "../../store/requestFunction";
 
 export const CardsPieChart: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -14,11 +15,7 @@ export const CardsPieChart: React.FC = () => {
     const [langCards, setLangCards] = useState<Array<LangCards> | null>(null);
 
     const loadData = async () => {
-        setLangCards(await fetch(
-            "/api/statistics/get-language-stats", {
-                method: 'GET'
-            }
-        ).then(response => response.json()))
+        setLangCards(await getRequest("/statistics/get-language-stats").then(response => response.json()))
     }
 
     useEffect(() => {

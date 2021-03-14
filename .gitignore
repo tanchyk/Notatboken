@@ -3,6 +3,9 @@
 /.pnp
 .pnp.js
 client/.env
+server/.env
+server/pgdata
+server/docker-compose.yml
 
 # testing
 /coverage

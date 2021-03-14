@@ -1,4 +1,5 @@
 module.exports = {
+    "name": "development",
     "type": "postgres",
     "host": "db",
     "port": 5432,

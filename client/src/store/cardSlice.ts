@@ -7,7 +7,7 @@ import {
     Proficiency,
     StreakSliceType
 } from "../utils/types";
-import {serverRequest} from "./requestFunction";
+import {getRequest, serverRequest} from "./requestFunction";
 
 const initialState = {
     cards: [],
@@ -22,12 +22,7 @@ const initialState = {
 export const fetchCards = createAsyncThunk<Array<CardData>, {deckId: number}>(
     'cards/fetchCards',
     async (cardData) => {
-        const response = await fetch(`/api/cards/find-cards/${cardData.deckId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await getRequest(`/cards/find-cards/${cardData.deckId}`);
         return (await response.json()) as Array<CardData>;
     }
 )
@@ -35,12 +30,7 @@ export const fetchCards = createAsyncThunk<Array<CardData>, {deckId: number}>(
 export const fetchCardsForReview = createAsyncThunk<Array<CardData>, {deckId: number}>(
     'cards/fetchCardsForReview',
     async (cardData) => {
-        const response = await fetch(`/api/cards/find-review/${cardData.deckId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await getRequest(`/cards/find-review/${cardData.deckId}`);
         return (await response.json()) as Array<CardData>;
     }
 )
@@ -48,7 +38,7 @@ export const fetchCardsForReview = createAsyncThunk<Array<CardData>, {deckId: nu
 export const addCard = createAsyncThunk<{message: string}, {card: CardDispatch}>(
     'cards/addCard',
     async (cardData, {getState}) => {
-        const response = await serverRequest(cardData.card, getState, '/api/cards/create-card', 'POST');
+        const response = await serverRequest(cardData.card, getState, '/cards/create-card', 'POST');
         return (await response.json()) as {message: string};
     }
 )
@@ -56,7 +46,7 @@ export const addCard = createAsyncThunk<{message: string}, {card: CardDispatch}>
 export const editCard = createAsyncThunk<CardData, {card: CardDispatch}>(
     'cards/editCard',
     async (cardData, {getState}) => {
-        const response = await serverRequest(cardData.card, getState, '/api/cards/edit-card', 'PUT');
+        const response = await serverRequest(cardData.card, getState, '/cards/edit-card', 'PUT');
         return (await response.json()) as CardData;
     }
 )
@@ -65,7 +55,7 @@ export const editCardStatus = createAsyncThunk<{card: CardData, notification: nu
     'cards/editCardStatus',
     async (cardData, {getState}) => {
         const check = getState() as {streak: StreakSliceType};
-        const response = await serverRequest({...cardData, today: check.streak.today}, getState, '/api/cards/change-status', 'PUT');
+        const response = await serverRequest({...cardData, today: check.streak.today}, getState, '/cards/change-status', 'PUT');
         return (await response.json()) as {card: CardData, notification: null | string};
     }
 )
@@ -73,7 +63,7 @@ export const editCardStatus = createAsyncThunk<{card: CardData, notification: nu
 export const deleteCard = createAsyncThunk<ErrorDeleteCard, {cardId: number}>(
     'cards/deleteCard',
     async (cardData, {getState}) => {
-        const response = await serverRequest({cardId: cardData.cardId}, getState, '/api/cards/delete-card', 'DELETE')
+        const response = await serverRequest({cardId: cardData.cardId}, getState, '/cards/delete-card', 'DELETE')
             .then(response => {
             if(response.status === 204) {
                 return {

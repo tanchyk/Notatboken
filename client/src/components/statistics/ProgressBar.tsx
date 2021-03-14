@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Stack, Progress, useStyleConfig, Text, CircularProgressLabel, CircularProgress} from "@chakra-ui/react";
+import {getRequest} from "../../store/requestFunction";
 
 interface ProgressBarProps {
     type?: 'bar' | 'circle';
@@ -17,11 +18,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({type ='bar'}) => {
     const [amount, setAmount] = useState<Amount | null>(null)
 
     const loadData = async () => {
-        setAmount(await fetch(
-            "/api/statistics/get-user-progress", {
-                method: 'GET'
-            }
-        ).then(response => response.json()))
+        setAmount(await getRequest("/statistics/get-user-progress").then(response => response.json()));
     }
 
     useEffect(() => {

@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {BasicUser, ErrorDelete, LoginData, RegisterData, UserAuth, UserSliceType} from "../utils/types";
-import {serverRequest} from "./requestFunction";
+import {getRequest, serverRequest} from "./requestFunction";
 
 const initialState = {
     user: {
@@ -24,7 +24,7 @@ const initialState = {
 export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
     'user/fetchUser',
     async (loginData, {getState}) => {
-        const response = await serverRequest(loginData, getState, '/api/users/login', 'POST');
+        const response = await serverRequest(loginData, getState, '/users/login', 'POST');
         return (await response.json()) as UserAuth;
     }
 );
@@ -33,7 +33,7 @@ export const fetchUser = createAsyncThunk<UserAuth, LoginData>(
 export const createUser = createAsyncThunk<{message: string}, RegisterData>(
     'user/createUser',
     async (registerData, {getState}) => {
-        const response = await serverRequest(registerData, getState, '/api/users/register', 'PUT');
+        const response = await serverRequest(registerData, getState, '/users/register', 'PUT');
         return (await response.json()) as {message: string};
     }
 );
@@ -42,7 +42,7 @@ export const createUser = createAsyncThunk<{message: string}, RegisterData>(
 export const requestChangePassword = createAsyncThunk<{message: string}, {email: string}>(
     'user/requestChangePassword',
     async (data, {getState}) => {
-        const response = await serverRequest(data, getState, '/api/users/forgot-password', 'POST');
+        const response = await serverRequest(data, getState, '/users/forgot-password', 'POST');
         return (await response.json()) as {message: string};
     }
 )
@@ -51,9 +51,7 @@ export const requestChangePassword = createAsyncThunk<{message: string}, {email:
 export const loadUser = createAsyncThunk<UserAuth, void>(
     'user/loadUser',
     async () => {
-        const response = await fetch('/api/users/single-user', {
-            method: 'GET'
-        });
+        const response = await getRequest('/users/single-user');
         return (await response.json()) as UserAuth;
     }
 );
@@ -61,14 +59,14 @@ export const loadUser = createAsyncThunk<UserAuth, void>(
 export const logoutUser = createAsyncThunk<void, void>(
     'user/logoutUser',
     async (_,{getState}) => {
-        await serverRequest(_, getState, '/api/users/logout', 'POST');
+        await serverRequest(_, getState, '/users/logout', 'POST');
     }
 )
 
 export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
     'user/updateUser',
     async (updateData, {getState}) => {
-        const response = await serverRequest(updateData, getState, '/api/users/update-user', 'PUT');
+        const response = await serverRequest(updateData, getState, '/users/update-user', 'PUT');
         return (await response.json()) as UserAuth;
     }
 )
@@ -76,7 +74,7 @@ export const updateUser = createAsyncThunk<UserAuth, BasicUser>(
 export const updateGoal = createAsyncThunk<{message: string, userGoal: number}, {userGoal: number}>(
     'user/updateGoal',
     async (updateData, {getState}) => {
-        const response = await serverRequest(updateData, getState, '/api/users/update-goal', 'PUT')
+        const response = await serverRequest(updateData, getState, '/users/update-goal', 'PUT')
             .then(response => {
             if(response.status === 204) {
                 return {message: 'Updated', userGoal: updateData.userGoal};
@@ -91,7 +89,7 @@ export const updateGoal = createAsyncThunk<{message: string, userGoal: number}, 
 export const deleteUser = createAsyncThunk<ErrorDelete, {password: string}>(
     'user/deleteUser',
     async (passwordData, {getState}) => {
-        const response = await serverRequest(passwordData, getState, '/api/users/delete-user', 'DELETE')
+        const response = await serverRequest(passwordData, getState, '/users/delete-user', 'DELETE')
             .then(response => {
             if(response.status === 204) {
                 return {message: 'Deleted'};

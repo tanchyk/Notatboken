@@ -1,6 +1,6 @@
 import {ErrorDeleteFolder, FolderData, FolderSliceType} from "../utils/types";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {serverRequest} from "./requestFunction";
+import {getRequest, serverRequest} from "./requestFunction";
 
 const initialState = {
     folders: [],
@@ -15,12 +15,7 @@ const initialState = {
 export const fetchFolder = createAsyncThunk<Array<FolderData>, {languageId: number}>(
     'folders/fetchFolders',
     async (folderData) => {
-        const response = await fetch(`/api/folders/find-folders/${folderData.languageId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await getRequest(`/folders/find-folders/${folderData.languageId}`);
         return (await response.json()) as Array<FolderData>;
     }
 );
@@ -28,7 +23,7 @@ export const fetchFolder = createAsyncThunk<Array<FolderData>, {languageId: numb
 export const addFolder = createAsyncThunk<FolderData, {folderName: string, languageId: number}>(
     'folders/addFolder',
     async (folderData, {getState}) => {
-        const response = await serverRequest(folderData, getState, '/api/folders/create-folder', 'POST');
+        const response = await serverRequest(folderData, getState, '/folders/create-folder', 'POST');
         return (await response.json()) as FolderData;
     }
 );
@@ -36,7 +31,7 @@ export const addFolder = createAsyncThunk<FolderData, {folderName: string, langu
 export const editFolder = createAsyncThunk<FolderData, {folderId: number, folderName: string, languageId: number}>(
     'folders/editFolder',
     async (folderData, {getState}) => {
-        const response = await serverRequest(folderData, getState, '/api/folders/edit-folder', 'PUT');
+        const response = await serverRequest(folderData, getState, '/folders/edit-folder', 'PUT');
         return (await response.json()) as FolderData;
     }
 )
@@ -44,7 +39,7 @@ export const editFolder = createAsyncThunk<FolderData, {folderId: number, folder
 export const addDeckToFolder = createAsyncThunk<{folder: FolderData}, {folderId: number, deckId: number}>(
     'folders/addDeckToFolder',
     async (folderData, {getState}) => {
-        const response = await serverRequest(folderData, getState, '/api/folders/add-deck-folder', 'PUT');
+        const response = await serverRequest(folderData, getState, '/folders/add-deck-folder', 'PUT');
         return (await response.json()) as {folder: FolderData};
     }
 );
@@ -52,7 +47,7 @@ export const addDeckToFolder = createAsyncThunk<{folder: FolderData}, {folderId:
 export const deleteDeckFromFolder = createAsyncThunk<{folder: FolderData}, {folderId: number, deckId: number}>(
     'folders/deleteDeckFromFolder',
     async (folderData, {getState}) => {
-        const response = await serverRequest(folderData, getState, '/api/folders/delete-deck-folder', 'PUT');
+        const response = await serverRequest(folderData, getState, '/folders/delete-deck-folder', 'PUT');
         return (await response.json()) as {folder: FolderData};
     }
 );
@@ -60,7 +55,7 @@ export const deleteDeckFromFolder = createAsyncThunk<{folder: FolderData}, {fold
 export const deleteFolder = createAsyncThunk<ErrorDeleteFolder, {folderId: number}>(
     'folders/deleteFolder',
     async (folderData, {getState}) => {
-        const response = await serverRequest(folderData, getState, '/api/folders/delete-folder', 'DELETE')
+        const response = await serverRequest(folderData, getState, '/folders/delete-folder', 'DELETE')
             .then(response => {
             if(response.status === 204) {
                 return {

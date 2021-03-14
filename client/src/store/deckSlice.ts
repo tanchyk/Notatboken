@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
 import {DeckData, DeckSliceType, ErrorDelete} from "../utils/types";
-import {serverRequest} from "./requestFunction";
+import {getRequest, serverRequest} from "./requestFunction";
 
 const initialState = {
     decks: [],
@@ -15,12 +15,7 @@ const initialState = {
 export const fetchDecks = createAsyncThunk<Array<DeckData>, {languageId: number}>(
     'decks/fetchDecks',
     async (deckData) => {
-        const response = await fetch(`/api/decks/find-decks/${deckData.languageId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await getRequest(`/decks/find-decks/${deckData.languageId}`);
         return (await response.json()) as Array<DeckData>;
     }
 );
@@ -28,7 +23,7 @@ export const fetchDecks = createAsyncThunk<Array<DeckData>, {languageId: number}
 export const addDeck = createAsyncThunk<DeckData, {deckName: string, languageId: number}>(
     'decks/addDeck',
     async (deckData, {getState}) => {
-        const response = await serverRequest(deckData, getState, '/api/decks/create-deck', 'POST');
+        const response = await serverRequest(deckData, getState, '/decks/create-deck', 'POST');
         return (await response.json()) as DeckData;
     }
 );
@@ -36,7 +31,7 @@ export const addDeck = createAsyncThunk<DeckData, {deckName: string, languageId:
 export const editDeck = createAsyncThunk<DeckData, {deckName: string, deckId: number, languageId: number}>(
     'decks/editDeck',
         async (deckData, {getState}) => {
-            const response = await serverRequest(deckData, getState, '/api/decks/edit-deck', 'PUT');
+            const response = await serverRequest(deckData, getState, '/decks/edit-deck', 'PUT');
             return (await response.json()) as DeckData;
         }
 )
@@ -45,7 +40,7 @@ export const deleteDeck = createAsyncThunk<ErrorDelete, {deckId: number}>(
     'decks/deleteDeck',
     async (deckData, {getState}) => {
         await serverRequest(deckData, getState, '/api/decks/delete-deck', 'DELETE')
-        const response = await serverRequest(deckData, getState, '/api/decks/delete-deck', 'DELETE')
+        const response = await serverRequest(deckData, getState, '/decks/delete-deck', 'DELETE')
             .then(response => {
             if(response.status === 204) {
                 return {

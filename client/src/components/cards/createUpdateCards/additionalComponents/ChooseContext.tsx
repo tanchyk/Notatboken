@@ -16,6 +16,7 @@ import {useSelector} from "react-redux";
 import {csrfData} from "../../../../store/csrfSlice";
 import {ContextApi} from "../../../../utils/types";
 import {ContextBox} from "../boxes/ContexBox";
+import {ppdRequest} from "../../../../store/requestFunction";
 
 interface ChooseContextProps {
     foreignWord: string;
@@ -34,24 +35,19 @@ export const ChooseContext: React.FC<ChooseContextProps> = ({foreignWord, langua
     const csrfToken = useSelector(csrfData);
 
     const fetchContext = useCallback(async () => {
-        const response = await fetch(`/api/cards/search-context`, {
-            method: 'POST',
-            body: JSON.stringify({
+        if(csrfToken) {
+            const response = await ppdRequest(csrfToken, {
                 foreignWord,
                 languageName
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken}`
+            }, '/cards/search-context', 'POST').then(response => response.json());
+
+            if("message" in response) {
+                setContextError(response.message);
+                return;
             }
-        }).then(response => response.json());
 
-        if("message" in response) {
-            setContextError(response.message);
-            return;
+            setContexts(response);
         }
-
-        setContexts(response);
     }, [foreignWord, languageName])
 
     //Functions for user clicks

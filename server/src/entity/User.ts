@@ -38,7 +38,7 @@ export class User extends BaseEntity {
     @Column({default: 5})
     userGoal: number;
 
-    @Column({default: "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614722799/notatboken/workplace_crsauv.png"})
+    @Column({default: "https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614456522/app/default_avatar_jubcnt.png"})
     avatar: string;
 
     @Column()

@@ -9,6 +9,7 @@ import {Link as LinkPage} from "react-router-dom";
 import {loadUser, userData} from "../../store/userSlice";
 import {AppDispatch} from "../../store/store";
 import {LanguagesHeader} from "./LanguagesHeader";
+import {ppdRequest} from "../../store/requestFunction";
 
 export const LanguagesList: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -25,16 +26,13 @@ export const LanguagesList: React.FC = () => {
     }
 
     const addHandler = async () => {
-        const response = await fetch('/api/languages/add-language', {
-            method: 'POST',
-            body: JSON.stringify({
+        let response: any;
+        if(csrfToken) {
+            response = await ppdRequest(csrfToken, {
                 language: addLanguage
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken}`
-            }
-        });
+            }, '/languages/add-language', 'POST');
+
+        }
 
         const result = await response.json();
         if (result.message === 'Language is added') {

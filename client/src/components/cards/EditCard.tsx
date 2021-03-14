@@ -107,7 +107,7 @@ export const EditCard: React.FC<CardChangeProps>= ({match}) => {
         >
             {({submitForm}) => (
                 <Form>
-                    <AdditionalDecksWrapper title="Edit Card 📝">
+                    <AdditionalDecksWrapper type="deck" title="Edit Card 📝">
                         <Stack spacing={4}>
                             <CardInput
                                 photo={photo}

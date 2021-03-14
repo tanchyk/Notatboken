@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Box, Heading, Stack, useStyleConfig} from "@chakra-ui/react";
 import {Bar} from "react-chartjs-2";
+import {getRequest} from "../../store/requestFunction";
 
 const countArrayOfDays = () => {
     const ary = [];
@@ -32,11 +33,7 @@ export const WeekCardsReview: React.FC = () => {
     const [weekData, setWeekData] = useState<Array<number> | null>(null)
 
     const loadData = async () => {
-        setWeekData(await fetch(
-            "/api/statistics/get-card-week-review", {
-                method: 'GET'
-            }
-        ).then(response => response.json()))
+        setWeekData(await getRequest("/statistics/get-card-week-review").then(response => response.json()))
     }
 
     useEffect(() => {

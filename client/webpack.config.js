@@ -5,12 +5,11 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const webpack = require("webpack");
 const dotenv = require('dotenv');
+dotenv.config()
 
 module.exports = function(env, argv) {
-    const envParsed = dotenv.config().parsed;
-
     return {
-        mode: env.production ? 'production' : 'development',
+        mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
         name: 'client',
         entry: {
@@ -25,13 +24,13 @@ module.exports = function(env, argv) {
 
         target: 'web',
 
-        devtool: env.production ? 'eval-cheap-source-map' : 'eval',
+        // devtool: process.env.NODE_ENV === 'production' ? false : 'eval',
 
         resolve: {
             extensions: ['.ts', '.tsx', '.js']
         },
 
-        optimization: env.production ? {
+        optimization: process.env.NODE_ENV === 'production' ? {
             splitChunks: {
                 chunks: "all"
             }
@@ -40,10 +39,7 @@ module.exports = function(env, argv) {
                 chunks: "all"
             },
             minimizer: [
-                new UglifyJsPlugin({
-                    cache: true,
-                    parallel: true
-                }),
+                new UglifyJsPlugin(),
                 new OptimizeCSSAssetsPlugin({})
             ]
         },
@@ -64,12 +60,14 @@ module.exports = function(env, argv) {
         plugins: [
             new HtmlWebPackPlugin({
                 template: "./public/index.html",
+                favicon: "./public/favicon.ico",
                 minify: {
                     collapseWhitespace: true
                 }
             }),
             new webpack.DefinePlugin({
-                'process.env.REACT_APP_API_PEXELS': JSON.stringify(`${envParsed.REACT_APP_API_PEXELS}`)
+                'process.env.REACT_APP_API_PEXELS': JSON.stringify(`${process.env.REACT_APP_API_PEXELS}`),
+                'process.env.REACT_APP_SERVER': JSON.stringify(`${process.env.REACT_APP_SERVER}`)
             }),
             new MiniCssExtractPlugin({
                 filename: '[name].css'
@@ -83,7 +81,7 @@ module.exports = function(env, argv) {
                     use: [
                         {
                             loader: 'html-loader',
-                            options: { minimize: env.production ? false : true }
+                            options: { minimize: process.env.NODE_ENV === 'production' ? false : true }
                         }
                     ]
                 },
@@ -94,7 +92,7 @@ module.exports = function(env, argv) {
                 {
                     test: /\.css$/,
                     use: [
-                        env.production ? {} : {
+                        process.env.NODE_ENV === 'production' ? {} : {
                             loader: MiniCssExtractPlugin.loader,
                         }, 'css-loader'
                     ]

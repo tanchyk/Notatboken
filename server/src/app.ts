@@ -15,9 +15,10 @@ import cardsRouter from "./routes/cardRoutes";
 import foldersRouter from "./routes/folderRoutes";
 import statisticsRouter from "./routes/statisticsRoutes";
 
-import {Connection} from "typeorm";
+import {Connection, getRepository} from "typeorm";
 import {Language} from "./entity/Language";
 import {createTypeormConnection} from "./utils/createTypeormConnection";
+
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -38,11 +39,18 @@ export const app: Application = express();
 
 const start = async () => {
     if (process.env.NODE_ENV !== "test") {
-        await createTypeormConnection();
+        const connection = await createTypeormConnection();
+        const languageRepository = getRepository(Language);
+        if(await languageRepository.count() === 0) {
+            await setLanguages(connection);
+        }
     }
 
     app.use(helmet());
-    app.use(cors());
+    app.use(cors({
+        origin: 'http://localhost:4020',
+        credentials: true
+    }));
     app.use(express.urlencoded({
         extended: false
     }));

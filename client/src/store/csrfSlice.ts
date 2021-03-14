@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {CsrfSliceType} from "../utils/types";
+import {getRequest} from "./requestFunction";
 
 const initialState = {
     csrfToken: null
@@ -9,9 +10,7 @@ const initialState = {
 export const fetchToken = createAsyncThunk<CsrfSliceType, void>(
     'user/fetchToken',
     async () => {
-        const response = await fetch('/api/csrf-token', {
-            method: 'GET'
-        });
+        const response = await getRequest('/csrf-token');
         return (await response.json()) as CsrfSliceType;
     }
 );

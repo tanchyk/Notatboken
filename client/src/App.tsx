@@ -92,7 +92,7 @@ const App: React.FC<{}> = () => {
                     <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
                         <LanguageContext.Provider value={[language, setLanguage]}>
                             {
-                                status === 'loading' ? <LoadingPage /> : (
+                                status === 'loading' && (window.location.pathname === '/' ||  window.location.pathname === '/login') ? <LoadingPage /> : (
                                     <Router history={history}>
                                         {routes}
                                     </Router>

@@ -13,6 +13,7 @@ import {validatePassword} from "../../utils/validationFunctions";
 import {useSelector} from "react-redux";
 import {csrfData} from "../../store/csrfSlice";
 import {PasswordInput} from "../inputs/PasswordInput";
+import {ppdRequest} from "../../store/requestFunction";
 
 export const ChangePassword: React.FC<{}> = () => {
     //Data
@@ -21,17 +22,13 @@ export const ChangePassword: React.FC<{}> = () => {
     const csrfToken = useSelector(csrfData);
 
     const changePasswordHandler = async (values: Passwords) => {
-        const response = await fetch('/api/users/change-password', {
-            method: 'POST',
-            body: JSON.stringify({
+        let response: any;
+        if(csrfToken) {
+            response = await ppdRequest(csrfToken, {
                 newPassword: values.newPassword,
                 oldPassword: values.oldPassword
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'CSRF-Token': `${csrfToken}`
-            }
-        });
+            }, '/users/change-password', 'POST');
+        }
         return (await response.json()) as {message: string} | {error: string};
     }
 

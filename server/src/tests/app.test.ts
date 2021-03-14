@@ -64,7 +64,7 @@ describe("User request", () => {
             .expect(200);
 
         const userRepository = getRepository(User);
-        const user = await userRepository.findOneOrFail({where: {username: 'johnee2'}})
+        const user = await userRepository.findOne({where: {username: 'johnee2'}})
 
         expect(user).not.toBe(undefined);
         done();

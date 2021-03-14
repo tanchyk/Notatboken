@@ -3,6 +3,7 @@ import {Flex, Stack, Image, Heading, Text, useStyleConfig, Progress} from "@chak
 import {useSelector} from "react-redux";
 import {userData} from "../../store/userSlice";
 import {todayStreak} from "../../store/streakSlice";
+import {getRequest} from "../../store/requestFunction";
 
 export const DailyGoal: React.FC = () => {
     const styleStack = useStyleConfig("Stack");
@@ -13,11 +14,7 @@ export const DailyGoal: React.FC = () => {
     const [dayData, setDayData] = useState<number>(0)
 
     const loadData = async () => {
-        const response = await fetch(
-            "/api/statistics/get-card-day-review", {
-                method: 'GET'
-            }
-        ).then(response => response.json())
+        const response = await getRequest("/statistics/get-card-day-review").then(response => response.json())
         setDayData(response.amount);
     }
 

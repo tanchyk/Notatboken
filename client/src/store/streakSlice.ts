@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {StreakSliceType} from "../utils/types";
+import {getRequest} from "./requestFunction";
 
 const initialState = {
     streak: 0,
@@ -10,9 +11,7 @@ const initialState = {
 export const fetchStreak = createAsyncThunk<StreakSliceType, void>(
     'streak/fetchStreak',
     async () => {
-        const response = await fetch('/api/statistics/get-streak', {
-            method: 'GET'
-        });
+        const response = await getRequest('/statistics/get-streak');
         return (await response.json()) as StreakSliceType;
     }
 );
