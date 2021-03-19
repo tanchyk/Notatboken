@@ -67,7 +67,7 @@ module.exports = function(env, argv) {
             }),
             new webpack.DefinePlugin({
                 'process.env.REACT_APP_API_PEXELS': JSON.stringify(`${process.env.REACT_APP_API_PEXELS}`),
-                'process.env.REACT_APP_SERVER': JSON.stringify(`${process.env.REACT_APP_SERVER}`)
+                'process.env.REACT_APP_BACK_END': JSON.stringify(`${process.env.REACT_APP_BACK_END}`)
             }),
             new MiniCssExtractPlugin({
                 filename: '[name].css'

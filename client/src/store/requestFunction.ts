@@ -3,7 +3,7 @@ import {CsrfSliceType} from "../utils/types";
 const configureUrl = (url: string) => {
     let serverUrl: string;
     if(process.env.NODE_ENV === 'production') {
-        serverUrl = `${process.env.REACT_APP_SERVER}${url}`;
+        serverUrl = `${process.env.REACT_APP_BACK_END}${url}`;
     } else {
         serverUrl = '/api' + url;
     }

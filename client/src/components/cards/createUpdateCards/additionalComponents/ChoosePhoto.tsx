@@ -27,6 +27,7 @@ export const ChoosePhoto: React.FC<ChoosePhotoProps> = ({nativeWord, isDisabled,
     //Load and prepare images
     const loadImages = useCallback(async () => {
         setImageError(null);
+        console.log(API_PEXELS);
         const imagesFromFetch = await fetch(`https://api.pexels.com/v1/search?query=${nativeWord}`, {
                 headers: {
                     Authorization: API_PEXELS
