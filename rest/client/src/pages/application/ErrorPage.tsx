@@ -30,7 +30,7 @@ export const ErrorPage: React.FC = () => {
                         </Flex>
                             <Flex boxSize={["240px", "240px", "300px", "360px"]} alignItems="center" margin="auto">
                                 <Image
-                                    src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614528339/app/error_cdmky9.png"
+                                    src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614528339/index/error_cdmky9.png"
                                 />
                             </Flex>
                     </SimpleGrid>

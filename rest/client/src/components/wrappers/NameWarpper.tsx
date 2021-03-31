@@ -6,7 +6,7 @@ export const NameWrapper: React.FC<{}> = ({children}) => {
     return (
         <Flex
             justifyContent="center"
-            backgroundImage="url(https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614441218/app/bg-main_iuk29t.png)"
+            backgroundImage="url(https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614441218/index/bg-main_iuk29t.png)"
             backgroundPosition="center"
             backgroundRepeat="no-repeat"
             paddingTop={6}

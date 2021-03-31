@@ -30,7 +30,7 @@ export const DailyGoal: React.FC = () => {
         >
             <Image
                 boxSize="120px"
-                src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614457184/app/daily_goal_shoblz.png"
+                src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614457184/index/daily_goal_shoblz.png"
             />
             <Stack spacing={3} ml={6} w="100%">
                 <Heading as="h1" size="lg" mb={2}>Daily Goal</Heading>

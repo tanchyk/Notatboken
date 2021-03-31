@@ -21,7 +21,7 @@ export const NoProgress: React.FC = () => {
                 <Flex alignItems="center" justifyContent="center" mt={[8,8,6,0]}>
                     <Box boxSize={["200px","220px", "280px", "280px"]}>
                         <Image
-                            src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614498835/app/progress_ovx6aj.png"
+                            src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614498835/index/progress_ovx6aj.png"
                         />
                     </Box>
                 </Flex>
