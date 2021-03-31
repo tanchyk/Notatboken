@@ -51,7 +51,7 @@ class AuthController {
             }
         )
 
-        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 , sameSite: 'none', secure: true});
         return res.status(200).json({
             userId: user.id,
             name: user.name,
@@ -104,7 +104,7 @@ class AuthController {
                 expiresIn: '1d',
             },
             (err, emailToken) => {
-                const url = `http://localhost:5000/users/confirmation/${emailToken}`;
+                const url = `https://server.notatboken.com/users/confirmation/${emailToken}`;
 
                 transporter.sendMail({
                     from: `${process.env.GMAIL_USER}`,
@@ -140,7 +140,7 @@ class AuthController {
             user.confirmed = true;
             await userRepository.save(user);
 
-            return res.redirect('http://localhost:4020/login')
+            return res.redirect('https://www.notatboken.com/login')
         } catch (e) {
             res.send('error');
         }
@@ -167,7 +167,7 @@ class AuthController {
                 expiresIn: '1d',
             },
             (err, emailToken) => {
-                const url = `http://localhost:4020/change-forgot-password/${emailToken}`;
+                const url = `https://server.notatboken.com/change-forgot-password/${emailToken}`;
 
                 transporter.sendMail({
                     from: `${process.env.GMAIL_USER}`,
@@ -212,8 +212,8 @@ class AuthController {
 
     //Logout
     static logout = async (req: Request, res: Response) => {
-        await res.clearCookie('token');
-        return res.redirect('/');
+        await res.cookie('token', '', { httpOnly: true, maxAge: 0 , sameSite: 'none', secure: true});
+        return res.redirect('https://www.notatboken.com/');
     }
 }
 

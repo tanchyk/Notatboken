@@ -1,7 +1,7 @@
 module.exports = {
     "name": "development",
     "type": "postgres",
-    "host": "db",
+    "host": `${process.env.DB}`,
     "port": 5432,
     "username": "postgres",
     "password": `${process.env.POSTGRES_PASSWORD}`,

@@ -48,7 +48,7 @@ const start = async () => {
 
     app.use(helmet());
     app.use(cors({
-        origin: 'http://localhost:4020',
+        origin: ['https://notatboken.com', 'https://www.notatboken.com'],
         credentials: true
     }));
     app.use(express.urlencoded({
@@ -58,7 +58,7 @@ const start = async () => {
     app.use(cookieParser());
     if(process.env.NODE_ENV !== 'test') {
         app.use(csurf({
-                cookie: true
+                cookie: {sameSite: 'none', secure: true}
             })
         );
         app.get('/csrf-token', (req: Request, res: Response) => {
