@@ -1,10 +1,13 @@
 import {Request, Response} from "express";
 import {Field, InputType, ObjectType} from "type-graphql";
-import {User} from "./entities/User";
+import {User} from "../entities/User";
+import Redis from "ioredis";
+import {Session, SessionData} from "express-session";
 
 export interface MyContext {
-    req: Request,
-    res: Response
+    req: Request & {session: Session & Partial<SessionData> & {userId: number}},
+    res: Response,
+    redis: Redis.Redis
 }
 
 @InputType()

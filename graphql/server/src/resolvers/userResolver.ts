@@ -1,6 +1,6 @@
 import {Arg, Mutation, Query, Resolver} from "type-graphql";
 import {User} from "../entities/User";
-import {EmailResponse, LoginInput, RegisterInput, UserResponse} from "../types";
+import {EmailResponse, LoginInput, RegisterInput, UserResponse} from "../types/types";
 import argon2 from "argon2";
 import { getRepository } from "typeorm";
 
