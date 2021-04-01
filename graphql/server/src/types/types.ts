@@ -39,15 +39,23 @@ export class FieldError {
 @ObjectType()
 export class UserResponse {
     @Field(() => [FieldError], {nullable: true})
-    errors?: FieldError[];
+    errors: FieldError[] | null;
     @Field(() => User, {nullable: true})
-    user?: User;
+    user: User | null;
 }
 
 @ObjectType()
 export class EmailResponse {
     @Field(() => [FieldError], {nullable: true})
-    errors?: FieldError[];
+    errors: FieldError[] | null;
     @Field(() => Boolean, {defaultValue: false})
     send: Boolean;
+}
+
+@ObjectType()
+export class ConfirmationResponse {
+    @Field(() => [FieldError], {nullable: true})
+    errors: FieldError[] | null;
+    @Field(() => Boolean, {defaultValue: false})
+    confirmed: Boolean;
 }

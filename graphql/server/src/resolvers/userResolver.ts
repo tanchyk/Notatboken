@@ -1,7 +1,7 @@
 require('dotenv').config();
 import {Arg, Ctx, Mutation, Query, Resolver} from "type-graphql";
 import {User} from "../entities/User";
-import {EmailResponse, LoginInput, MyContext, RegisterInput, UserResponse} from "../types/types";
+import {ConfirmationResponse, EmailResponse, LoginInput, MyContext, RegisterInput, UserResponse} from "../types/types";
 import argon2 from "argon2";
 import {v4} from "uuid";
 import { getRepository } from "typeorm";
@@ -117,11 +117,52 @@ export class UserResolver {
         };
     }
 
+    @Mutation(() => ConfirmationResponse)
+    async confirmRegistration(
+        @Arg("token") token: string,
+        @Ctx() {redis}: MyContext
+    ): Promise<ConfirmationResponse> {
+        const userId = await redis.get(REGISTER_PREFIX+token);
+
+        if(!userId) {
+            return {
+                errors: [{
+                    field: "token",
+                    message: "Token has already expired"
+                }],
+                confirmed: false
+            }
+        }
+
+        const userRepository = getRepository(User);
+        const user = await userRepository.findOne({ where: {id: parseInt(userId)}});
+
+        if(!user) {
+            return {
+                errors: [{
+                    field: "token",
+                    message: "User no longer exists"
+                }],
+                confirmed: false
+            }
+        }
+
+        user.confirmed = true;
+        await userRepository.save(user);
+
+        await redis.del(REGISTER_PREFIX+token);
+
+        return {
+            errors: null,
+            confirmed: true
+        }
+    }
+
     @Mutation(() => UserResponse)
     async login(
         @Arg("input") input: LoginInput,
         @Ctx() {req}: MyContext
-    ) {
+    ): Promise<UserResponse> {
         const incorrectUsernameOrEmail = {
             errors: [{
                 field: 'usernameOrEmail',
@@ -200,7 +241,7 @@ export class UserResolver {
     async forgotPassword(
         @Arg("email") email: string,
         @Ctx() {redis}: MyContext
-    ) {
+    ): Promise<EmailResponse> {
         const userRepository = getRepository(User);
         const user = await userRepository.findOne({
             where: {email}
@@ -251,17 +292,51 @@ export class UserResolver {
                 errors: [{
                     field: "email",
                     message: "Ooops, something wrong with our service"
-                }]
+                }],
+                send: false
             }
         }
     }
 
-    // @Mutation(() => UserResponse)
-    // async resetPassword(
-    //     @Arg("token") token: string,
-    //     @Arg("")
-    //     @Ctx() {req}: MyContext
-    // ) {
-    //
-    // }
+    @Mutation(() => ConfirmationResponse)
+    async resetPassword(
+        @Arg("token") token: string,
+        @Arg("newPassword") newPassword: string,
+        @Ctx() {redis}: MyContext
+    ): Promise<ConfirmationResponse> {
+        const userId = await redis.get(FORGET_PASSWORD_PREFIX+token);
+
+        if(!userId) {
+            return {
+                errors: [{
+                    field: "token",
+                    message: "Token has already expired"
+                }],
+                confirmed: false
+            }
+        }
+
+        const userRepository = getRepository(User);
+        const user = await userRepository.findOne({ where: {id: parseInt(userId)}});
+
+        if(!user) {
+            return {
+                errors: [{
+                    field: "token",
+                    message: "User no longer exists"
+                }],
+                confirmed: false
+            }
+        }
+
+        user.password = await argon2.hash(newPassword);
+        await userRepository.save(user);
+
+        await redis.del(FORGET_PASSWORD_PREFIX+token);
+
+        return {
+            errors: null,
+            confirmed: true
+        }
+    }
 }
