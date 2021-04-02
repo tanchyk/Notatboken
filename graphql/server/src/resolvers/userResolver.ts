@@ -1,5 +1,5 @@
 require('dotenv').config();
-import {Arg, Ctx, Mutation, Query, Resolver} from "type-graphql";
+import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {User} from "../entities/User";
 import {ConfirmationResponse, EmailResponse, LoginInput, MyContext, RegisterInput, UserResponse} from "../types/types";
 import argon2 from "argon2";
@@ -7,6 +7,7 @@ import {v4} from "uuid";
 import { getRepository } from "typeorm";
 import {COOKIE_NAME, FORGET_PASSWORD_PREFIX, REGISTER_PREFIX} from "../types/constants";
 import {transporter} from "../utils/mailer";
+import { testEmail, testUsername, testPassword } from "../middleware/validationMiddleware";
 
 @Resolver(User)
 export class UserResolver {
@@ -23,6 +24,7 @@ export class UserResolver {
     }
 
     @Mutation(() => EmailResponse)
+    @UseMiddleware(testEmail, testUsername, testPassword)
     async register(
         @Arg("input") input: RegisterInput,
         @Ctx() {redis}: MyContext
@@ -238,6 +240,7 @@ export class UserResolver {
     }
 
     @Mutation(() => EmailResponse)
+    @UseMiddleware(testEmail)
     async forgotPassword(
         @Arg("email") email: string,
         @Ctx() {redis}: MyContext
@@ -299,9 +302,10 @@ export class UserResolver {
     }
 
     @Mutation(() => ConfirmationResponse)
+    @UseMiddleware(testPassword)
     async resetPassword(
         @Arg("token") token: string,
-        @Arg("newPassword") newPassword: string,
+        @Arg("password") password: string,
         @Ctx() {redis}: MyContext
     ): Promise<ConfirmationResponse> {
         const userId = await redis.get(FORGET_PASSWORD_PREFIX+token);
@@ -329,7 +333,7 @@ export class UserResolver {
             }
         }
 
-        user.password = await argon2.hash(newPassword);
+        user.password = await argon2.hash(password);
         await userRepository.save(user);
 
         await redis.del(FORGET_PASSWORD_PREFIX+token);
