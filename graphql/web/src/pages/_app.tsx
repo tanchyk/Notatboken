@@ -1,17 +1,32 @@
-import React from "react";
-import {ChakraProvider, ColorModeProvider} from '@chakra-ui/react';
+import React, {createContext, useState} from "react";
+import {ChakraProvider, } from '@chakra-ui/react';
 import {theme} from '../utils/theme';
+// import {theme} from '../../../../rest/client/src/utils/theme';
 
-const MyApp: React.FC = ({Component, pageProps}: any) => {
+export const CloseContextHome = createContext<any>([]);
+export const CloseContextFolders = createContext<any>([]);
+export const LanguageContext = createContext<any>([]);
+
+const MyApp = ({Component, pageProps}: any) => {
+    const [closeCreateHome, setCloseCreateHome] = useState<boolean>(false);
+    const [closeCreateFolders, setCloseCreateFolders] = useState<boolean>(false);
+    const [language, setLanguage] = useState<string | null>(null);
+
     return (
-        <ChakraProvider resetCSS theme={theme}>
-            <ColorModeProvider
-                options={{
-                    useSystemColorMode: true,
-                }}
-            >
-                <Component {...pageProps} />
-            </ColorModeProvider>
+        <ChakraProvider theme={theme}>
+            {/*<ColorModeProvider*/}
+            {/*    options={{*/}
+            {/*        useSystemColorMode: true,*/}
+            {/*    }}*/}
+            {/*>*/}
+                <CloseContextHome.Provider value={[closeCreateHome, setCloseCreateHome]}>
+                    <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
+                        <LanguageContext.Provider value={[language, setLanguage]}>
+                            <Component {...pageProps} />
+                        </LanguageContext.Provider>
+                    </CloseContextFolders.Provider>
+                </CloseContextHome.Provider>
+            {/*</ColorModeProvider>*/}
         </ChakraProvider>
     )
 }

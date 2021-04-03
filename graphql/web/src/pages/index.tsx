@@ -1,14 +1,13 @@
-// import NextLink from 'next/link';
-//
-// const IndexPage = () => (
-//   <Layout title="Home | Next.js + TypeScript Example">
-//     <h1>Hello Next.js 👋</h1>
-//     <p>
-//       <Link href="/about">
-//         <a>About</a>
-//       </Link>
-//     </p>
-//   </Layout>
-// )
-//
-// export default IndexPage
+import React from "react";
+import {Layout} from "../components/Layout";
+import {withApollo} from "../utils/withApollo";
+
+const Index: React.FC = () => {
+    return (
+        <Layout>
+            <></>
+        </Layout>
+    )
+}
+
+export default withApollo({ssr: true})(Index);
