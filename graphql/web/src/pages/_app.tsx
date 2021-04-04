@@ -14,19 +14,13 @@ const MyApp = ({Component, pageProps}: any) => {
 
     return (
         <ChakraProvider theme={theme}>
-            {/*<ColorModeProvider*/}
-            {/*    options={{*/}
-            {/*        useSystemColorMode: true,*/}
-            {/*    }}*/}
-            {/*>*/}
-                <CloseContextHome.Provider value={[closeCreateHome, setCloseCreateHome]}>
-                    <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
-                        <LanguageContext.Provider value={[language, setLanguage]}>
-                            <Component {...pageProps} />
-                        </LanguageContext.Provider>
-                    </CloseContextFolders.Provider>
-                </CloseContextHome.Provider>
-            {/*</ColorModeProvider>*/}
+            <CloseContextHome.Provider value={[closeCreateHome, setCloseCreateHome]}>
+                <CloseContextFolders.Provider value={[closeCreateFolders, setCloseCreateFolders]}>
+                    <LanguageContext.Provider value={[language, setLanguage]}>
+                        <Component {...pageProps} />
+                    </LanguageContext.Provider>
+                </CloseContextFolders.Provider>
+            </CloseContextHome.Provider>
         </ChakraProvider>
     )
 }

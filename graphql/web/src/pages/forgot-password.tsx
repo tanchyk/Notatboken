@@ -14,7 +14,7 @@ import {withApollo} from "../utils/withApollo";
 const ForgotPassword: React.FC = () => {
     const router = useRouter();
     const toast = useToast();
-    const [forgotPassword] = useForgotPasswordMutation();
+    const [forgotPassword, {loading}] = useForgotPasswordMutation();
 
     return (
         <Formik
@@ -66,6 +66,7 @@ const ForgotPassword: React.FC = () => {
                             <Button
                                 width="120px"
                                 type="submit"
+                                isLoading={loading}
                             >
                                 Send Email
                             </Button>

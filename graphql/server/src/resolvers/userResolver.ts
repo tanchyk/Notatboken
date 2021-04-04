@@ -244,7 +244,7 @@ export class UserResolver {
                 1000*60*60*24
             );
 
-            const url = `${process.env.CORS_ORIGIN}/reset-password/${token}`;
+            const url = `${process.env.CORS_ORIGIN}/change-password/${token}`;
 
             await transporter.sendMail({
                 from: `${process.env.GMAIL_USER}`,

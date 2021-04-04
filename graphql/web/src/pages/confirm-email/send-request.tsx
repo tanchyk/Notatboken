@@ -14,7 +14,7 @@ import {useRequestEmailConfirmationMutation} from "../../generated/graphql";
 const SendRequest: React.FC = () => {
     const router = useRouter();
     const toast = useToast();
-    const [requestConfirmation] = useRequestEmailConfirmationMutation();
+    const [requestConfirmation, {loading}] = useRequestEmailConfirmationMutation();
 
     return (
         <Formik
@@ -66,6 +66,7 @@ const SendRequest: React.FC = () => {
                             <Button
                                 width="120px"
                                 type="submit"
+                                isLoading={loading}
                             >
                                 Send Email
                             </Button>

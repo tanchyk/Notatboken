@@ -26,7 +26,6 @@ export const Navbar: React.FC = ({}) => {
         if(isOpen) {
             onClose();
         }
-        console.log(url);
     }, [url])
 
     const handleClick = () => {
@@ -81,7 +80,7 @@ export const Navbar: React.FC = ({}) => {
     const auth = useStyleConfig("NavbarAuth");
 
     return (
-        <Flex sx={!!data ? auth : main} p={3} justifyContent="center">
+        <Flex sx={!!data?.me ? auth : main} p={3} justifyContent="center">
             <Wrapper variant='regular' direction="column">
                 <Flex justifyContent="space-between">
                     <NextLink href="/">

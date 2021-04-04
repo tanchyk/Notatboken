@@ -16,7 +16,7 @@ interface ChangePasswordProps {
 const ChangePassword: NextPage<ChangePasswordProps> = ({token}) => {
     const router = useRouter();
     const toast = useToast();
-    const [resetPassword] = useResetPasswordMutation();
+    const [resetPassword, {loading}] = useResetPasswordMutation();
 
     return (
         <Formik
@@ -93,6 +93,7 @@ const ChangePassword: NextPage<ChangePasswordProps> = ({token}) => {
                             width="150px"
                             type="submit"
                             size="lg"
+                            isLoading={loading}
                         >
                             Change Password
                         </Button>

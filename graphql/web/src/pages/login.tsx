@@ -14,7 +14,7 @@ import {toErrorMap} from "../utils/toErrorMap";
 
 const Login: React.FC = ({}) => {
     const router = useRouter();
-    const [login] = useLoginMutation();
+    const [login, {loading}] = useLoginMutation();
 
     return (
         <Formik
@@ -77,6 +77,7 @@ const Login: React.FC = ({}) => {
                             <Button
                                 width="120px"
                                 type="submit"
+                                isLoading={loading}
                             >
                                 Login
                             </Button>

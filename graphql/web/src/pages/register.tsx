@@ -13,7 +13,7 @@ import {toErrorMap} from "../utils/toErrorMap";
 
 const Register: React.FC = ({}) => {
     const router = useRouter();
-    const [register] = useRegisterMutation();
+    const [register, {loading}] = useRegisterMutation();
     const toast = useToast();
 
     return (
@@ -86,6 +86,7 @@ const Register: React.FC = ({}) => {
                             <Button
                                 width="120px"
                                 type="submit"
+                                isLoading={loading}
                             >
                                 Sign up
                             </Button>

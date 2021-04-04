@@ -1,12 +1,30 @@
 import React from "react";
-import {Layout} from "../components/Layout";
 import {withApollo} from "../utils/withApollo";
+import {useMeQuery} from "../generated/graphql";
+import {NoAuth} from "../components/noauth/NoAuth";
+import {Navbar} from "../components/Navbar";
+import {Flex, useColorModeValue} from "@chakra-ui/react";
+import {Wrapper} from "../components/wrappers/Wrapper";
 
 const Index: React.FC = () => {
+    const {data} = useMeQuery();
+    const bgValue = useColorModeValue("#fff", "gray.700");
+
     return (
-        <Layout>
-            <></>
-        </Layout>
+        <>
+            <Navbar />
+            <Flex bg={data?.me ? "initial" : bgValue} justifyContent="center">
+                <Wrapper variant='regular'>
+                    {
+                        data?.me ? (
+                            <h1>hi</h1>
+                        ) : (
+                            <NoAuth />
+                        )
+                    }
+                </Wrapper>
+            </Flex>
+        </>
     )
 }
 
