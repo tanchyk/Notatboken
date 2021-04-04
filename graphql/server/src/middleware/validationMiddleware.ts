@@ -2,7 +2,15 @@ import {MiddlewareFn} from "type-graphql";
 
 export const testEmail: MiddlewareFn = ({args}, next) => {
     const test = /\S+@\S+\.\S+/;
-    if(!test.test(args.input.email) || args.input.email.length < 8 || args.input.email.length >= 254) {
+
+    let email = '';
+    if("input" in args) {
+        email = args.input.email;
+    } else {
+        email = args.email;
+    }
+
+    if(!test.test(email) || email.length < 8 || email.length >= 254) {
         return new Promise(resolve => resolve({
                 errors: [{
                     field: "email",
@@ -17,7 +25,15 @@ export const testEmail: MiddlewareFn = ({args}, next) => {
 
 export const testPassword: MiddlewareFn = ({args}, next) => {
     const test = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
-    if(!test.test(args.input.password)) {
+
+    let password = '';
+    if("input" in args) {
+        password = args.input.password;
+    } else {
+        password = args.password;
+    }
+
+    if(!test.test(password)) {
         return new Promise(resolve => resolve({
                 errors: [{
                     field: "password",
@@ -32,7 +48,15 @@ export const testPassword: MiddlewareFn = ({args}, next) => {
 
 export const testUsername: MiddlewareFn = ({args}, next) => {
     const test = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
-    if(!test.test(args.input.username)) {
+
+    let username = '';
+    if("input" in args) {
+        username = args.input.username;
+    } else {
+        username = args.username;
+    }
+
+    if(!test.test(username)) {
         return new Promise(resolve => resolve({
                 errors: [{
                     field: "username",

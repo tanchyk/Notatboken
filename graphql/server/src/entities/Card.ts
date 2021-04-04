@@ -28,19 +28,19 @@ export class Card extends BaseEntity {
     @Column({length: 50})
     nativeWord!: string;
 
-    @Field()
+    @Field({nullable: true})
     @Column({nullable: true})
     imageId: number;
 
-    @Field()
+    @Field({nullable: true})
     @Column({nullable: true})
     voiceId: number;
 
-    @Field()
+    @Field({nullable: true})
     @Column({nullable: true, length: 220})
     foreignContext: string;
 
-    @Field()
+    @Field({nullable: true})
     @Column({nullable: true, length: 220})
     nativeContext: string;
 
@@ -52,7 +52,7 @@ export class Card extends BaseEntity {
     })
     proficiency: ProficiencyType
 
-    @Field()
+    @Field({nullable: true})
     @Column({nullable: true})
     reviewDate: Date;
 

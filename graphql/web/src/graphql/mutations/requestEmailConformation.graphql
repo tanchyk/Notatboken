@@ -1,0 +1,10 @@
+mutation RequestEmailConfirmation($email: String!) {
+    requestEmailConfirmation(
+        email: $email
+    ) {
+        send
+        errors {
+            ...Error
+        }
+    }
+}

@@ -1,0 +1,8 @@
+mutation ConfirmRegistration($token: String!) {
+    confirmRegistration(token: $token) {
+        errors {
+            ...Error
+        },
+        confirmed
+    }
+}

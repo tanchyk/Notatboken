@@ -1,14 +1,13 @@
-import React, {useState} from "react";
+import React from "react";
 import {NextPage} from "next";
-import {Form, Formik} from "formik";
-import {toErrorMap} from "../../utils/toErrorMap";
-import {InputField} from "../../components/InputField";
-import {Alert, AlertIcon, Button, Link, Stack} from "@chakra-ui/react";
-import {Wrapper} from "../../components/Wrapper";
-import {MeDocument, MeQuery, useChangePasswordMutation} from "../../generated/graphql";
-import {useRouter} from "next/router";
-import NextLink from "next/link";
+import {Field, FieldProps, Form, Formik} from "formik";
+import {Box, Button, Text, useToast} from "@chakra-ui/react";
 import {withApollo} from "../../utils/withApollo"
+import { AuthWrapper } from "../../components/wrappers/AuthWrapper";
+import { validatePassword } from "../../utils/validationFunctions";
+import { PasswordInput } from "../../components/inputs/PasswordInput";
+import {useResetPasswordMutation} from "../../generated/graphql";
+import {useRouter} from "next/router";
 
 interface ChangePasswordProps {
     token: string;
@@ -16,77 +15,91 @@ interface ChangePasswordProps {
 
 const ChangePassword: NextPage<ChangePasswordProps> = ({token}) => {
     const router = useRouter();
-    const [changePassword] = useChangePasswordMutation();
-    const [tokenError, setTokenError] = useState<string>('');
+    const toast = useToast();
+    const [resetPassword] = useResetPasswordMutation();
 
     return (
-        <Wrapper variant="small">
-            <Formik
-                initialValues={{
-                    newPassword: ""
-                }}
-                onSubmit={async (values, {setErrors}) => {
-                    const response = await changePassword({
-                        variables: {token, newPassword: values.newPassword},
-                        update: (
-                            cache,
-                            {data}
-                        ) => {
-                            cache.writeQuery<MeQuery>({
-                                query: MeDocument,
-                                data: {
-                                    __typename: 'Query',
-                                    me: data?.changePassword.user
-                                },
-                            })
-                        }
-                    });
+        <Formik
+            initialValues={{
+                newPassword: '',
+                confirmPassword: ''
+            }}
+            onSubmit={async (values, {setFieldError}) => {
+                if(values.newPassword !== values.confirmPassword) {
+                    setFieldError('newPassword', "Passwords don't match");
+                } else {
+                    const response = await resetPassword({variables: {token, password: values.newPassword}});
 
-                    if(response.data?.changePassword?.errors) {
-                        const errors = toErrorMap(response.data.changePassword.errors);
-                        if('token' in errors) {
-                            setTokenError(errors.token);
-                        }
-                        return setErrors(errors);
-                    } else if(response.data?.changePassword.user) {
-                        return router.push('/');
+                    if(response.data?.resetPassword.errors) {
+                        toast({
+                            position: 'bottom',
+                            title: "Error.",
+                            description: response.data?.resetPassword.errors[0].message,
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                        });
+                    } else if(response.data?.resetPassword.confirmed) {
+                        toast({
+                            position: 'bottom',
+                            title: "Changed!",
+                            description: "Your password is changed, you can login now",
+                            status: "success",
+                            duration: 9000,
+                            isClosable: true,
+                        });
+                        await router.push('/login');
                     }
-                }}
-            >
-                {({isSubmitting}) => (
-                    <Form>
-                        <InputField
-                            name="newPassword"
-                            label="New Password"
-                            placeholder="New Password"
-                            type="password"
-                        />
-                        {
-                            tokenError ? (
-                                <Stack spacing={4}>
-                                    <Alert status="error">
-                                        <AlertIcon />
-                                        {tokenError}
-                                    </Alert>
-                                    <NextLink href="/forgot-password">
-                                        <Link>
-                                            Get token
-                                        </Link>
-                                    </NextLink>
-                                </Stack>
-                            ) : null
-                        }
+                }
+            }}
+        >
+            {() => (
+                <Form>
+                    <AuthWrapper
+                        page="Change Password"
+                        src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614425565/mainpage/change_password_mr16nb.png"
+                        to="/register"
+                        text="If you dont have account yet, sign up"
+                    >
+                        <Box>
+                            <Text fontSize="lg" marginBottom={3} fontWeight="bold">New Password</Text>
+                            <Field name="newPassword" validate={validatePassword}>
+                                {({field, form}: FieldProps) => (
+                                    <PasswordInput
+                                        size="lg"
+                                        name="newPassword"
+                                        placeholder="Enter new password"
+                                        field={field}
+                                        form={form}
+                                    />
+                                )}
+                            </Field>
+                        </Box>
+                        <Box>
+                            <Text fontSize="lg" marginBottom={3} fontWeight="bold">Confirm New Password</Text>
+                            <Field name="confirmPassword" validate={validatePassword}>
+                                {({field, form}: FieldProps) => (
+                                    <PasswordInput
+                                        size="lg"
+                                        name="confirmPassword"
+                                        placeholder="Confirm new password"
+                                        field={field}
+                                        form={form}
+                                    />
+                                )}
+                            </Field>
+                        </Box>
                         <Button
-                            mt={4}
+                            width="150px"
                             type="submit"
-                            isLoading={isSubmitting}
+                            size="lg"
                         >
-                            Change
+                            Change Password
                         </Button>
-                    </Form>
-                )}
-            </Formik>
-        </Wrapper>
+                    </AuthWrapper>
+                </Form>
+            )}
+        </Formik>
     );
 }
 

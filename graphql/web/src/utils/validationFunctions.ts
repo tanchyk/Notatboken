@@ -14,7 +14,7 @@ export const validateUsername = (value: string) => {
     let error;
     const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
     if (!testUsername.test(value)) {
-        error = "Please, enter a valid Username";
+        error = "Username should contain only letters and numbers";
     }
     return error;
 }
@@ -41,7 +41,7 @@ export const validatePassword = (value: string) => {
     let error;
     const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
     if (!testPassword.test(value)) {
-        error = "Please, enter a valid Password";
+        error = "Password should contain at least one number, one lowercase and one uppercase letter";
     }
     return error
 }

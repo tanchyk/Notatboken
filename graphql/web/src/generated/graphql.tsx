@@ -16,33 +16,29 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type ConfirmationResponse = {
-  __typename?: 'ConfirmationResponse';
-  errors?: Maybe<Array<FieldError>>;
-  confirmed?: Maybe<Scalars['Boolean']>;
+export type Query = {
+  __typename?: 'Query';
+  me?: Maybe<User>;
 };
 
-
-export type EmailResponse = {
-  __typename?: 'EmailResponse';
-  errors?: Maybe<Array<FieldError>>;
-  send?: Maybe<Scalars['Boolean']>;
+export type User = {
+  __typename?: 'User';
+  id: Scalars['Float'];
+  name: Scalars['String'];
+  username: Scalars['String'];
+  email: Scalars['String'];
+  confirmed: Scalars['Boolean'];
+  userGoal: Scalars['Float'];
+  avatar: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
-export type FieldError = {
-  __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
-};
-
-export type LoginInput = {
-  usernameOrEmail: Scalars['String'];
-  password: Scalars['String'];
-};
 
 export type Mutation = {
   __typename?: 'Mutation';
   register: EmailResponse;
+  requestEmailConfirmation: EmailResponse;
   confirmRegistration: ConfirmationResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
@@ -53,6 +49,11 @@ export type Mutation = {
 
 export type MutationRegisterArgs = {
   input: RegisterInput;
+};
+
+
+export type MutationRequestEmailConfirmationArgs = {
+  email: Scalars['String'];
 };
 
 
@@ -76,9 +77,16 @@ export type MutationResetPasswordArgs = {
   token: Scalars['String'];
 };
 
-export type Query = {
-  __typename?: 'Query';
-  me?: Maybe<User>;
+export type EmailResponse = {
+  __typename?: 'EmailResponse';
+  errors?: Maybe<Array<FieldError>>;
+  send?: Maybe<Scalars['Boolean']>;
+};
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -87,23 +95,21 @@ export type RegisterInput = {
   password: Scalars['String'];
 };
 
-export type User = {
-  __typename?: 'User';
-  id: Scalars['Float'];
-  name: Scalars['String'];
-  username: Scalars['String'];
-  email: Scalars['String'];
-  confirmed: Scalars['Boolean'];
-  userGoal: Scalars['Float'];
-  avatar: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+export type ConfirmationResponse = {
+  __typename?: 'ConfirmationResponse';
+  errors?: Maybe<Array<FieldError>>;
+  confirmed?: Maybe<Scalars['Boolean']>;
 };
 
 export type UserResponse = {
   __typename?: 'UserResponse';
   errors?: Maybe<Array<FieldError>>;
   user?: Maybe<User>;
+};
+
+export type LoginInput = {
+  usernameOrEmail: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type ErrorFragment = (
@@ -114,6 +120,40 @@ export type ErrorFragment = (
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'name' | 'username' | 'email' | 'userGoal' | 'avatar' | 'createdAt'>
+);
+
+export type ConfirmRegistrationMutationVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type ConfirmRegistrationMutation = (
+  { __typename?: 'Mutation' }
+  & { confirmRegistration: (
+    { __typename?: 'ConfirmationResponse' }
+    & Pick<ConfirmationResponse, 'confirmed'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
+);
+
+export type ForgotPasswordMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type ForgotPasswordMutation = (
+  { __typename?: 'Mutation' }
+  & { forgotPassword: (
+    { __typename?: 'EmailResponse' }
+    & Pick<EmailResponse, 'send'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -160,6 +200,41 @@ export type RegisterMutation = (
   ) }
 );
 
+export type RequestEmailConfirmationMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type RequestEmailConfirmationMutation = (
+  { __typename?: 'Mutation' }
+  & { requestEmailConfirmation: (
+    { __typename?: 'EmailResponse' }
+    & Pick<EmailResponse, 'send'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
+);
+
+export type ResetPasswordMutationVariables = Exact<{
+  token: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type ResetPasswordMutation = (
+  { __typename?: 'Mutation' }
+  & { resetPassword: (
+    { __typename?: 'ConfirmationResponse' }
+    & Pick<ConfirmationResponse, 'confirmed'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -188,6 +263,78 @@ export const RegularUserFragmentDoc = gql`
   createdAt
 }
     `;
+export const ConfirmRegistrationDocument = gql`
+    mutation ConfirmRegistration($token: String!) {
+  confirmRegistration(token: $token) {
+    errors {
+      ...Error
+    }
+    confirmed
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type ConfirmRegistrationMutationFn = Apollo.MutationFunction<ConfirmRegistrationMutation, ConfirmRegistrationMutationVariables>;
+
+/**
+ * __useConfirmRegistrationMutation__
+ *
+ * To run a mutation, you first call `useConfirmRegistrationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useConfirmRegistrationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [confirmRegistrationMutation, { data, loading, error }] = useConfirmRegistrationMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useConfirmRegistrationMutation(baseOptions?: Apollo.MutationHookOptions<ConfirmRegistrationMutation, ConfirmRegistrationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ConfirmRegistrationMutation, ConfirmRegistrationMutationVariables>(ConfirmRegistrationDocument, options);
+      }
+export type ConfirmRegistrationMutationHookResult = ReturnType<typeof useConfirmRegistrationMutation>;
+export type ConfirmRegistrationMutationResult = Apollo.MutationResult<ConfirmRegistrationMutation>;
+export type ConfirmRegistrationMutationOptions = Apollo.BaseMutationOptions<ConfirmRegistrationMutation, ConfirmRegistrationMutationVariables>;
+export const ForgotPasswordDocument = gql`
+    mutation ForgotPassword($email: String!) {
+  forgotPassword(email: $email) {
+    send
+    errors {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type ForgotPasswordMutationFn = Apollo.MutationFunction<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
+
+/**
+ * __useForgotPasswordMutation__
+ *
+ * To run a mutation, you first call `useForgotPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useForgotPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [forgotPasswordMutation, { data, loading, error }] = useForgotPasswordMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ForgotPasswordMutation, ForgotPasswordMutationVariables>(ForgotPasswordDocument, options);
+      }
+export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswordMutation>;
+export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
+export type ForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
@@ -293,6 +440,79 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const RequestEmailConfirmationDocument = gql`
+    mutation RequestEmailConfirmation($email: String!) {
+  requestEmailConfirmation(email: $email) {
+    send
+    errors {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type RequestEmailConfirmationMutationFn = Apollo.MutationFunction<RequestEmailConfirmationMutation, RequestEmailConfirmationMutationVariables>;
+
+/**
+ * __useRequestEmailConfirmationMutation__
+ *
+ * To run a mutation, you first call `useRequestEmailConfirmationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRequestEmailConfirmationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [requestEmailConfirmationMutation, { data, loading, error }] = useRequestEmailConfirmationMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useRequestEmailConfirmationMutation(baseOptions?: Apollo.MutationHookOptions<RequestEmailConfirmationMutation, RequestEmailConfirmationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RequestEmailConfirmationMutation, RequestEmailConfirmationMutationVariables>(RequestEmailConfirmationDocument, options);
+      }
+export type RequestEmailConfirmationMutationHookResult = ReturnType<typeof useRequestEmailConfirmationMutation>;
+export type RequestEmailConfirmationMutationResult = Apollo.MutationResult<RequestEmailConfirmationMutation>;
+export type RequestEmailConfirmationMutationOptions = Apollo.BaseMutationOptions<RequestEmailConfirmationMutation, RequestEmailConfirmationMutationVariables>;
+export const ResetPasswordDocument = gql`
+    mutation ResetPassword($token: String!, $password: String!) {
+  resetPassword(token: $token, password: $password) {
+    errors {
+      ...Error
+    }
+    confirmed
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type ResetPasswordMutationFn = Apollo.MutationFunction<ResetPasswordMutation, ResetPasswordMutationVariables>;
+
+/**
+ * __useResetPasswordMutation__
+ *
+ * To run a mutation, you first call `useResetPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetPasswordMutation, { data, loading, error }] = useResetPasswordMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useResetPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ResetPasswordMutation, ResetPasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ResetPasswordMutation, ResetPasswordMutationVariables>(ResetPasswordDocument, options);
+      }
+export type ResetPasswordMutationHookResult = ReturnType<typeof useResetPasswordMutation>;
+export type ResetPasswordMutationResult = Apollo.MutationResult<ResetPasswordMutation>;
+export type ResetPasswordMutationOptions = Apollo.BaseMutationOptions<ResetPasswordMutation, ResetPasswordMutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {

@@ -2,25 +2,28 @@ import React, {useMemo, useState} from 'react';
 import NextLink from "next/link";
 import {NavItemProfile} from "./NavItemProfile";
 import {Stack} from "@chakra-ui/react";
+import {useRouter} from "next/router";
 
 interface NavbarProfileProps {
     url: string;
 }
 
 export const NavProfile: React.FC<NavbarProfileProps> = ({url}) => {
+    const router = useRouter();
+    const path = router.pathname;
     const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete' | 'goal'>('basic');
 
     useMemo(() => {
-        if(window.location.pathname.includes('change-password')) {
+        if(path.includes('change-password')) {
             setClicked('change-p')
-        } else if(window.location.pathname.includes('delete-account')) {
+        } else if(path.includes('delete-account')) {
             setClicked('delete')
-        } else if(window.location.pathname.includes('goal')) {
+        } else if(path.includes('goal')) {
             setClicked('goal')
         } else {
             setClicked('basic')
         }
-    }, [window.location.pathname])
+    }, [path])
 
     return (
         <Stack spacing={8}>

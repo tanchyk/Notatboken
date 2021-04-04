@@ -5,14 +5,19 @@ import {FaUser} from "react-icons/fa";
 import {IoLanguageOutline} from "react-icons/io5";
 import {MdExitToApp} from "react-icons/md";
 import {BiStats} from "react-icons/bi";
-import {useMeQuery} from "../../generated/graphql";
+import {useLogoutMutation, useMeQuery} from "../../generated/graphql";
+import {useApolloClient} from "@apollo/client";
 
-interface UserIconProps {
-    logoutHandler: () => void;
-}
-
-export const UserIcon: React.FC<UserIconProps> = ({logoutHandler}) => {
+export const UserIcon: React.FC = ({}) => {
+    const apolloClient = useApolloClient();
     const {data} = useMeQuery();
+    const [logout] = useLogoutMutation();
+
+
+    const logoutHandler = async () => {
+        await logout();
+        await apolloClient.resetStore();
+    }
 
     if(!data || !data.me) {
         return <></>;
@@ -34,17 +39,17 @@ export const UserIcon: React.FC<UserIconProps> = ({logoutHandler}) => {
                     </MenuItem>
                 </NextLink>
                 <NextLink href="/statistics">
-                    <MenuItem icon={<IoLanguageOutline/>}>
+                    <MenuItem icon={<BiStats/>}>
                         Statistics
                     </MenuItem>
                 </NextLink>
                 <NextLink href="/">
-                    <MenuItem icon={<MdExitToApp/>}>
+                    <MenuItem icon={<IoLanguageOutline/>}>
                         Languages
                     </MenuItem>
                 </NextLink>
                 <MenuDivider/>
-                <MenuItem icon={<BiStats />} onClick={logoutHandler}>
+                <MenuItem icon={<MdExitToApp />} onClick={logoutHandler}>
                     Log out
                 </MenuItem>
             </MenuList>

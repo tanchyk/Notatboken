@@ -1,20 +1,20 @@
 import React from "react";
-import {Field, Form, Formik, FieldProps} from "formik";
-import {Box, Button, IconButton, Link, Stack, Tooltip, useToast} from "@chakra-ui/react";
-import {validateEmail} from "../utils/validationFunctions";
-import {UserInput} from "../components/inputs/UserInput";
-import {AuthWrapper} from "../components/wrappers/AuthWrapper";
-import NextLink from "next/link";
-import {RiLightbulbLine} from "react-icons/ri";
 import {useRouter} from "next/router";
-import {useForgotPasswordMutation} from "../generated/graphql";
-import {toErrorMap} from "../utils/toErrorMap";
-import {withApollo} from "../utils/withApollo";
+import {Box, Button, IconButton, Link, Stack, Tooltip, useToast} from "@chakra-ui/react";
+import {Field, FieldProps, Form, Formik} from "formik";
+import {toErrorMap} from "../../utils/toErrorMap";
+import {AuthWrapper} from "../../components/wrappers/AuthWrapper";
+import {validateEmail} from "../../utils/validationFunctions";
+import {UserInput} from "../../components/inputs/UserInput";
+import NextLink from "next/link";
+import {FaUserPlus} from "react-icons/fa";
+import {withApollo} from "../../utils/withApollo";
+import {useRequestEmailConfirmationMutation} from "../../generated/graphql";
 
-const ForgotPassword: React.FC = () => {
+const SendRequest: React.FC = () => {
     const router = useRouter();
     const toast = useToast();
-    const [forgotPassword] = useForgotPasswordMutation();
+    const [requestConfirmation] = useRequestEmailConfirmationMutation();
 
     return (
         <Formik
@@ -22,13 +22,13 @@ const ForgotPassword: React.FC = () => {
                 email: ''
             }}
             onSubmit={async (values, {setErrors}) => {
-                const response = await forgotPassword({
+                const response = await requestConfirmation({
                     variables: {email: values.email}
                 });
 
-                if(response.data?.forgotPassword.errors) {
-                    return setErrors(toErrorMap(response.data?.forgotPassword.errors));
-                } else if(response.data?.forgotPassword.send === true) {
+                if(response.data?.requestEmailConfirmation.errors) {
+                    return setErrors(toErrorMap(response.data?.requestEmailConfirmation.errors));
+                } else if(response.data?.requestEmailConfirmation.send === true) {
                     toast({
                         position: 'bottom',
                         title: "Email is sent.",
@@ -44,8 +44,8 @@ const ForgotPassword: React.FC = () => {
             {() => (
                 <Form>
                     <AuthWrapper
-                        page="Forgot Password"
-                        src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614424748/mainpage/forgot_password_pcnkfd.png"
+                        page="Confirm Email"
+                        src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1617481922/mainpage/send-request_ycjlry.png"
                         to="/register"
                         text="If you dont have account yet, sign up"
                     >
@@ -69,9 +69,9 @@ const ForgotPassword: React.FC = () => {
                             >
                                 Send Email
                             </Button>
-                            <Tooltip label="Back to login">
-                                <NextLink href="/login">
-                                    <IconButton aria-label="login" icon={<RiLightbulbLine/>}/>
+                            <Tooltip label="Register new user">
+                                <NextLink href="/register">
+                                    <IconButton aria-label="register" icon={<FaUserPlus/>}/>
                                 </NextLink>
                             </Tooltip>
                             <Link color="blue.500" href="/" pl={3}>
@@ -87,4 +87,4 @@ const ForgotPassword: React.FC = () => {
     );
 }
 
-export default withApollo({ssr: false})(ForgotPassword);
+export default withApollo({ssr: false})(SendRequest);

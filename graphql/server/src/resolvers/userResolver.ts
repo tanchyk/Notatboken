@@ -6,7 +6,7 @@ import argon2 from "argon2";
 import {v4} from "uuid";
 import { getRepository } from "typeorm";
 import {COOKIE_NAME, FORGET_PASSWORD_PREFIX, REGISTER_PREFIX} from "../types/constants";
-import {transporter} from "../utils/mailer";
+import {sendEmailConformation, transporter} from "../utils/mailer";
 import { testEmail, testUsername, testPassword } from "../middleware/validationMiddleware";
 
 @Resolver(User)
@@ -75,48 +75,26 @@ export class UserResolver {
             }
         }
 
-        try {
-            const token = v4();
-            await redis.set(
-                REGISTER_PREFIX + token,
-                user.id,
-                "ex",
-                1000*60*60*24
-            );
+        return sendEmailConformation(user, redis);
+    }
 
-            const url = `${process.env.CORS_ORIGIN}/confirm-email/${token}`;
+    @Mutation(() => EmailResponse)
+    @UseMiddleware(testEmail)
+    async requestEmailConfirmation(
+        @Arg("email") email: string,
+        @Ctx() {redis}: MyContext
+    ): Promise<EmailResponse> {
+        const userRepository = getRepository(User);
+        const user = await userRepository.findOne({where: email});
 
-            await transporter.sendMail({
-                from: `${process.env.GMAIL_USER}`,
-                to: user.email,
-                subject: "Confirm email for Notatboken",
-                html: `
-                    <div style="margin: 40px; padding: 40px; border: 1px solid #4A5568; border-radius: 0.5rem; display: flex; flex-direction: row; flex-wrap: wrap;">
-                        <div style="padding: 40px;">
-                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614424748/mainpage/forgot_password_pcnkfd.png" />
-                        </div>
-                        <div style="padding: 40px;">
-                            <h1>Please click this link to confirm your email: </h1>
-                            <a href="${url}">Confirm Email</a>
-                        </div>
-                    </div>
-                `
-            })
-        } catch (e) {
-            console.log(e);
+        if(!user) {
             return {
-                errors: [{
-                    field: "username",
-                    message: "Ops, for some reason we can't send you an email"
-                }],
-                send: false
-            }
+                errors: null,
+                send: true
+            };
         }
 
-        return {
-            errors: null,
-            send: true
-        };
+        return sendEmailConformation(user, redis);
     }
 
     @Mutation(() => ConfirmationResponse)

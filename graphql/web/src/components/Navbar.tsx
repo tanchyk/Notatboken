@@ -1,33 +1,20 @@
 import React, {useContext, useEffect} from "react";
 import NextLink from "next/link";
-import {
-    Box,
-    Button,
-    Flex,
-    Heading,
-    Image,
-    IconButton,
-    Stack,
-    useDisclosure,
-    useStyleConfig
-} from "@chakra-ui/react";
+import {Box, Button, Flex, Heading, IconButton, Image, Stack, useDisclosure, useStyleConfig} from "@chakra-ui/react";
 import {LanguageContext} from '../pages/_app';
 import {Wrapper} from "./wrappers/Wrapper";
 import {ColorModeSwitcher} from "./ColorModeSwitcher";
-import {CloseIcon } from '@chakra-ui/icons';
+import {CloseIcon} from '@chakra-ui/icons';
 import {HiMenu} from "react-icons/hi";
 import {NavProfile} from "./navigation/NavProfile";
 import {NavDecks} from "./navigation/NavDecks";
 import {StreakNavbar} from "./navigation/StreakNavbar";
 import {UserIcon} from "./navigation/UserIcon";
-import {useLoginMutation, useMeQuery} from "../generated/graphql";
-import {useApolloClient} from "@apollo/client";
-import { useRouter } from 'next/router';
+import {useMeQuery} from "../generated/graphql";
+import {useRouter} from 'next/router';
 
 export const Navbar: React.FC = ({}) => {
-    const apolloClient = useApolloClient();
     const {data} = useMeQuery();
-    const [logout] = useLoginMutation();
     let body;
 
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,22 +26,18 @@ export const Navbar: React.FC = ({}) => {
         if(isOpen) {
             onClose();
         }
+        console.log(url);
     }, [url])
 
     const handleClick = () => {
         isOpen ? onClose() : onOpen()
     }
 
-    const logoutHandler = async () => {
-        await logout();
-        await apolloClient.resetStore();
-    }
-
     if (!!data?.me) {
         body = (
             <>
                 {
-                    window.location.pathname.includes('profile') || window.location.pathname.includes('decks') ? (
+                    url.includes('profile') || url.includes('decks') ? (
                         <IconButton
                             size="md"
                             fontSize="lg"
@@ -67,7 +50,7 @@ export const Navbar: React.FC = ({}) => {
                     ) : null
                 }
                 <StreakNavbar />
-                <UserIcon logoutHandler={logoutHandler} />
+                <UserIcon />
             </>
         );
     } else {
