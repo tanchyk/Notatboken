@@ -28,6 +28,18 @@ export class LoginInput {
     password: string;
 }
 
+@InputType()
+export class EditUserInput {
+    @Field()
+    name: string;
+    @Field()
+    username: string;
+    @Field()
+    email: string;
+    @Field({nullable: true})
+    avatarData: string;
+}
+
 @ObjectType()
 export class FieldError {
     @Field()

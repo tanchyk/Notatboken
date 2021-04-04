@@ -1,36 +1,37 @@
-require('dotenv').config();
-import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Ctx, Int, Mutation, Resolver, UseMiddleware} from "type-graphql";
 import {User} from "../entities/User";
-import {ConfirmationResponse, EmailResponse, LoginInput, MyContext, RegisterInput, UserResponse} from "../types/types";
+import {ConfirmationResponse, EditUserInput, MyContext, UserResponse} from "../types/types";
+import {isAuth} from "../middleware/isAuth";
 import argon2 from "argon2";
-import {v4} from "uuid";
 import { getRepository } from "typeorm";
-import {COOKIE_NAME, FORGET_PASSWORD_PREFIX, REGISTER_PREFIX} from "../types/constants";
-import {sendEmailConformation, transporter} from "../utils/mailer";
-import { testEmail, testUsername, testPassword } from "../middleware/validationMiddleware";
+import {testPassword} from "../middleware/validationMiddleware";
+import {COOKIE_NAME} from "../types/constants";
+
+const cloudinary = require("cloudinary").v2;
 
 @Resolver(User)
 export class UserResolver {
-    @Query(() => User, {nullable: true})
-    async me(
-        @Ctx() {req}: MyContext
-    ) {
-        if(!req.session.userId) {
-            return null;
-        } else {
-            const userRepository = getRepository(User);
-            return userRepository.findOne({ where: {id: req.session.userId}});
+    @Mutation(() => UserResponse)
+    @UseMiddleware(isAuth)
+    async editUser(
+        @Arg("input") input: EditUserInput,
+        @Ctx() {req}:MyContext
+    ): Promise<UserResponse> {
+        const userRepository = getRepository(User);
+        let user: User;
+        try {
+            user = await userRepository.findOneOrFail({relations: ["userLanguages"], where: {id: req.session.userId}});
+        } catch (err) {
+            return {
+                errors: [{
+                    field: "user",
+                    message: "User is not exists"
+                }],
+                user: null
+            }
         }
-    }
 
-    @Mutation(() => EmailResponse)
-    @UseMiddleware(testEmail, testUsername, testPassword)
-    async register(
-        @Arg("input") input: RegisterInput,
-        @Ctx() {redis}: MyContext
-    ) {
-        const userRepository = await getRepository(User);
-
+        //Checking if data already in database
         const checkExisting: User | undefined = await userRepository.findOne({
             where : [{
                 username : input.username,
@@ -39,98 +40,122 @@ export class UserResolver {
             }]
         });
 
-        if(checkExisting && checkExisting!.username === input.username) {
+        if(checkExisting && checkExisting!.username === input.username && checkExisting!.username !== user.username) {
             return {
                 errors: [{
-                    field: 'username',
-                    message: 'Username is already taken'
+                    field: "username",
+                    message: "Username is already taken"
                 }],
-                send: false
+                user: null
             }
-        } else if(checkExisting && checkExisting!.email === input.email) {
+        } else if(checkExisting && checkExisting!.email === input.email && checkExisting!.email !== user.email) {
             return {
                 errors: [{
-                    field: 'email',
-                    message: 'Email is already taken'
+                    field: "email",
+                    message: "Email is already taken"
                 }],
-                send: false
+                user: null
             }
         }
 
-        const user = new User();
+        if(input.avatarData && input.avatarData !== user.avatar) {
+            try {
+                await cloudinary.config({
+                    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                    api_key: process.env.CLOUDINARY_KEY,
+                    api_secret: process.env.CLOUDINARY_SECRET
+                });
 
+                const uploadResponse = await cloudinary.uploader.upload(input.avatarData, {
+                    upload_presets: 'user_avatar', transformation: [
+                        {width: 400, height: 400, gravity: "face", crop: "thumb"}
+                    ]
+                })
+                user.avatar = uploadResponse.secure_url;
+            } catch (e) {
+                console.log('Error', e);
+            }
+        }
+
+        user.name = input.name;
+        user.email = input.email;
         user.username = input.username;
-        user.email =  input.email;
-        user.password = await argon2.hash(input.password);
 
+        //Try to save, if it fails, that means username or email already in use
         try {
             await userRepository.save(user);
         } catch (e) {
             return {
                 errors: [{
-                    field: 'email',
-                    message: "Email is already in use"
+                    field: "username",
+                    message: "Username or Email is already in use"
                 }],
-                send: false
+                user: null
             }
         }
 
-        return sendEmailConformation(user, redis);
-    }
-
-    @Mutation(() => EmailResponse)
-    @UseMiddleware(testEmail)
-    async requestEmailConfirmation(
-        @Arg("email") email: string,
-        @Ctx() {redis}: MyContext
-    ): Promise<EmailResponse> {
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({where: email});
-
-        if(!user) {
-            return {
-                errors: null,
-                send: true
-            };
+        return {
+            errors: null,
+            user: user
         }
-
-        return sendEmailConformation(user, redis);
     }
 
     @Mutation(() => ConfirmationResponse)
-    async confirmRegistration(
-        @Arg("token") token: string,
-        @Ctx() {redis}: MyContext
+    @UseMiddleware(isAuth)
+    async changePassword(
+        @Arg("newPassword") newPassword: string,
+        @Arg("oldPassword") oldPassword: string,
+        @Ctx() {req}: MyContext
     ): Promise<ConfirmationResponse> {
-        const userId = await redis.get(REGISTER_PREFIX+token);
-
-        if(!userId) {
+        const testPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,100}/;
+        if(!testPassword.test(newPassword)) {
             return {
                 errors: [{
-                    field: "token",
-                    message: "Token has already expired"
+                    field: "newPassword",
+                    message: "Password should contain at least one number, one lowercase and one uppercase letter"
                 }],
                 confirmed: false
             }
         }
 
+        //Try to find user on database
         const userRepository = getRepository(User);
-        const user = await userRepository.findOne({ where: {id: parseInt(userId)}});
-
-        if(!user) {
+        let user: User;
+        try {
+            user = await userRepository.findOneOrFail({where: {id: req.session.userId}});
+        } catch (err) {
             return {
                 errors: [{
-                    field: "token",
-                    message: "User no longer exists"
+                    field: "newPassword",
+                    message: "User is not exists"
                 }],
                 confirmed: false
             }
         }
 
-        user.confirmed = true;
-        await userRepository.save(user);
+        //Checking password
+        if(! await argon2.verify(user.password, oldPassword)) {
+            return {
+                errors: [{
+                    field: "oldPassword",
+                    message: "Incorrect password"
+                }],
+                confirmed: false
+            }
+        }
 
-        await redis.del(REGISTER_PREFIX+token);
+        if(newPassword === oldPassword) {
+            return {
+                errors: [{
+                    field: "newPassword",
+                    message: "Please, change your password"
+                }],
+                confirmed: false
+            }
+        }
+
+        user.password = await argon2.hash(newPassword);
+        await userRepository.save(user);
 
         return {
             errors: null,
@@ -138,183 +163,70 @@ export class UserResolver {
         }
     }
 
-    @Mutation(() => UserResponse)
-    async login(
-        @Arg("input") input: LoginInput,
+    @Mutation(() => ConfirmationResponse)
+    @UseMiddleware(isAuth)
+    async editGoal(
+        @Arg("userGoal", () => Int) userGoal: number,
         @Ctx() {req}: MyContext
-    ): Promise<UserResponse> {
-        const incorrectUsernameOrEmail = {
-            errors: [{
-                field: 'usernameOrEmail',
-                message: 'Incorrect username/email or password'
-            }],
-            user: null
-        }
-
-        if (!(input.usernameOrEmail && input.password)) {
-            return {
-                errors: [{
-                    field: 'usernameOrEmail',
-                    message: 'Incorrect data'
-                }],
-                user: null
-            }
-        }
-
-        //Search for user
-        const userRepository = await getRepository(User);
+    ): Promise<ConfirmationResponse> {
+        const userRepository = getRepository(User);
         let user: User;
-
-        if(input.usernameOrEmail.includes('@')) {
-            try {
-                user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {email: input.usernameOrEmail}});
-            } catch (e) {
-                return incorrectUsernameOrEmail;
-            }
-        } else {
-            try {
-                user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {username: input.usernameOrEmail}});
-            } catch (e) {
-                return incorrectUsernameOrEmail;
-            }
-        }
-
-        if(!user.confirmed) {
+        try {
+            user = await userRepository.findOneOrFail({where: {id: req.session.userId}});
+        } catch (err) {
             return {
                 errors: [{
-                    field: 'usernameOrEmail',
-                    message: 'Please, confirm your email'
+                    field: "userGoal",
+                    message: "User is not exists"
                 }],
-                user: null
+                confirmed: false
             }
         }
 
-        //Checking password
-        if(! await argon2.verify(user.password, input.password)) {
-            return incorrectUsernameOrEmail;
+        if(userGoal === 5 || userGoal === 10 || userGoal === 15 || userGoal === 20) {
+            user.userGoal = userGoal;
+            await userRepository.save(user);
         }
-
-        req.session.userId = user.id;
 
         return {
             errors: null,
-            user: user
-        };
-    }
-
-    @Mutation(() => Boolean)
-    logout(
-        @Ctx() {req, res}: MyContext
-    ) {
-        return new Promise<boolean>(resolve => req.session.destroy(err => {
-            if(err) {
-                console.log(err);
-                return resolve(false);
-            } else {
-                res.clearCookie(COOKIE_NAME);
-                return resolve(true);
-            }
-        }))
-    }
-
-    @Mutation(() => EmailResponse)
-    @UseMiddleware(testEmail)
-    async forgotPassword(
-        @Arg("email") email: string,
-        @Ctx() {redis}: MyContext
-    ): Promise<EmailResponse> {
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({
-            where: {email}
-        });
-
-        if(!user) {
-            return {
-                errors: null,
-                send: true
-            };
-        }
-
-        try {
-            const token = v4();
-            await redis.set(
-                FORGET_PASSWORD_PREFIX+token,
-                user.id,
-                "ex",
-                1000*60*60*24
-            );
-
-            const url = `${process.env.CORS_ORIGIN}/change-password/${token}`;
-
-            await transporter.sendMail({
-                from: `${process.env.GMAIL_USER}`,
-                to: user.email,
-                subject: "Change Password",
-                html: `
-                    <div style="margin: 40px; padding: 40px; border: 1px solid #4A5568; border-radius: 0.5rem; display: flex; flex-direction: row; flex-wrap: wrap;">
-                        <div style="padding: 40px;">
-                            <img style="width: 200px; height: 200px;" src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1614425565/mainpage/change_password_mr16nb.png" />
-                        </div>
-                        <div style="padding: 40px;">
-                            <h1>Please click this link to change your password: </h1>
-                            <a href="${url}">Change Password</a>
-                        </div>
-                    </div>
-                `
-            });
-
-            return {
-                errors: null,
-                send: true
-            };
-        } catch (e) {
-            console.log(e);
-            return {
-                errors: [{
-                    field: "email",
-                    message: "Ooops, something wrong with our service"
-                }],
-                send: false
-            }
+            confirmed: true
         }
     }
 
     @Mutation(() => ConfirmationResponse)
-    @UseMiddleware(testPassword)
-    async resetPassword(
-        @Arg("token") token: string,
+    @UseMiddleware(isAuth, testPassword)
+    async deleteUser(
         @Arg("password") password: string,
-        @Ctx() {redis}: MyContext
+        @Ctx() {req, res}: MyContext
     ): Promise<ConfirmationResponse> {
-        const userId = await redis.get(FORGET_PASSWORD_PREFIX+token);
-
-        if(!userId) {
-            return {
-                errors: [{
-                    field: "token",
-                    message: "Token has already expired"
-                }],
-                confirmed: false
-            }
-        }
-
         const userRepository = getRepository(User);
-        const user = await userRepository.findOne({ where: {id: parseInt(userId)}});
-
-        if(!user) {
+        let user: User;
+        try {
+            user = await userRepository.findOneOrFail({where: {id: req.session.userId}});
+        } catch (err) {
             return {
                 errors: [{
-                    field: "token",
-                    message: "User no longer exists"
+                    field: "password",
+                    message: "User is not exists"
                 }],
                 confirmed: false
             }
         }
 
-        user.password = await argon2.hash(password);
-        await userRepository.save(user);
+        //Checking password
+        if (!await argon2.verify(user.password, password)) {
+            return {
+                errors: [{
+                    field: "password",
+                    message: "Incorrect password"
+                }],
+                confirmed: false
+            }
+        }
 
-        await redis.del(FORGET_PASSWORD_PREFIX+token);
+        await userRepository.delete({id: req.session.userId});
+        await res.clearCookie(COOKIE_NAME);
 
         return {
             errors: null,
