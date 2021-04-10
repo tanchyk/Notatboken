@@ -1,0 +1,8 @@
+mutation DeleteAccount($password: String!) {
+    deleteUser(password: $password) {
+        errors {
+            ...Error
+        }
+        confirmed
+    }
+}

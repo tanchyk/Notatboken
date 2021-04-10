@@ -160,6 +160,24 @@ export type RegularUserFragment = (
   & Pick<User, 'id' | 'name' | 'username' | 'email' | 'userGoal' | 'avatar' | 'createdAt'>
 );
 
+export type ChangePasswordMutationVariables = Exact<{
+  newPassword: Scalars['String'];
+  oldPassword: Scalars['String'];
+}>;
+
+
+export type ChangePasswordMutation = (
+  { __typename?: 'Mutation' }
+  & { changePassword: (
+    { __typename?: 'ConfirmationResponse' }
+    & Pick<ConfirmationResponse, 'confirmed'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
+);
+
 export type ConfirmEmailChangeMutationVariables = Exact<{
   token: Scalars['String'];
 }>;
@@ -185,6 +203,23 @@ export type ConfirmRegistrationMutationVariables = Exact<{
 export type ConfirmRegistrationMutation = (
   { __typename?: 'Mutation' }
   & { confirmRegistration: (
+    { __typename?: 'ConfirmationResponse' }
+    & Pick<ConfirmationResponse, 'confirmed'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
+);
+
+export type DeleteAccountMutationVariables = Exact<{
+  password: Scalars['String'];
+}>;
+
+
+export type DeleteAccountMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteUser: (
     { __typename?: 'ConfirmationResponse' }
     & Pick<ConfirmationResponse, 'confirmed'>
     & { errors?: Maybe<Array<(
@@ -354,6 +389,43 @@ export const RegularUserFragmentDoc = gql`
   createdAt
 }
     `;
+export const ChangePasswordDocument = gql`
+    mutation ChangePassword($newPassword: String!, $oldPassword: String!) {
+  changePassword(newPassword: $newPassword, oldPassword: $oldPassword) {
+    errors {
+      ...Error
+    }
+    confirmed
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
+
+/**
+ * __useChangePasswordMutation__
+ *
+ * To run a mutation, you first call `useChangePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
+ *   variables: {
+ *      newPassword: // value for 'newPassword'
+ *      oldPassword: // value for 'oldPassword'
+ *   },
+ * });
+ */
+export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangePasswordMutation, ChangePasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, options);
+      }
+export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
+export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
+export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const ConfirmEmailChangeDocument = gql`
     mutation ConfirmEmailChange($token: String!) {
   confirmEmailChange(token: $token) {
@@ -426,6 +498,42 @@ export function useConfirmRegistrationMutation(baseOptions?: Apollo.MutationHook
 export type ConfirmRegistrationMutationHookResult = ReturnType<typeof useConfirmRegistrationMutation>;
 export type ConfirmRegistrationMutationResult = Apollo.MutationResult<ConfirmRegistrationMutation>;
 export type ConfirmRegistrationMutationOptions = Apollo.BaseMutationOptions<ConfirmRegistrationMutation, ConfirmRegistrationMutationVariables>;
+export const DeleteAccountDocument = gql`
+    mutation DeleteAccount($password: String!) {
+  deleteUser(password: $password) {
+    errors {
+      ...Error
+    }
+    confirmed
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteAccountMutationFn = Apollo.MutationFunction<DeleteAccountMutation, DeleteAccountMutationVariables>;
+
+/**
+ * __useDeleteAccountMutation__
+ *
+ * To run a mutation, you first call `useDeleteAccountMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteAccountMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteAccountMutation, { data, loading, error }] = useDeleteAccountMutation({
+ *   variables: {
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useDeleteAccountMutation(baseOptions?: Apollo.MutationHookOptions<DeleteAccountMutation, DeleteAccountMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteAccountMutation, DeleteAccountMutationVariables>(DeleteAccountDocument, options);
+      }
+export type DeleteAccountMutationHookResult = ReturnType<typeof useDeleteAccountMutation>;
+export type DeleteAccountMutationResult = Apollo.MutationResult<DeleteAccountMutation>;
+export type DeleteAccountMutationOptions = Apollo.BaseMutationOptions<DeleteAccountMutation, DeleteAccountMutationVariables>;
 export const EditGoalDocument = gql`
     mutation EditGoal($userGoal: Int!) {
   editGoal(userGoal: $userGoal) {
