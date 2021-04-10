@@ -1,7 +1,7 @@
 import React from "react";
 import {Stack, useStyleConfig} from "@chakra-ui/react";
 
-export const ProfileWrapper: React.FC<{}> = ({children}) => {
+export const AccountWrapper: React.FC<{}> = ({children}) => {
     const styleStack = useStyleConfig("Stack");
     styleStack.borderLeftWidth = "6px";
 

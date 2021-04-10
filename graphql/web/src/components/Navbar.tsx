@@ -4,8 +4,9 @@ import {Box, Button, Flex, Heading, IconButton, Image, Stack, useDisclosure, use
 import {LanguageContext} from '../pages/_app';
 import {Wrapper} from "./wrappers/Wrapper";
 import {ColorModeSwitcher} from "./ColorModeSwitcher";
-import {CloseIcon} from '@chakra-ui/icons';
-import {HiMenu} from "react-icons/hi";
+// import {CloseIcon} from '@chakra-ui/icons';
+import {AiOutlineMenu} from "react-icons/ai";
+import {VscChromeClose} from "react-icons/vsc"
 import {NavProfile} from "./navigation/NavProfile";
 import {NavDecks} from "./navigation/NavDecks";
 import {StreakNavbar} from "./navigation/StreakNavbar";
@@ -36,14 +37,14 @@ export const Navbar: React.FC = ({}) => {
         body = (
             <>
                 {
-                    url.includes('profile') || url.includes('decks') ? (
+                    url.includes('account') || url.includes('decks') ? (
                         <IconButton
                             size="md"
                             fontSize="lg"
                             variant="ghost"
                             display={["inline-flex", "inline-flex", "none", "none", "none", "none"]}
                             aria-label="open drawer"
-                            icon={isOpen ? <HiMenu /> : <CloseIcon />}
+                            icon={isOpen ? <VscChromeClose /> : <AiOutlineMenu />}
                             onClick={handleClick}
                         />
                     ) : null
@@ -84,7 +85,12 @@ export const Navbar: React.FC = ({}) => {
             <Wrapper variant='regular' direction="column">
                 <Flex justifyContent="space-between">
                     <NextLink href="/">
-                        <Stack direction="row" spacing={3} alignItems="center">
+                        <Stack
+                            direction="row"
+                            spacing={3}
+                            alignItems="center"
+                            _hover={{cursor: "pointer"}}
+                        >
                             <Box boxSize="40px" direction="row">
                                 <Image
                                     src="https://res.cloudinary.com/dw3hb6ec8/image/upload/v1612990216/notatboken/notebook_b5bgvg.png"
@@ -110,8 +116,8 @@ export const Navbar: React.FC = ({}) => {
                             marginTop={8}
                         >
                             {
-                                window.location.pathname.includes('profile') ?
-                                    <NavProfile url='/profile' /> : <NavDecks url={`/decks/${language}`} />
+                                url.includes('account') ?
+                                    <NavProfile /> : <NavDecks url={`/decks/${language}`} />
                             }
                         </Stack>
                     ) : null

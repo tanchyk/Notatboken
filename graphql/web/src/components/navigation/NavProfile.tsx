@@ -4,11 +4,7 @@ import {NavItemProfile} from "./NavItemProfile";
 import {Stack} from "@chakra-ui/react";
 import {useRouter} from "next/router";
 
-interface NavbarProfileProps {
-    url: string;
-}
-
-export const NavProfile: React.FC<NavbarProfileProps> = ({url}) => {
+export const NavProfile: React.FC = ({}) => {
     const router = useRouter();
     const path = router.pathname;
     const [clicked, setClicked] = useState<'basic' | 'change-p' | 'delete' | 'goal'>('basic');
@@ -27,7 +23,7 @@ export const NavProfile: React.FC<NavbarProfileProps> = ({url}) => {
 
     return (
         <Stack spacing={8}>
-            <NextLink href={`${url}/basic-information`}>
+            <NextLink href="/account/basic-information">
                 <NavItemProfile
                     id="basic"
                     clicked={clicked}
@@ -35,7 +31,7 @@ export const NavProfile: React.FC<NavbarProfileProps> = ({url}) => {
                     Basic Information
                 </NavItemProfile>
             </NextLink>
-            <NextLink href={`${url}/goal`}>
+            <NextLink href="/account/goal">
                 <NavItemProfile
                     id="goal"
                     clicked={clicked}
@@ -43,7 +39,7 @@ export const NavProfile: React.FC<NavbarProfileProps> = ({url}) => {
                     Set User Goal
                 </NavItemProfile>
             </NextLink>
-            <NextLink href={`${url}/change-password`}>
+            <NextLink href="/account/change-password">
                 <NavItemProfile
                     id="change-p"
                     clicked={clicked}
@@ -51,7 +47,7 @@ export const NavProfile: React.FC<NavbarProfileProps> = ({url}) => {
                     Change Password
                 </NavItemProfile>
             </NextLink>
-            <NextLink href={`${url}/delete-account`}>
+            <NextLink href="/account/delete-account">
                 <NavItemProfile
                     id="delete"
                     clicked={clicked}

@@ -1,7 +1,7 @@
 import React from "react";
 import {Avatar, Menu, MenuButton, MenuDivider, MenuItem, MenuList} from "@chakra-ui/react";
 import NextLink from 'next/link';
-import {FaUser} from "react-icons/fa";
+import {FaUser, FaUserCog} from "react-icons/fa";
 import {IoLanguageOutline} from "react-icons/io5";
 import {MdExitToApp} from "react-icons/md";
 import {BiStats} from "react-icons/bi";
@@ -36,6 +36,11 @@ export const UserIcon: React.FC = ({}) => {
                 <NextLink href="/profile">
                     <MenuItem icon={<FaUser/>}>
                         Profile
+                    </MenuItem>
+                </NextLink>
+                <NextLink href="/account/basic-information">
+                    <MenuItem icon={<FaUserCog />}>
+                        Edit Profile
                     </MenuItem>
                 </NextLink>
                 <NextLink href="/statistics">

@@ -2,6 +2,7 @@ import "reflect-metadata";
 require('dotenv').config();
 import express from "express";
 import cors from "cors";
+import bodyParser from "body-parser";
 import {createConnection, getConnectionOptions} from "typeorm";
 import {ApolloServer} from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -27,6 +28,8 @@ const app = async () => {
         origin: `${process.env.CORS_ORIGIN}`,
         credentials: true
     }));
+
+    app.use(bodyParser({limit: '10mb'}));
 
     app.use(
         session({

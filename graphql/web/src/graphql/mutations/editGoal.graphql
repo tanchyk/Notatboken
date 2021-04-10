@@ -1,0 +1,8 @@
+mutation EditGoal($userGoal: Int!) {
+    editGoal(userGoal: $userGoal) {
+        errors {
+            ...Error
+        }
+        confirmed
+    }
+}

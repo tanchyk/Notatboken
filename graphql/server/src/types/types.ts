@@ -30,7 +30,7 @@ export class LoginInput {
 
 @InputType()
 export class EditUserInput {
-    @Field()
+    @Field({nullable: true})
     name: string;
     @Field()
     username: string;

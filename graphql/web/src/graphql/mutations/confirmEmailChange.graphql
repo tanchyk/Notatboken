@@ -1,0 +1,8 @@
+mutation ConfirmEmailChange($token: String!) {
+    confirmEmailChange(token: $token) {
+        errors {
+            ...Error
+        }
+        confirmed
+    }
+}

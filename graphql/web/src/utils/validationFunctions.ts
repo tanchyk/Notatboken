@@ -10,6 +10,15 @@ export const validateUsernameOrEmail = (value: string) => {
     return error;
 }
 
+export const validateName = (value: string) => {
+    let error;
+    const testName = /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/i;
+    if (!testName.test(value)) {
+        error = "Enter your first and last name";
+    }
+    return error;
+}
+
 export const validateUsername = (value: string) => {
     let error;
     const testUsername = /^(?=.{3,64}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;

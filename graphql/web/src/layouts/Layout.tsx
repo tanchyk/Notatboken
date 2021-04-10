@@ -1,6 +1,6 @@
 import React from "react";
-import {Wrapper} from "./wrappers/Wrapper";
-import {Navbar} from "./Navbar";
+import {Wrapper} from "../components/wrappers/Wrapper";
+import {Navbar} from "../components/Navbar";
 import { Flex } from "@chakra-ui/react";
 
 interface Layout {

@@ -5,16 +5,17 @@ import {useConfirmRegistrationMutation} from "../../generated/graphql";
 import {useEffect} from "react";
 import {useToast} from "@chakra-ui/react";
 
-interface ChangePasswordProps {
+interface ConfirmEmail {
     token: string;
 }
 
-const ChangePassword: NextPage<ChangePasswordProps> = ({token}) => {
+const ConfirmEmail: NextPage<ConfirmEmail> = ({token}) => {
     const router = useRouter();
     const toast = useToast();
+
     const [confirmRegistration] = useConfirmRegistrationMutation();
 
-    const sendRequest = async (tokenStr: string) => {
+    const sendLoginRequest = async (tokenStr: string) => {
         const response = await confirmRegistration({variables: {token: tokenStr}});
 
         if(response.data?.confirmRegistration.errors) {
@@ -41,7 +42,7 @@ const ChangePassword: NextPage<ChangePasswordProps> = ({token}) => {
     }
 
     useEffect(() => {
-        sendRequest(token);
+        sendLoginRequest(token);
     }, [])
 
     return (
@@ -49,11 +50,11 @@ const ChangePassword: NextPage<ChangePasswordProps> = ({token}) => {
     );
 }
 
-ChangePassword.getInitialProps = ({query}) => {
+ConfirmEmail.getInitialProps = ({query}) => {
     return {
         token: query.token as string
     }
 }
 
 // @ts-ignore
-export default withApollo({ssr: false})(ChangePassword);
+export default withApollo({ssr: false})(ConfirmEmail);

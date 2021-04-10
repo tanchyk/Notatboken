@@ -24,7 +24,7 @@ export type Query = {
 export type User = {
   __typename?: 'User';
   id: Scalars['Float'];
-  name: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
   username: Scalars['String'];
   email: Scalars['String'];
   confirmed: Scalars['Boolean'];
@@ -44,6 +44,11 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   forgotPassword: EmailResponse;
   resetPassword: ConfirmationResponse;
+  editUser: UserResponse;
+  confirmEmailChange: ConfirmationResponse;
+  changePassword: ConfirmationResponse;
+  editGoal: ConfirmationResponse;
+  deleteUser: ConfirmationResponse;
 };
 
 
@@ -75,6 +80,32 @@ export type MutationForgotPasswordArgs = {
 export type MutationResetPasswordArgs = {
   password: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type MutationEditUserArgs = {
+  input: EditUserInput;
+};
+
+
+export type MutationConfirmEmailChangeArgs = {
+  token: Scalars['String'];
+};
+
+
+export type MutationChangePasswordArgs = {
+  oldPassword: Scalars['String'];
+  newPassword: Scalars['String'];
+};
+
+
+export type MutationEditGoalArgs = {
+  userGoal: Scalars['Int'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  password: Scalars['String'];
 };
 
 export type EmailResponse = {
@@ -112,6 +143,13 @@ export type LoginInput = {
   password: Scalars['String'];
 };
 
+export type EditUserInput = {
+  name?: Maybe<Scalars['String']>;
+  username: Scalars['String'];
+  email: Scalars['String'];
+  avatarData?: Maybe<Scalars['String']>;
+};
+
 export type ErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
@@ -120,6 +158,23 @@ export type ErrorFragment = (
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'name' | 'username' | 'email' | 'userGoal' | 'avatar' | 'createdAt'>
+);
+
+export type ConfirmEmailChangeMutationVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type ConfirmEmailChangeMutation = (
+  { __typename?: 'Mutation' }
+  & { confirmEmailChange: (
+    { __typename?: 'ConfirmationResponse' }
+    & Pick<ConfirmationResponse, 'confirmed'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
 );
 
 export type ConfirmRegistrationMutationVariables = Exact<{
@@ -136,6 +191,42 @@ export type ConfirmRegistrationMutation = (
       { __typename?: 'FieldError' }
       & ErrorFragment
     )>> }
+  ) }
+);
+
+export type EditGoalMutationVariables = Exact<{
+  userGoal: Scalars['Int'];
+}>;
+
+
+export type EditGoalMutation = (
+  { __typename?: 'Mutation' }
+  & { editGoal: (
+    { __typename?: 'ConfirmationResponse' }
+    & Pick<ConfirmationResponse, 'confirmed'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
+);
+
+export type EditUserMutationVariables = Exact<{
+  input: EditUserInput;
+}>;
+
+
+export type EditUserMutation = (
+  { __typename?: 'Mutation' }
+  & { editUser: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>>, user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )> }
   ) }
 );
 
@@ -263,6 +354,42 @@ export const RegularUserFragmentDoc = gql`
   createdAt
 }
     `;
+export const ConfirmEmailChangeDocument = gql`
+    mutation ConfirmEmailChange($token: String!) {
+  confirmEmailChange(token: $token) {
+    errors {
+      ...Error
+    }
+    confirmed
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type ConfirmEmailChangeMutationFn = Apollo.MutationFunction<ConfirmEmailChangeMutation, ConfirmEmailChangeMutationVariables>;
+
+/**
+ * __useConfirmEmailChangeMutation__
+ *
+ * To run a mutation, you first call `useConfirmEmailChangeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useConfirmEmailChangeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [confirmEmailChangeMutation, { data, loading, error }] = useConfirmEmailChangeMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useConfirmEmailChangeMutation(baseOptions?: Apollo.MutationHookOptions<ConfirmEmailChangeMutation, ConfirmEmailChangeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ConfirmEmailChangeMutation, ConfirmEmailChangeMutationVariables>(ConfirmEmailChangeDocument, options);
+      }
+export type ConfirmEmailChangeMutationHookResult = ReturnType<typeof useConfirmEmailChangeMutation>;
+export type ConfirmEmailChangeMutationResult = Apollo.MutationResult<ConfirmEmailChangeMutation>;
+export type ConfirmEmailChangeMutationOptions = Apollo.BaseMutationOptions<ConfirmEmailChangeMutation, ConfirmEmailChangeMutationVariables>;
 export const ConfirmRegistrationDocument = gql`
     mutation ConfirmRegistration($token: String!) {
   confirmRegistration(token: $token) {
@@ -299,6 +426,81 @@ export function useConfirmRegistrationMutation(baseOptions?: Apollo.MutationHook
 export type ConfirmRegistrationMutationHookResult = ReturnType<typeof useConfirmRegistrationMutation>;
 export type ConfirmRegistrationMutationResult = Apollo.MutationResult<ConfirmRegistrationMutation>;
 export type ConfirmRegistrationMutationOptions = Apollo.BaseMutationOptions<ConfirmRegistrationMutation, ConfirmRegistrationMutationVariables>;
+export const EditGoalDocument = gql`
+    mutation EditGoal($userGoal: Int!) {
+  editGoal(userGoal: $userGoal) {
+    errors {
+      ...Error
+    }
+    confirmed
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type EditGoalMutationFn = Apollo.MutationFunction<EditGoalMutation, EditGoalMutationVariables>;
+
+/**
+ * __useEditGoalMutation__
+ *
+ * To run a mutation, you first call `useEditGoalMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditGoalMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editGoalMutation, { data, loading, error }] = useEditGoalMutation({
+ *   variables: {
+ *      userGoal: // value for 'userGoal'
+ *   },
+ * });
+ */
+export function useEditGoalMutation(baseOptions?: Apollo.MutationHookOptions<EditGoalMutation, EditGoalMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditGoalMutation, EditGoalMutationVariables>(EditGoalDocument, options);
+      }
+export type EditGoalMutationHookResult = ReturnType<typeof useEditGoalMutation>;
+export type EditGoalMutationResult = Apollo.MutationResult<EditGoalMutation>;
+export type EditGoalMutationOptions = Apollo.BaseMutationOptions<EditGoalMutation, EditGoalMutationVariables>;
+export const EditUserDocument = gql`
+    mutation EditUser($input: EditUserInput!) {
+  editUser(input: $input) {
+    errors {
+      ...Error
+    }
+    user {
+      ...RegularUser
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${RegularUserFragmentDoc}`;
+export type EditUserMutationFn = Apollo.MutationFunction<EditUserMutation, EditUserMutationVariables>;
+
+/**
+ * __useEditUserMutation__
+ *
+ * To run a mutation, you first call `useEditUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editUserMutation, { data, loading, error }] = useEditUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditUserMutation(baseOptions?: Apollo.MutationHookOptions<EditUserMutation, EditUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditUserMutation, EditUserMutationVariables>(EditUserDocument, options);
+      }
+export type EditUserMutationHookResult = ReturnType<typeof useEditUserMutation>;
+export type EditUserMutationResult = Apollo.MutationResult<EditUserMutation>;
+export type EditUserMutationOptions = Apollo.BaseMutationOptions<EditUserMutation, EditUserMutationVariables>;
 export const ForgotPasswordDocument = gql`
     mutation ForgotPassword($email: String!) {
   forgotPassword(email: $email) {

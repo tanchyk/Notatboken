@@ -14,25 +14,42 @@ interface NavItemPropsDeck {
     icon?: IconType | null;
 }
 
-export const NavItemProfile: React.FC<NavItemProps | NavItemPropsDeck> = ({id, clicked, children, icon=null}) => {
+type ButtonProps = React.HTMLProps<HTMLAnchorElement> & (NavItemProps | NavItemPropsDeck);
+
+export const NavItemProfile = React.forwardRef<HTMLAnchorElement, ButtonProps>
+(({
+      id,
+      clicked,
+      icon=null,
+      children,
+      href,
+      onClick
+  }, ref) => {
     return (
-        <Flex
-            direction="row"
-            paddingLeft={clicked === id ? [5,5,9,9] : [6,6,10,10]}
-            borderLeft={clicked === id ? "4px solid #E2E8F0" : ""}
-            id={id}
-            alignItems="center"
+        <a
+            ref={ref}
+            href={href}
+            onClick={onClick}
         >
-            {
-                icon ? <Icon as={icon} boxSize={5}/> : null
-            }
-            <Text
-                fontSize="lg"
-                ml={icon ? 2 : 0}
-                fontWeight={clicked === id ? 'bold' : 'regular'}
+            <Flex
+                direction="row"
+                paddingLeft={clicked === id ? [5, 5, 9, 9] : [6, 6, 10, 10]}
+                borderLeft={clicked === id ? "4px solid #E2E8F0" : ""}
+                id={id}
+                alignItems="center"
+                _hover={{cursor: "pointer"}}
             >
-                {children}
-            </Text>
-        </Flex>
+                {
+                    icon ? <Icon as={icon} boxSize={5}/> : null
+                }
+                <Text
+                    fontSize="lg"
+                    ml={icon ? 2 : 0}
+                    fontWeight={clicked === id ? 'bold' : 'regular'}
+                >
+                    {children}
+                </Text>
+            </Flex>
+        </a>
     );
-}
+});

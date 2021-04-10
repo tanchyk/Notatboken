@@ -1,7 +1,6 @@
 import React, {createContext, useState} from "react";
 import {ChakraProvider, } from '@chakra-ui/react';
 import {theme} from '../utils/theme';
-// import {theme} from '../../../../rest/client/src/utils/theme';
 
 export const CloseContextHome = createContext<any>([]);
 export const CloseContextFolders = createContext<any>([]);
@@ -25,4 +24,4 @@ const MyApp = ({Component, pageProps}: any) => {
     )
 }
 
-export default MyApp
+export default MyApp;

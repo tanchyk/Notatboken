@@ -3,19 +3,20 @@ import {User} from "../entities/User";
 import {ConfirmationResponse, EditUserInput, MyContext, UserResponse} from "../types/types";
 import {isAuth} from "../middleware/isAuth";
 import argon2 from "argon2";
-import { getRepository } from "typeorm";
-import {testPassword} from "../middleware/validationMiddleware";
-import {COOKIE_NAME} from "../types/constants";
+import {getRepository} from "typeorm";
+import {testEmail, testName, testPassword, testUsername} from "../middleware/validationMiddleware";
+import {CHANGE_EMAIL_PREFIX, COOKIE_NAME} from "../types/constants";
+import {changeEmailConformation} from "../utils/mailer";
 
 const cloudinary = require("cloudinary").v2;
 
 @Resolver(User)
 export class UserResolver {
     @Mutation(() => UserResponse)
-    @UseMiddleware(isAuth)
+    @UseMiddleware(isAuth, testUsername, testEmail, testName)
     async editUser(
         @Arg("input") input: EditUserInput,
-        @Ctx() {req}:MyContext
+        @Ctx() {req, redis}:MyContext
     ): Promise<UserResponse> {
         const userRepository = getRepository(User);
         let user: User;
@@ -25,7 +26,7 @@ export class UserResolver {
             return {
                 errors: [{
                     field: "user",
-                    message: "User is not exists"
+                    message: "User does not exists"
                 }],
                 user: null
             }
@@ -66,10 +67,14 @@ export class UserResolver {
                     api_secret: process.env.CLOUDINARY_SECRET
                 });
 
-                const uploadResponse = await cloudinary.uploader.upload(input.avatarData, {
-                    upload_presets: 'user_avatar', transformation: [
-                        {width: 400, height: 400, gravity: "face", crop: "thumb"}
-                    ]
+                const uploadResponse = await cloudinary.uploader.upload_large(input.avatarData, {
+                    upload_presets: 'user_avatar',
+                    resource_type: "image",
+                    chunk_size: 5000000,
+                    transformation: [
+                        {width: 400, height: 400, gravity: "face", crop: "thumb"},
+
+                    ],
                 })
                 user.avatar = uploadResponse.secure_url;
             } catch (e) {
@@ -78,8 +83,17 @@ export class UserResolver {
         }
 
         user.name = input.name;
-        user.email = input.email;
         user.username = input.username;
+
+        if(input.email !== user.email) {
+            const response = await changeEmailConformation(user, input.email, redis);
+            if(response.errors) {
+                return {
+                    errors: response.errors,
+                    user: null
+                }
+            }
+        }
 
         //Try to save, if it fails, that means username or email already in use
         try {
@@ -88,7 +102,7 @@ export class UserResolver {
             return {
                 errors: [{
                     field: "username",
-                    message: "Username or Email is already in use"
+                    message: "Username is already in use"
                 }],
                 user: null
             }
@@ -97,6 +111,48 @@ export class UserResolver {
         return {
             errors: null,
             user: user
+        }
+    }
+
+    @Mutation(() => ConfirmationResponse)
+    @UseMiddleware(isAuth)
+    async confirmEmailChange(
+        @Arg("token") token: string,
+        @Ctx() {req, redis}: MyContext
+    ): Promise<ConfirmationResponse> {
+        const email = await redis.get(CHANGE_EMAIL_PREFIX+`${req.session.userId}`+token);
+
+        if(!email) {
+            return {
+                errors: [{
+                    field: "token",
+                    message: "Token has already expired"
+                }],
+                confirmed: false
+            }
+        }
+
+        const userRepository = getRepository(User);
+        const user = await userRepository.findOne({ where: {id: req.session.userId}});
+
+        if(!user) {
+            return {
+                errors: [{
+                    field: "token",
+                    message: "User no longer exists"
+                }],
+                confirmed: false
+            }
+        }
+
+        user.email = email;
+        await userRepository.save(user);
+
+        await redis.del(CHANGE_EMAIL_PREFIX+`${req.session.userId}`+token);
+
+        return {
+            errors: null,
+            confirmed: true
         }
     }
 

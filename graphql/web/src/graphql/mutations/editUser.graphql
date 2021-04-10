@@ -1,0 +1,10 @@
+mutation EditUser($input: EditUserInput!) {
+    editUser(input: $input) {
+        errors {
+            ...Error
+        }
+        user {
+            ...RegularUser
+        }
+    }
+}

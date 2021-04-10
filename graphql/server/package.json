@@ -26,6 +26,8 @@
   "dependencies": {
     "apollo-server-express": "^2.22.2",
     "argon2": "^0.27.2",
+    "body-parser": "^1.19.0",
+    "cloudinary": "^1.25.0",
     "connect-redis": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -38,7 +40,6 @@
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.32",
-    "uuid": "^8.3.2",
-    "cloudinary": "^1.25.0"
+    "uuid": "^8.3.2"
   }
 }
