@@ -71,3 +71,5 @@ export class ConfirmationResponse {
     @Field(() => Boolean, {defaultValue: false})
     confirmed: Boolean;
 }
+
+export type Languages  = 'Polish' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';
