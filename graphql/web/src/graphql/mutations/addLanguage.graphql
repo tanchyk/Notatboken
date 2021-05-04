@@ -1,0 +1,8 @@
+mutation AddLanguage($language: String!) {
+    addLanguage(language: $language) {
+        errors {
+            ...Error
+        }
+        languageId
+    }
+}

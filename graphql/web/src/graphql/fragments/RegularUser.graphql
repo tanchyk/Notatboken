@@ -6,4 +6,8 @@ fragment RegularUser on User {
     userGoal
     avatar
     createdAt
+    userLanguages {
+        languageId
+        languageName
+    }
 }

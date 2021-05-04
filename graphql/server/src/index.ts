@@ -6,14 +6,15 @@ import bodyParser from "body-parser";
 import {createConnection, getConnectionOptions} from "typeorm";
 import {ApolloServer} from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import {MyContext} from "./types/types";
+import {MyContext} from "./utils/types/types";
 import {AuthResolver} from "./resolvers/authResolver";
 
 import session from "express-session";
 import connectRedis from "connect-redis";
 import Redis from "ioredis";
-import {COOKIE_NAME} from "./types/constants";
+import {COOKIE_NAME} from "./utils/types/constants";
 import {UserResolver} from "./resolvers/userResolver";
+import {LanguageResolver} from "./resolvers/languageResolver";
 
 const app = async () => {
     const connOptions = await getConnectionOptions();
@@ -52,7 +53,7 @@ const app = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [AuthResolver, UserResolver],
+            resolvers: [AuthResolver, UserResolver, LanguageResolver],
             validate: false
         }),
         context: ({res, req}: MyContext): MyContext => ({

@@ -60,18 +60,23 @@ export class User extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @Field(() => [Deck])
     @OneToMany(() => Deck, deck => deck.user, { cascade: true})
     decks: Deck[];
 
+    @Field(() => [DayChecked])
     @OneToMany(() => DayChecked, dayChecked => dayChecked.user, { cascade: true})
     daysChecked: DayChecked[];
 
+    @Field(() => [CardChecked])
     @OneToMany(() => CardChecked, cardChecked => cardChecked.user, { cascade: true})
     cardsChecked: CardChecked[];
 
+    @Field(() => [Folder])
     @OneToMany(() => Folder, folder => folder.user, { cascade: true})
     folders: Folder[];
 
+    @Field(() => [Language])
     @ManyToMany(() => Language, (language: Language) => language.users,{ cascade: true })
     @JoinTable({name: "userLanguages"})
     userLanguages: Language[];

@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import {Field, InputType, ObjectType} from "type-graphql";
-import {User} from "../entities/User";
+import {Field, InputType, Int, ObjectType} from "type-graphql";
+import {User} from "../../entities/User";
 import Redis from "ioredis";
 import {Session, SessionData} from "express-session";
 
@@ -70,6 +70,14 @@ export class ConfirmationResponse {
     errors: FieldError[] | null;
     @Field(() => Boolean, {defaultValue: false})
     confirmed: Boolean;
+}
+
+@ObjectType()
+export class AddLanguageResponse {
+    @Field(() => [FieldError], {nullable: true})
+    errors: FieldError[] | null;
+    @Field(() => Int, {defaultValue: 0})
+    languageId: number;
 }
 
 export type Languages  = 'Polish' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';

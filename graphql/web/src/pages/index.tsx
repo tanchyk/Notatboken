@@ -5,6 +5,7 @@ import {NoAuth} from "../components/noauth/NoAuth";
 import {Navbar} from "../components/Navbar";
 import {Flex, useColorModeValue} from "@chakra-ui/react";
 import {Wrapper} from "../components/wrappers/Wrapper";
+import {Home} from "../components/home/Home";
 
 const Index: React.FC = () => {
     const {data} = useMeQuery();
@@ -12,18 +13,18 @@ const Index: React.FC = () => {
 
     return (
         <>
-            <Navbar />
-            <Flex bg={data?.me ? "initial" : bgValue} justifyContent="center">
-                <Wrapper variant='regular'>
-                    {
-                        data?.me ? (
-                            <h1>hi</h1>
-                        ) : (
-                            <NoAuth />
-                        )
-                    }
-                </Wrapper>
-            </Flex>
+            <Navbar/>
+            {
+                data?.me ? (
+                    <Home user={data.me}/>
+                ) : (
+                    <Flex bg={data?.me ? "initial" : bgValue} justifyContent="center">
+                        <Wrapper variant='regular'>
+                            <NoAuth/>
+                        </Wrapper>
+                    </Flex>
+                )
+            }
         </>
     )
 }

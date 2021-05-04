@@ -32,8 +32,47 @@ export type User = {
   avatar: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  decks: Array<Deck>;
+  daysChecked: Array<DayChecked>;
+  cardsChecked: Array<CardChecked>;
+  folders: Array<Folder>;
+  userLanguages: Array<Language>;
 };
 
+
+export type Deck = {
+  __typename?: 'Deck';
+  deckId: Scalars['Float'];
+  deckName: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type DayChecked = {
+  __typename?: 'DayChecked';
+  createdAt: Scalars['DateTime'];
+};
+
+export type CardChecked = {
+  __typename?: 'CardChecked';
+  createdAt: Scalars['DateTime'];
+};
+
+export type Folder = {
+  __typename?: 'Folder';
+  folderId: Scalars['Float'];
+  folderName: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type Language = {
+  __typename?: 'Language';
+  languageId: Scalars['Float'];
+  languageName: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -49,6 +88,7 @@ export type Mutation = {
   changePassword: ConfirmationResponse;
   editGoal: ConfirmationResponse;
   deleteUser: ConfirmationResponse;
+  addLanguage: AddLanguageResponse;
 };
 
 
@@ -108,6 +148,11 @@ export type MutationDeleteUserArgs = {
   password: Scalars['String'];
 };
 
+
+export type MutationAddLanguageArgs = {
+  language: Scalars['String'];
+};
+
 export type EmailResponse = {
   __typename?: 'EmailResponse';
   errors?: Maybe<Array<FieldError>>;
@@ -150,6 +195,12 @@ export type EditUserInput = {
   avatarData?: Maybe<Scalars['String']>;
 };
 
+export type AddLanguageResponse = {
+  __typename?: 'AddLanguageResponse';
+  errors?: Maybe<Array<FieldError>>;
+  languageId?: Maybe<Scalars['Int']>;
+};
+
 export type ErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
@@ -158,6 +209,27 @@ export type ErrorFragment = (
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'name' | 'username' | 'email' | 'userGoal' | 'avatar' | 'createdAt'>
+  & { userLanguages: Array<(
+    { __typename?: 'Language' }
+    & Pick<Language, 'languageId' | 'languageName'>
+  )> }
+);
+
+export type AddLanguageMutationVariables = Exact<{
+  language: Scalars['String'];
+}>;
+
+
+export type AddLanguageMutation = (
+  { __typename?: 'Mutation' }
+  & { addLanguage: (
+    { __typename?: 'AddLanguageResponse' }
+    & Pick<AddLanguageResponse, 'languageId'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>> }
+  ) }
 );
 
 export type ChangePasswordMutationVariables = Exact<{
@@ -387,8 +459,48 @@ export const RegularUserFragmentDoc = gql`
   userGoal
   avatar
   createdAt
+  userLanguages {
+    languageId
+    languageName
+  }
 }
     `;
+export const AddLanguageDocument = gql`
+    mutation AddLanguage($language: String!) {
+  addLanguage(language: $language) {
+    errors {
+      ...Error
+    }
+    languageId
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type AddLanguageMutationFn = Apollo.MutationFunction<AddLanguageMutation, AddLanguageMutationVariables>;
+
+/**
+ * __useAddLanguageMutation__
+ *
+ * To run a mutation, you first call `useAddLanguageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddLanguageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addLanguageMutation, { data, loading, error }] = useAddLanguageMutation({
+ *   variables: {
+ *      language: // value for 'language'
+ *   },
+ * });
+ */
+export function useAddLanguageMutation(baseOptions?: Apollo.MutationHookOptions<AddLanguageMutation, AddLanguageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddLanguageMutation, AddLanguageMutationVariables>(AddLanguageDocument, options);
+      }
+export type AddLanguageMutationHookResult = ReturnType<typeof useAddLanguageMutation>;
+export type AddLanguageMutationResult = Apollo.MutationResult<AddLanguageMutation>;
+export type AddLanguageMutationOptions = Apollo.BaseMutationOptions<AddLanguageMutation, AddLanguageMutationVariables>;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($newPassword: String!, $oldPassword: String!) {
   changePassword(newPassword: $newPassword, oldPassword: $oldPassword) {

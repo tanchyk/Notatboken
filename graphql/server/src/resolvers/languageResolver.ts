@@ -1,18 +1,18 @@
 import {Arg, Ctx, Mutation, Resolver, UseMiddleware} from "type-graphql";
-import {ConfirmationResponse, MyContext} from "../types/types";
-import { isAuth } from "src/middleware/isAuth";
-import { Language } from "src/entities/Language";
+import {AddLanguageResponse, MyContext} from "../utils/types/types";
+import { isAuth } from "../middleware/isAuth";
+import { Language } from "../entities/Language";
 import { getRepository } from "typeorm";
-import { User } from "src/entities/User";
+import { User } from "../entities/User";
 
 @Resolver()
 export class LanguageResolver {
-    @Mutation(() => ConfirmationResponse)
+    @Mutation(() => AddLanguageResponse)
     @UseMiddleware(isAuth)
     async addLanguage(
-        @Arg("language") language: Language,
+        @Arg("language") language: string,
         @Ctx() {req}: MyContext
-    ): Promise<ConfirmationResponse> {
+    ): Promise<AddLanguageResponse> {
         //Finding user
         const userRepository = getRepository(User);
         let user: User
@@ -24,7 +24,7 @@ export class LanguageResolver {
                     field: "language",
                     message: "User not found"
                 }],
-                confirmed: false
+                languageId: 0
             }
         }
 
@@ -34,7 +34,7 @@ export class LanguageResolver {
                     field: "language",
                     message: "Sorry, Notatboken cant add more languages for you"
                 }],
-                confirmed: false
+                languageId: 0
             }
         }
 
@@ -47,24 +47,22 @@ export class LanguageResolver {
             return {
                 errors: [{
                     field: "language",
-                    message: "Sorry, Notatboken cant use this language yet"
+                    message: "Sorry, Notatboken cant add this language for you yet"
                 }],
-                confirmed: false
+                languageId: 0
             }
         }
 
         //Checking picked language
-        user.userLanguages.forEach((language): ConfirmationResponse | void => {
-            if(language.languageId === languageUser.languageId) {
-                return {
-                    errors: [{
-                        field: "language",
-                        message: "You already have this language"
-                    }],
-                    confirmed: false
-                }
+        if(user.userLanguages.some((language) => language.languageId === languageUser.languageId)) {
+            return {
+                errors: [{
+                    field: "language",
+                    message: "You already have this language"
+                }],
+                languageId: 0
             }
-        })
+        }
 
         //Saving to a user
         user.userLanguages.push(languageUser);
@@ -72,7 +70,7 @@ export class LanguageResolver {
 
         return {
             errors: null,
-            confirmed: true
+            languageId: languageUser.languageId
         }
     }
 }

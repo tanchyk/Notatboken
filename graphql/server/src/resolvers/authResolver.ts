@@ -1,13 +1,20 @@
 require('dotenv').config();
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {User} from "../entities/User";
-import {ConfirmationResponse, EmailResponse, LoginInput, MyContext, RegisterInput, UserResponse} from "../types/types";
+import {
+    ConfirmationResponse,
+    EmailResponse,
+    LoginInput,
+    MyContext,
+    RegisterInput,
+    UserResponse
+} from "../utils/types/types";
 import argon2 from "argon2";
 import {v4} from "uuid";
-import { getRepository } from "typeorm";
-import {COOKIE_NAME, FORGET_PASSWORD_PREFIX, REGISTER_PREFIX} from "../types/constants";
+import {getRepository} from "typeorm";
+import {COOKIE_NAME, FORGET_PASSWORD_PREFIX, REGISTER_PREFIX} from "../utils/types/constants";
 import {sendEmailConformation, transporter} from "../utils/mailer";
-import { testEmail, testUsername, testPassword } from "../middleware/validationMiddleware";
+import {testEmail, testPassword, testUsername} from "../middleware/validationMiddleware";
 
 @Resolver(User)
 export class AuthResolver {
@@ -19,7 +26,7 @@ export class AuthResolver {
             return null;
         } else {
             const userRepository = getRepository(User);
-            return userRepository.findOne({ where: {id: req.session.userId}});
+            return userRepository.findOne({relations: ["userLanguages"], where: {id: req.session.userId}});
         }
     }
 

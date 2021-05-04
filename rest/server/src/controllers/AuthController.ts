@@ -92,7 +92,7 @@ class AuthController {
         try {
             await userRepository.save(user);
         } catch (e) {
-            return res.status(409).send({message: 'Email is already in use'});;
+            return res.status(409).send({message: 'Email is already in use'});
         }
 
         jwt.sign(

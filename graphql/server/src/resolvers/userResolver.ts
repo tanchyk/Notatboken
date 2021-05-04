@@ -1,11 +1,11 @@
 import {Arg, Ctx, Int, Mutation, Resolver, UseMiddleware} from "type-graphql";
 import {User} from "../entities/User";
-import {ConfirmationResponse, EditUserInput, MyContext, UserResponse} from "../types/types";
+import {ConfirmationResponse, EditUserInput, MyContext, UserResponse} from "../utils/types/types";
 import {isAuth} from "../middleware/isAuth";
 import argon2 from "argon2";
 import {getRepository} from "typeorm";
 import {testEmail, testName, testPassword, testUsername} from "../middleware/validationMiddleware";
-import {CHANGE_EMAIL_PREFIX, COOKIE_NAME} from "../types/constants";
+import {CHANGE_EMAIL_PREFIX, COOKIE_NAME} from "../utils/types/constants";
 import {changeEmailConformation} from "../utils/mailer";
 
 const cloudinary = require("cloudinary").v2;

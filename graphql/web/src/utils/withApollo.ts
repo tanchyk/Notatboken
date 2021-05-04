@@ -14,8 +14,5 @@ const client = (ctx: any) => new ApolloClient({
 })
 
 export const withApollo = createWithApollo((ctx) => {
-    if (ctx) {
-        console.log(ctx.req?.headers);
-    }
     return client(ctx)
 });

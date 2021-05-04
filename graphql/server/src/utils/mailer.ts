@@ -1,9 +1,9 @@
-import {EmailResponse, FieldError} from "../types/types";
+import {EmailResponse, FieldError} from "./types/types";
 require('dotenv').config();
 import nodemailer from "nodemailer";
 import Redis from "ioredis";
 import {v4} from "uuid";
-import {CHANGE_EMAIL_PREFIX, REGISTER_PREFIX} from "../types/constants";
+import {CHANGE_EMAIL_PREFIX, REGISTER_PREFIX} from "./types/constants";
 import {User} from "../entities/User";
 
 export const transporter = nodemailer.createTransport({
