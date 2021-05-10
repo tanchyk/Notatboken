@@ -12,16 +12,17 @@ const cloudinary = require("cloudinary").v2;
 
 @Resolver(User)
 export class UserResolver {
+    private userRepository = getRepository(User);
+
     @Mutation(() => UserResponse)
     @UseMiddleware(isAuth, testUsername, testEmail, testName)
     async editUser(
         @Arg("input") input: EditUserInput,
         @Ctx() {req, redis}:MyContext
     ): Promise<UserResponse> {
-        const userRepository = getRepository(User);
         let user: User;
         try {
-            user = await userRepository.findOneOrFail({relations: ["userLanguages"], where: {id: req.session.userId}});
+            user = await this.userRepository.findOneOrFail({relations: ["userLanguages"], where: {id: req.session.userId}});
         } catch (err) {
             return {
                 errors: [{
@@ -33,7 +34,7 @@ export class UserResolver {
         }
 
         //Checking if data already in database
-        const checkExisting: User | undefined = await userRepository.findOne({
+        const checkExisting: User | undefined = await this.userRepository.findOne({
             where : [{
                 username : input.username,
             }, {
@@ -97,7 +98,7 @@ export class UserResolver {
 
         //Try to save, if it fails, that means username or email already in use
         try {
-            await userRepository.save(user);
+            await this.userRepository.save(user);
         } catch (e) {
             return {
                 errors: [{
@@ -132,8 +133,7 @@ export class UserResolver {
             }
         }
 
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({ where: {id: req.session.userId}});
+        const user = await this.userRepository.findOne({ where: {id: req.session.userId}});
 
         if(!user) {
             return {
@@ -146,7 +146,7 @@ export class UserResolver {
         }
 
         user.email = email;
-        await userRepository.save(user);
+        await this.userRepository.save(user);
 
         await redis.del(CHANGE_EMAIL_PREFIX+`${req.session.userId}`+token);
 
@@ -175,10 +175,9 @@ export class UserResolver {
         }
 
         //Try to find user on database
-        const userRepository = getRepository(User);
         let user: User;
         try {
-            user = await userRepository.findOneOrFail({where: {id: req.session.userId}});
+            user = await this.userRepository.findOneOrFail({where: {id: req.session.userId}});
         } catch (err) {
             return {
                 errors: [{
@@ -211,7 +210,7 @@ export class UserResolver {
         }
 
         user.password = await argon2.hash(newPassword);
-        await userRepository.save(user);
+        await this.userRepository.save(user);
 
         return {
             errors: null,
@@ -225,10 +224,9 @@ export class UserResolver {
         @Arg("userGoal", () => Int) userGoal: number,
         @Ctx() {req}: MyContext
     ): Promise<ConfirmationResponse> {
-        const userRepository = getRepository(User);
         let user: User;
         try {
-            user = await userRepository.findOneOrFail({where: {id: req.session.userId}});
+            user = await this.userRepository.findOneOrFail({where: {id: req.session.userId}});
         } catch (err) {
             return {
                 errors: [{
@@ -241,7 +239,7 @@ export class UserResolver {
 
         if(userGoal === 5 || userGoal === 10 || userGoal === 15 || userGoal === 20) {
             user.userGoal = userGoal;
-            await userRepository.save(user);
+            await this.userRepository.save(user);
         }
 
         return {
@@ -256,10 +254,9 @@ export class UserResolver {
         @Arg("password") password: string,
         @Ctx() {req, res}: MyContext
     ): Promise<ConfirmationResponse> {
-        const userRepository = getRepository(User);
         let user: User;
         try {
-            user = await userRepository.findOneOrFail({where: {id: req.session.userId}});
+            user = await this.userRepository.findOneOrFail({where: {id: req.session.userId}});
         } catch (err) {
             return {
                 errors: [{
@@ -281,7 +278,7 @@ export class UserResolver {
             }
         }
 
-        await userRepository.delete({id: req.session.userId});
+        await this.userRepository.delete({id: req.session.userId});
         await res.clearCookie(COOKIE_NAME);
 
         return {

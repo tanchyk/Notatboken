@@ -18,15 +18,16 @@ import {testEmail, testPassword, testUsername} from "../middleware/validationMid
 
 @Resolver(User)
 export class AuthResolver {
+    private userRepository = getRepository(User);
+
     @Query(() => User, {nullable: true})
     async me(
         @Ctx() {req}: MyContext
     ) {
-        if(!req.session.userId) {
+        if (!req.session.userId) {
             return null;
         } else {
-            const userRepository = getRepository(User);
-            return userRepository.findOne({relations: ["userLanguages"], where: {id: req.session.userId}});
+            return this.userRepository.findOne({relations: ["userLanguages"], where: {id: req.session.userId}});
         }
     }
 
@@ -36,17 +37,15 @@ export class AuthResolver {
         @Arg("input") input: RegisterInput,
         @Ctx() {redis}: MyContext
     ) {
-        const userRepository = await getRepository(User);
-
-        const checkExisting: User | undefined = await userRepository.findOne({
-            where : [{
-                username : input.username,
+        const checkExisting: User | undefined = await this.userRepository.findOne({
+            where: [{
+                username: input.username,
             }, {
-                email : input.email,
+                email: input.email,
             }]
         });
 
-        if(checkExisting && checkExisting!.username === input.username) {
+        if (checkExisting && checkExisting!.username === input.username) {
             return {
                 errors: [{
                     field: 'username',
@@ -54,7 +53,7 @@ export class AuthResolver {
                 }],
                 send: false
             }
-        } else if(checkExisting && checkExisting!.email === input.email) {
+        } else if (checkExisting && checkExisting!.email === input.email) {
             return {
                 errors: [{
                     field: 'email',
@@ -65,13 +64,12 @@ export class AuthResolver {
         }
 
         const user = new User();
-
         user.username = input.username;
-        user.email =  input.email;
+        user.email = input.email;
         user.password = await argon2.hash(input.password);
 
         try {
-            await userRepository.save(user);
+            await this.userRepository.save(user);
         } catch (e) {
             return {
                 errors: [{
@@ -91,10 +89,9 @@ export class AuthResolver {
         @Arg("email") email: string,
         @Ctx() {redis}: MyContext
     ): Promise<EmailResponse> {
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({where: email});
+        const user = await this.userRepository.findOne({where: email});
 
-        if(!user) {
+        if (!user) {
             return {
                 errors: null,
                 send: true
@@ -109,9 +106,9 @@ export class AuthResolver {
         @Arg("token") token: string,
         @Ctx() {redis}: MyContext
     ): Promise<ConfirmationResponse> {
-        const userId = await redis.get(REGISTER_PREFIX+token);
+        const userId = await redis.get(REGISTER_PREFIX + token);
 
-        if(!userId) {
+        if (!userId) {
             return {
                 errors: [{
                     field: "token",
@@ -121,10 +118,9 @@ export class AuthResolver {
             }
         }
 
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({ where: {id: parseInt(userId)}});
+        const user = await this.userRepository.findOne({where: {id: parseInt(userId)}});
 
-        if(!user) {
+        if (!user) {
             return {
                 errors: [{
                     field: "token",
@@ -135,9 +131,9 @@ export class AuthResolver {
         }
 
         user.confirmed = true;
-        await userRepository.save(user);
+        await this.userRepository.save(user);
 
-        await redis.del(REGISTER_PREFIX+token);
+        await redis.del(REGISTER_PREFIX + token);
 
         return {
             errors: null,
@@ -169,24 +165,29 @@ export class AuthResolver {
         }
 
         //Search for user
-        const userRepository = await getRepository(User);
         let user: User;
 
-        if(input.usernameOrEmail.includes('@')) {
+        if (input.usernameOrEmail.includes('@')) {
             try {
-                user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {email: input.usernameOrEmail}});
+                user = await this.userRepository.findOneOrFail({
+                    relations: ["userLanguages"],
+                    where: {email: input.usernameOrEmail}
+                });
             } catch (e) {
                 return incorrectUsernameOrEmail;
             }
         } else {
             try {
-                user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {username: input.usernameOrEmail}});
+                user = await this.userRepository.findOneOrFail({
+                    relations: ["userLanguages"],
+                    where: {username: input.usernameOrEmail}
+                });
             } catch (e) {
                 return incorrectUsernameOrEmail;
             }
         }
 
-        if(!user.confirmed) {
+        if (!user.confirmed) {
             return {
                 errors: [{
                     field: 'usernameOrEmail',
@@ -197,7 +198,7 @@ export class AuthResolver {
         }
 
         //Checking password
-        if(! await argon2.verify(user.password, input.password)) {
+        if (!await argon2.verify(user.password, input.password)) {
             return incorrectUsernameOrEmail;
         }
 
@@ -214,7 +215,7 @@ export class AuthResolver {
         @Ctx() {req, res}: MyContext
     ) {
         return new Promise<boolean>(resolve => req.session.destroy(err => {
-            if(err) {
+            if (err) {
                 console.log(err);
                 return resolve(false);
             } else {
@@ -230,12 +231,11 @@ export class AuthResolver {
         @Arg("email") email: string,
         @Ctx() {redis}: MyContext
     ): Promise<EmailResponse> {
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({
+        const user = await this.userRepository.findOne({
             where: {email}
         });
 
-        if(!user) {
+        if (!user) {
             return {
                 errors: null,
                 send: true
@@ -245,10 +245,10 @@ export class AuthResolver {
         try {
             const token = v4();
             await redis.set(
-                FORGET_PASSWORD_PREFIX+token,
+                FORGET_PASSWORD_PREFIX + token,
                 user.id,
                 "ex",
-                1000*60*60*24
+                1000 * 60 * 60 * 24
             );
 
             const url = `${process.env.CORS_ORIGIN}/change-password/${token}`;
@@ -293,9 +293,9 @@ export class AuthResolver {
         @Arg("password") password: string,
         @Ctx() {redis}: MyContext
     ): Promise<ConfirmationResponse> {
-        const userId = await redis.get(FORGET_PASSWORD_PREFIX+token);
+        const userId = await redis.get(FORGET_PASSWORD_PREFIX + token);
 
-        if(!userId) {
+        if (!userId) {
             return {
                 errors: [{
                     field: "token",
@@ -305,10 +305,9 @@ export class AuthResolver {
             }
         }
 
-        const userRepository = getRepository(User);
-        const user = await userRepository.findOne({ where: {id: parseInt(userId)}});
+        const user = await this.userRepository.findOne({where: {id: parseInt(userId)}});
 
-        if(!user) {
+        if (!user) {
             return {
                 errors: [{
                     field: "token",
@@ -319,9 +318,9 @@ export class AuthResolver {
         }
 
         user.password = await argon2.hash(password);
-        await userRepository.save(user);
+        await this.userRepository.save(user);
 
-        await redis.del(FORGET_PASSWORD_PREFIX+token);
+        await redis.del(FORGET_PASSWORD_PREFIX + token);
 
         return {
             errors: null,

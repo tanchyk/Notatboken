@@ -3,6 +3,7 @@ import {Field, InputType, Int, ObjectType} from "type-graphql";
 import {User} from "../../entities/User";
 import Redis from "ioredis";
 import {Session, SessionData} from "express-session";
+import {Deck} from "../../entities/Deck";
 
 export interface MyContext {
     req: Request & {session: Session & Partial<SessionData> & {userId: number}},
@@ -81,3 +82,19 @@ export class AddLanguageResponse {
 }
 
 export type Languages  = 'Polish' | 'German' | 'Russian' | 'Norwegian' | 'Spanish' | 'French';
+
+@ObjectType()
+export class DecksResponse {
+    @Field(() => [FieldError], {nullable: true})
+    errors: FieldError[] | null;
+    @Field(() => [Deck], {nullable: true})
+    decks: Deck[] | null;
+}
+
+@ObjectType()
+export class SingleDeckResponse {
+    @Field(() => [FieldError], {nullable: true})
+    errors: FieldError[] | null;
+    @Field(() => Deck, {nullable: true})
+    deck: Deck | null;
+}

@@ -7,6 +7,9 @@ import { User } from "../entities/User";
 
 @Resolver()
 export class LanguageResolver {
+    private languageRepository = getRepository(Language);
+    private userRepository = getRepository(User);
+
     @Mutation(() => AddLanguageResponse)
     @UseMiddleware(isAuth)
     async addLanguage(
@@ -14,10 +17,9 @@ export class LanguageResolver {
         @Ctx() {req}: MyContext
     ): Promise<AddLanguageResponse> {
         //Finding user
-        const userRepository = getRepository(User);
         let user: User
         try {
-            user = await userRepository.findOneOrFail({ relations: ["userLanguages"], where: {id: req.session.userId}});
+            user = await this.userRepository.findOneOrFail({ relations: ["userLanguages"], where: {id: req.session.userId}});
         } catch (err) {
             return {
                 errors: [{
@@ -39,10 +41,9 @@ export class LanguageResolver {
         }
 
         //Finding language
-        const languageRepository = getRepository(Language);
         let languageUser: Language
         try {
-            languageUser = await languageRepository.findOneOrFail({where: {languageName: language}});
+            languageUser = await this.languageRepository.findOneOrFail({where: {languageName: language}});
         } catch (err) {
             return {
                 errors: [{
@@ -66,7 +67,7 @@ export class LanguageResolver {
 
         //Saving to a user
         user.userLanguages.push(languageUser);
-        await userRepository.save(user);
+        await this.userRepository.save(user);
 
         return {
             errors: null,
