@@ -1,26 +1,27 @@
 import React from "react";
 import {Flex, Grid, GridItem, Heading, Image, Stack, Text,} from "@chakra-ui/react";
-import {User} from "../../generated/graphql";
 import { NameWrapper } from "../wrappers/NameWrapper";
 import { Wrapper } from "../wrappers/Wrapper";
 import { LanguagesList } from "./LanguageList";
 
 interface HomeProps {
-    user: Pick<User, "id" | "name" | "username" | "userGoal" | "avatar" | "userLanguages">;
+    avatar: string;
+    name: string | undefined | null;
+    username: string;
 }
 
-export const Home: React.FC<HomeProps> = ({user}) => {
+export const Home: React.FC<HomeProps> = ({avatar, name, username}) => {
     return (
         <>
             <NameWrapper>
                 <Flex direction="row" alignItems="center">
                     <Image
-                        src={user.avatar!}
+                        src={avatar}
                         borderRadius="full"
                         boxSize="100px"
                     />
                     <Stack ml={6} spacing={1}>
-                        <Heading color="white" size="xl">{user.name ? user.name : user.username}</Heading>
+                        <Heading color="white" size="xl">{name ? name : username}</Heading>
                         <Text color="white" fontSize="lg" fontWeight="600">Notatboken member</Text>
                     </Stack>
                 </Flex>

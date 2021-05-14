@@ -19,6 +19,12 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  findDecks: DecksResponse;
+};
+
+
+export type QueryFindDecksArgs = {
+  languageId: Scalars['Int'];
 };
 
 export type User = {
@@ -46,16 +52,10 @@ export type Deck = {
   deckName: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-};
-
-export type DayChecked = {
-  __typename?: 'DayChecked';
-  createdAt: Scalars['DateTime'];
-};
-
-export type CardChecked = {
-  __typename?: 'CardChecked';
-  createdAt: Scalars['DateTime'];
+  user: User;
+  folder: Folder;
+  language: Language;
+  cards: Array<Card>;
 };
 
 export type Folder = {
@@ -74,6 +74,43 @@ export type Language = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type Card = {
+  __typename?: 'Card';
+  cardId: Scalars['Float'];
+  foreignWord: Scalars['String'];
+  nativeWord: Scalars['String'];
+  imageId?: Maybe<Scalars['Float']>;
+  voiceId?: Maybe<Scalars['Float']>;
+  foreignContext?: Maybe<Scalars['String']>;
+  nativeContext?: Maybe<Scalars['String']>;
+  proficiency: Scalars['String'];
+  reviewDate?: Maybe<Scalars['DateTime']>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type DayChecked = {
+  __typename?: 'DayChecked';
+  createdAt: Scalars['DateTime'];
+};
+
+export type CardChecked = {
+  __typename?: 'CardChecked';
+  createdAt: Scalars['DateTime'];
+};
+
+export type DecksResponse = {
+  __typename?: 'DecksResponse';
+  errors?: Maybe<Array<FieldError>>;
+  decks?: Maybe<Array<Deck>>;
+};
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   register: EmailResponse;
@@ -89,6 +126,9 @@ export type Mutation = {
   editGoal: ConfirmationResponse;
   deleteUser: ConfirmationResponse;
   addLanguage: AddLanguageResponse;
+  addDeck: SingleDeckResponse;
+  editDeck: SingleDeckResponse;
+  deleteDeck: ConfirmationResponse;
 };
 
 
@@ -153,16 +193,28 @@ export type MutationAddLanguageArgs = {
   language: Scalars['String'];
 };
 
+
+export type MutationAddDeckArgs = {
+  languageId: Scalars['Float'];
+  deckName: Scalars['String'];
+};
+
+
+export type MutationEditDeckArgs = {
+  languageId: Scalars['Float'];
+  deckName: Scalars['String'];
+  deckId: Scalars['Float'];
+};
+
+
+export type MutationDeleteDeckArgs = {
+  deckId: Scalars['Float'];
+};
+
 export type EmailResponse = {
   __typename?: 'EmailResponse';
   errors?: Maybe<Array<FieldError>>;
   send?: Maybe<Scalars['Boolean']>;
-};
-
-export type FieldError = {
-  __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -201,9 +253,20 @@ export type AddLanguageResponse = {
   languageId?: Maybe<Scalars['Int']>;
 };
 
+export type SingleDeckResponse = {
+  __typename?: 'SingleDeckResponse';
+  errors?: Maybe<Array<FieldError>>;
+  deck?: Maybe<Deck>;
+};
+
 export type ErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
+);
+
+export type RegularDeckFragment = (
+  { __typename?: 'Deck' }
+  & Pick<Deck, 'deckId' | 'deckName'>
 );
 
 export type RegularUserFragment = (
@@ -433,6 +496,25 @@ export type ResetPasswordMutation = (
   ) }
 );
 
+export type FindDecksQueryVariables = Exact<{
+  languageId: Scalars['Int'];
+}>;
+
+
+export type FindDecksQuery = (
+  { __typename?: 'Query' }
+  & { findDecks: (
+    { __typename?: 'DecksResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & ErrorFragment
+    )>>, decks?: Maybe<Array<(
+      { __typename?: 'Deck' }
+      & RegularDeckFragment
+    )>> }
+  ) }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -448,6 +530,12 @@ export const ErrorFragmentDoc = gql`
     fragment Error on FieldError {
   field
   message
+}
+    `;
+export const RegularDeckFragmentDoc = gql`
+    fragment RegularDeck on Deck {
+  deckId
+  deckName
 }
     `;
 export const RegularUserFragmentDoc = gql`
@@ -935,6 +1023,47 @@ export function useResetPasswordMutation(baseOptions?: Apollo.MutationHookOption
 export type ResetPasswordMutationHookResult = ReturnType<typeof useResetPasswordMutation>;
 export type ResetPasswordMutationResult = Apollo.MutationResult<ResetPasswordMutation>;
 export type ResetPasswordMutationOptions = Apollo.BaseMutationOptions<ResetPasswordMutation, ResetPasswordMutationVariables>;
+export const FindDecksDocument = gql`
+    query FindDecks($languageId: Int!) {
+  findDecks(languageId: $languageId) {
+    errors {
+      ...Error
+    }
+    decks {
+      ...RegularDeck
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${RegularDeckFragmentDoc}`;
+
+/**
+ * __useFindDecksQuery__
+ *
+ * To run a query within a React component, call `useFindDecksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindDecksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindDecksQuery({
+ *   variables: {
+ *      languageId: // value for 'languageId'
+ *   },
+ * });
+ */
+export function useFindDecksQuery(baseOptions: Apollo.QueryHookOptions<FindDecksQuery, FindDecksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindDecksQuery, FindDecksQueryVariables>(FindDecksDocument, options);
+      }
+export function useFindDecksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindDecksQuery, FindDecksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindDecksQuery, FindDecksQueryVariables>(FindDecksDocument, options);
+        }
+export type FindDecksQueryHookResult = ReturnType<typeof useFindDecksQuery>;
+export type FindDecksLazyQueryHookResult = ReturnType<typeof useFindDecksLazyQuery>;
+export type FindDecksQueryResult = Apollo.QueryResult<FindDecksQuery, FindDecksQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

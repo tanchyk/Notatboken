@@ -1,0 +1,10 @@
+query FindDecks($languageId: Int!) {
+  findDecks(languageId: $languageId) {
+    errors {
+      ...Error
+    }
+    decks {
+      ...RegularDeck
+    }
+  }
+}

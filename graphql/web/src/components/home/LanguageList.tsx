@@ -85,7 +85,7 @@ export const LanguagesList: React.FC = () => {
                 {
                     data?.me?.userLanguages ?
                         data.me.userLanguages.map((language, index) => (
-                                <NextLink href={`/decks/${language.languageName.toLowerCase()}`} key={index}>
+                                <NextLink href={`/decks/${language.languageName.toLowerCase()}/${language.languageId}`} key={index}>
                                     <Button
                                         w="100%"
                                         size="lg"

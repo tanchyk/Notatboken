@@ -1,0 +1,4 @@
+fragment RegularDeck on Deck {
+    deckId
+    deckName
+}

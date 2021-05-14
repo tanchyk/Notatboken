@@ -15,8 +15,8 @@ const Index: React.FC = () => {
         <>
             <Navbar/>
             {
-                data?.me ? (
-                    <Home user={data.me}/>
+                data && data.me ? (
+                    <Home name={data.me.name} username={data.me.username} avatar={data.me.avatar}/>
                 ) : (
                     <Flex bg={data?.me ? "initial" : bgValue} justifyContent="center">
                         <Wrapper variant='regular'>

@@ -34,15 +34,19 @@ export class Deck extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @Field(() => User)
     @ManyToOne(() => User, user => user.decks, {onDelete: 'CASCADE'})
     user: User;
 
-    @ManyToOne(() => Folder, folder => folder.decks, { nullable: true, onDelete: 'SET NULL'})
+    @Field(() => Folder)
+    @ManyToOne(() => Folder, folder => folder.decks, {nullable: true, onDelete: 'SET NULL'})
     folder: Folder | null;
 
+    @Field(() => Language)
     @ManyToOne(() => Language)
     language: Language;
 
-    @OneToMany(() => Card,card => card.deck, { cascade: true})
+    @Field(() => [Card])
+    @OneToMany(() => Card, card => card.deck, {cascade: true})
     cards: Card[];
 }
