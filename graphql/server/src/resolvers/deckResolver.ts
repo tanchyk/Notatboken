@@ -29,19 +29,18 @@ export class DeckResolver {
   ): Promise<DecksResponse> {
     const userId = req.session.userId;
 
-    let decks: Deck[];
     if (languageId) {
-      try {
-        decks = await this.deckRepository
-          .createQueryBuilder("deck")
-          .leftJoinAndSelect("deck.user", "user")
-          .leftJoinAndSelect("deck.language", "language")
-          .leftJoinAndSelect("deck.folder", "folder")
-          .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-          .where("user.id = :id", { id: userId })
-          .andWhere("language.languageId = :languageId", { languageId })
-          .getMany();
-      } catch (err) {
+      const decks = await this.deckRepository
+        .createQueryBuilder("deck")
+        .leftJoinAndSelect("deck.user", "user")
+        .leftJoinAndSelect("deck.language", "language")
+        .leftJoinAndSelect("deck.folder", "folder")
+        .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
+        .where("user.id = :id", { id: userId })
+        .andWhere("language.languageId = :languageId", { languageId })
+        .getMany();
+
+      if (!decks) {
         return {
           errors: [
             {
@@ -58,6 +57,7 @@ export class DeckResolver {
         decks: decks,
       };
     }
+
     return {
       errors: [
         {

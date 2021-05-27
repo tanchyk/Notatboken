@@ -38,6 +38,7 @@
     "nodemailer": "^6.5.0",
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13",
+    "reverso-api": "^2.16.2",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.32",
     "uuid": "^8.3.2"
