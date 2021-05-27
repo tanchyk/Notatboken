@@ -53,7 +53,7 @@ export class FieldError {
   message: string;
 }
 
-class FieldErrors {
+export class FieldErrors {
   @Field(() => [FieldError], { nullable: true })
   errors: FieldError[] | null;
 }
@@ -135,4 +135,57 @@ export class FolderResponse extends FieldErrors {
 export class SingleFolderResponse extends FieldErrors {
   @Field(() => Folder, { nullable: true })
   folder: Folder | null;
+}
+
+export class LanguageStatistics {
+  languageName: string;
+  amount: number;
+}
+
+export class UserProgressStatistics {
+  amountOfCards: number;
+  amountOfCardsLearned: number;
+}
+
+export class UserStreakStatistics {
+  streak: number;
+  today: boolean;
+}
+
+export class CardDayStatistics {
+  amount: number;
+}
+
+export class CardWeekStatistics {
+  daysAry: number[];
+}
+
+@ObjectType()
+export class LanguageStatResponse extends FieldErrors {
+  @Field(() => [LanguageStatistics], { nullable: true })
+  statistics: LanguageStatistics[] | null;
+}
+
+@ObjectType()
+export class UserProgressResponse extends FieldErrors {
+  @Field(() => UserProgressStatistics, { nullable: true })
+  statistics: UserProgressStatistics | null;
+}
+
+@ObjectType()
+export class UserStreakResponse extends FieldErrors {
+  @Field(() => UserStreakStatistics, { nullable: true })
+  statistics: UserStreakStatistics | null;
+}
+
+@ObjectType()
+export class CardDayResponse extends FieldErrors {
+  @Field(() => CardDayStatistics, { nullable: true })
+  statistics: CardDayStatistics | null;
+}
+
+@ObjectType()
+export class CardWeekResponse extends FieldErrors {
+  @Field(() => CardWeekStatistics, { nullable: true })
+  statistics: CardWeekStatistics | null;
 }
