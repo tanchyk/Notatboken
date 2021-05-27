@@ -73,7 +73,7 @@ export class DeckResolver {
   @UseMiddleware(isAuth)
   async addDeck(
     @Arg("deckName") deckName: string,
-    @Arg("languageId") languageId: number,
+    @Arg("languageId", () => Int) languageId: number,
     @Ctx() { req }: MyContext
   ): Promise<SingleDeckResponse> {
     const userId = req.session.userId;
@@ -139,9 +139,9 @@ export class DeckResolver {
   @Mutation(() => SingleDeckResponse)
   @UseMiddleware(isAuth)
   async editDeck(
-    @Arg("deckId") deckId: number,
+    @Arg("deckId", () => Int) deckId: number,
     @Arg("deckName") deckName: string,
-    @Arg("languageId") languageId: number,
+    @Arg("languageId", () => Int) languageId: number,
     @Ctx() { req }: MyContext
   ): Promise<SingleDeckResponse> {
     const userId = req.session.userId;
@@ -224,7 +224,7 @@ export class DeckResolver {
   @Mutation(() => ConfirmationResponse)
   @UseMiddleware(isAuth)
   async deleteDeck(
-    @Arg("deckId") deckId: number
+    @Arg("deckId", () => Int) deckId: number
   ): Promise<ConfirmationResponse> {
     const deckRepository = getRepository(Deck);
 

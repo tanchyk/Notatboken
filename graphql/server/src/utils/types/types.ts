@@ -5,6 +5,7 @@ import Redis from "ioredis";
 import { Session, SessionData } from "express-session";
 import { Deck } from "../../entities/Deck";
 import { Card } from "../../entities/Card";
+import { Folder } from "../../entities/Folder";
 
 export interface MyContext {
   req: Request & {
@@ -123,3 +124,15 @@ export type ProficiencyType =
   | "31d"
   | "90d"
   | "learned";
+
+@ObjectType()
+export class FolderResponse extends FieldErrors {
+  @Field(() => [Folder], { nullable: true })
+  folders: Folder[] | null;
+}
+
+@ObjectType()
+export class SingleFolderResponse extends FieldErrors {
+  @Field(() => Folder, { nullable: true })
+  folder: Folder | null;
+}
