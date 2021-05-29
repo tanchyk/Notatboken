@@ -13,13 +13,15 @@ import {
   MyContext,
   SingleDeckResponse,
 } from "../utils/types/types";
-import { getRepository } from "typeorm";
+import { Brackets, getRepository } from "typeorm";
 import { isAuth } from "../middleware/isAuth";
 import { Deck } from "../entities/Deck";
+import { Card } from "../entities/Card";
 
 @Resolver(Deck)
 export class DeckResolver {
   private deckRepository = getRepository(Deck);
+  private cardRepository = getRepository(Card);
 
   @Query(() => DecksResponse)
   @UseMiddleware(isAuth)
@@ -248,53 +250,64 @@ export class DeckResolver {
   }
 
   @UseMiddleware(isAuth)
-  async progressDeck() {
-    // @Arg("deckId") deckId: number
-    // const cardRepository = getRepository(Card);
-    //
-    // const forToday = await cardRepository
-    //     .createQueryBuilder("card")
-    //     .leftJoin("card.deck", "deck")
-    //     .where("deck.deckId = :deckId", {deckId})
-    //     .andWhere(new Brackets(qb => {
-    //         qb.where("card.reviewDate is null")
-    //             .orWhere(`card.reviewDate < :reviewDate`, {reviewDate: new Date()})
-    //     }))
-    //     .getCount()
-    //
-    // const notStudied = await cardRepository
-    //     .createQueryBuilder("card")
-    //     .leftJoin("card.deck", "deck")
-    //     .where("deck.deckId = :deckId", {deckId})
-    //     .andWhere(new Brackets(qb => {
-    //         qb.where("proficiency = :v1", {v1: 'fail'})
-    //             .orWhere("proficiency = :v2", {v2: 'repeat'})
-    //     }))
-    //     .getCount();
-    //
-    // const stillLearning = await cardRepository
-    //     .createQueryBuilder("card")
-    //     .leftJoin("card.deck", "deck")
-    //     .where("card.deckDeckId = :deckId", {deckId})
-    //     .andWhere(new Brackets(qb => {
-    //         qb.where("proficiency = :v1", {v1: '1d'})
-    //             .orWhere("proficiency = :v2", {v2: '3d'})
-    //             .orWhere("proficiency = :v3", {v3: '7d'})
-    //             .orWhere("proficiency = :v4", {v4: '21d'})
-    //             .orWhere("proficiency = :v5", {v5: '31d'})
-    //     }))
-    //     .getCount();
-    //
-    // const mastered = await cardRepository
-    //     .createQueryBuilder("card")
-    //     .leftJoin("card.deck", "deck")
-    //     .where("deck.deckId = :deckId", {deckId})
-    //     .andWhere(new Brackets(qb => {
-    //         qb.where("proficiency = :v1", {v1: '90d'})
-    //             .orWhere("proficiency = :v2", {v2: 'learned'})
-    //     }))
-    //     .getCount();
-    //
-    // return res.status(200).send({forToday, notStudied, stillLearning, mastered});
+  async progressDeck(@Arg("deckId") deckId: number) {
+    const forToday = await this.cardRepository
+      .createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .where("deck.deckId = :deckId", { deckId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where("card.reviewDate is null").orWhere(
+            `card.reviewDate < :reviewDate`,
+            { reviewDate: new Date() }
+          );
+        })
+      )
+      .getCount();
+
+    const notStudied = await this.cardRepository
+      .createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .where("deck.deckId = :deckId", { deckId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where("proficiency = :v1", { v1: "fail" }).orWhere(
+            "proficiency = :v2",
+            { v2: "repeat" }
+          );
+        })
+      )
+      .getCount();
+
+    const stillLearning = await this.cardRepository
+      .createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .where("card.deckDeckId = :deckId", { deckId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where("proficiency = :v1", { v1: "1d" })
+            .orWhere("proficiency = :v2", { v2: "3d" })
+            .orWhere("proficiency = :v3", { v3: "7d" })
+            .orWhere("proficiency = :v4", { v4: "21d" })
+            .orWhere("proficiency = :v5", { v5: "31d" });
+        })
+      )
+      .getCount();
+
+    const mastered = await this.cardRepository
+      .createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .where("deck.deckId = :deckId", { deckId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where("proficiency = :v1", { v1: "90d" }).orWhere(
+            "proficiency = :v2",
+            { v2: "learned" }
+          );
+        })
+      )
+      .getCount();
+
+    return { forToday, notStudied, stillLearning, mastered };
   }
 }

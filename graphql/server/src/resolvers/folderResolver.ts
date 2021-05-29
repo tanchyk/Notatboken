@@ -7,7 +7,8 @@ import {
   Resolver,
   Mutation,
 } from "type-graphql";
-import { getRepository } from "typeorm";
+import { Brackets, getRepository } from "typeorm";
+import { Card } from "../entities/Card";
 import { Deck } from "../entities/Deck";
 import { Folder } from "../entities/Folder";
 import { isAuth } from "../middleware/isAuth";
@@ -22,6 +23,7 @@ import {
 export class FolderResolver {
   private folderRepository = getRepository(Folder);
   private deckRepository = getRepository(Deck);
+  private cardRepository = getRepository(Card);
 
   @Query(() => FolderResponse)
   @UseMiddleware(isAuth)
@@ -328,28 +330,32 @@ export class FolderResolver {
   }
 
   @UseMiddleware(isAuth)
-  async progressFolder() {
-    // const folderId = Number.parseInt(req.params.folderId);
-    //     const deckRepository = getRepository(Deck);
-    //     const cardRepository = getRepository(Card);
-    //     const amountOfDecks = await deckRepository.createQueryBuilder("deck")
-    //         .leftJoin("deck.folder", "folder")
-    //         .where("folder.folderId = :folderId", {folderId})
-    //         .getCount()
-    //     const amountOfCards = await cardRepository.createQueryBuilder("card")
-    //         .leftJoin("card.deck", "deck")
-    //         .leftJoin("deck.folder", "folder")
-    //         .where("folder.folderId = :folderId", {folderId})
-    //         .getCount()
-    //     const amountOfCardsLearned = await cardRepository.createQueryBuilder("card")
-    //         .leftJoin("card.deck", "deck")
-    //         .leftJoin("deck.folder", "folder")
-    //         .where("folder.folderId = :folderId", {folderId})
-    //         .andWhere(new Brackets(qb => {
-    //             qb.where("proficiency = :v1", {v1: '90d'})
-    //                 .orWhere("proficiency = :v2", {v2: 'learned'})
-    //         }))
-    //         .getCount();
-    //     return res.status(200).send({amountOfDecks, amountOfCards, amountOfCardsLearned});
+  async progressFolder(@Arg("folderId", () => Int) folderId: number) {
+    const amountOfDecks = await this.deckRepository
+      .createQueryBuilder("deck")
+      .leftJoin("deck.folder", "folder")
+      .where("folder.folderId = :folderId", { folderId })
+      .getCount();
+    const amountOfCards = await this.cardRepository
+      .createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .leftJoin("deck.folder", "folder")
+      .where("folder.folderId = :folderId", { folderId })
+      .getCount();
+    const amountOfCardsLearned = await this.cardRepository
+      .createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .leftJoin("deck.folder", "folder")
+      .where("folder.folderId = :folderId", { folderId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where("proficiency = :v1", { v1: "90d" }).orWhere(
+            "proficiency = :v2",
+            { v2: "learned" }
+          );
+        })
+      )
+      .getCount();
+    return { amountOfDecks, amountOfCards, amountOfCardsLearned };
   }
 }
