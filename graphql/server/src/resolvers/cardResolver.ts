@@ -7,11 +7,12 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { Brackets, getRepository } from "typeorm";
+import { Brackets, getCustomRepository, getRepository } from "typeorm";
 import { Card, ProficiencyType } from "../entities/Card";
 import { CardChecked } from "../entities/CardChecked";
 import { DayChecked } from "../entities/DayChecked";
 import { isAuth } from "../middleware/isAuth";
+import { CardRepository } from "../repositories/CardRepository";
 import {
   CardsResponse,
   ConfirmationResponse,
@@ -21,17 +22,14 @@ import {
 
 @Resolver(Card)
 export class CardResolver {
-  private cardRepository = getRepository(Card);
+  private cardRepository = getCustomRepository(CardRepository);
 
   @Query(() => CardsResponse)
   @UseMiddleware(isAuth)
   async findCards(
     @Arg("deckId", () => Int) deckId: number
   ): Promise<CardsResponse> {
-    const cards = await this.cardRepository.find({
-      relations: ["deck"],
-      where: { deck: { deckId } },
-    });
+    const cards = await this.cardRepository.findCardsForDeck(deckId);
 
     if (!cards) {
       return {
@@ -56,19 +54,7 @@ export class CardResolver {
   async findCardsForReview(
     @Arg("deckId", () => Int) deckId: number
   ): Promise<CardsResponse> {
-    const cards = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoinAndSelect("card.deck", "deck")
-      .where("deck.deckId = :deckId", { deckId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("card.reviewDate is null").orWhere(
-            `card.reviewDate < :reviewDate`,
-            { reviewDate: new Date() }
-          );
-        })
-      )
-      .getMany();
+    const cards = await this.cardRepository.findCardsForReview(deckId);
 
     if (!cards) {
       return {
@@ -106,15 +92,11 @@ export class CardResolver {
     const card = new Card();
 
     //Checking for existing name
-    const cardCheck = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoinAndSelect("card.deck", "deck")
-      .leftJoinAndSelect("deck.user", "user")
-      .leftJoinAndSelect("deck.language", "language")
-      .where("user.id = :id", { id: userId })
-      .andWhere("language.languageId = :languageId", { languageId })
-      .andWhere("card.foreignWord = :foreignWord", { foreignWord })
-      .getMany();
+    const cardCheck = await this.cardRepository.checkCard(
+      userId,
+      languageId,
+      foreignWord
+    );
 
     if (cardCheck.length > 0) {
       return {
@@ -180,15 +162,11 @@ export class CardResolver {
 
     //Checking for existing name
     if (card.foreignWord !== foreignWord) {
-      const cardCheck = await this.cardRepository
-        .createQueryBuilder("card")
-        .leftJoinAndSelect("card.deck", "deck")
-        .leftJoinAndSelect("deck.user", "user")
-        .leftJoinAndSelect("deck.language", "language")
-        .where("user.id = :id", { id: userId })
-        .andWhere("language.languageId = :languageId", { languageId })
-        .andWhere("card.foreignWord = :foreignWord", { foreignWord })
-        .getMany();
+      const cardCheck = await this.cardRepository.checkCard(
+        userId,
+        languageId,
+        foreignWord
+      );
 
       if (cardCheck.length > 0) {
         return {
@@ -244,10 +222,7 @@ export class CardResolver {
     const cardCheckedRepository = getRepository(CardChecked);
     const dayCheckedRepository = getRepository(DayChecked);
 
-    const card = await this.cardRepository.findOneOrFail({
-      relations: ["deck"],
-      where: { cardId },
-    });
+    const card = await this.cardRepository.findCardById(cardId);
 
     let amountOfDays = 0;
 

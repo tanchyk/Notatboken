@@ -13,15 +13,16 @@ import {
   MyContext,
   SingleDeckResponse,
 } from "../utils/types/types";
-import { Brackets, getRepository } from "typeorm";
+import { Brackets, getCustomRepository } from "typeorm";
 import { isAuth } from "../middleware/isAuth";
 import { Deck } from "../entities/Deck";
-import { Card } from "../entities/Card";
+import { DeckRepository } from "../repositories/DeckRepository";
+import { CardRepository } from "../repositories/CardRepository";
 
 @Resolver(Deck)
 export class DeckResolver {
-  private deckRepository = getRepository(Deck);
-  private cardRepository = getRepository(Card);
+  private deckRepository = getCustomRepository(DeckRepository);
+  private cardRepository = getCustomRepository(CardRepository);
 
   @Query(() => DecksResponse)
   @UseMiddleware(isAuth)
@@ -32,15 +33,10 @@ export class DeckResolver {
     const userId = req.session.userId;
 
     if (languageId) {
-      const decks = await this.deckRepository
-        .createQueryBuilder("deck")
-        .leftJoinAndSelect("deck.user", "user")
-        .leftJoinAndSelect("deck.language", "language")
-        .leftJoinAndSelect("deck.folder", "folder")
-        .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-        .where("user.id = :id", { id: userId })
-        .andWhere("language.languageId = :languageId", { languageId })
-        .getMany();
+      const decks = await this.deckRepository.findDecksForLanguage(
+        userId,
+        languageId
+      );
 
       if (!decks) {
         return {
@@ -93,14 +89,11 @@ export class DeckResolver {
     }
 
     //Checking for existing name
-    const decksCheck = await this.deckRepository.findOne({
-      relations: ["language", "user"],
-      where: {
-        user: { id: userId },
-        language: { languageId: languageId },
-        deckName,
-      },
-    });
+    const decksCheck = await this.deckRepository.checkDeck(
+      userId,
+      languageId,
+      deckName
+    );
 
     if (decksCheck) {
       return {
@@ -125,16 +118,11 @@ export class DeckResolver {
 
     return {
       errors: null,
-      deck: await this.deckRepository
-        .createQueryBuilder("deck")
-        .leftJoinAndSelect("deck.user", "user")
-        .leftJoinAndSelect("deck.language", "language")
-        .leftJoinAndSelect("deck.folder", "folder")
-        .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-        .where("user.id = :id", { id: userId })
-        .andWhere("language.languageId = :languageId", { languageId })
-        .andWhere("deck.deckName = :deckName", { deckName })
-        .getOneOrFail(),
+      deck: await this.deckRepository.findDeckByName(
+        userId,
+        languageId,
+        deckName
+      ),
     };
   }
 
@@ -160,14 +148,7 @@ export class DeckResolver {
       };
     }
 
-    const deck: Deck | undefined = await this.deckRepository
-      .createQueryBuilder("deck")
-      .leftJoinAndSelect("deck.user", "user")
-      .leftJoinAndSelect("deck.language", "language")
-      .leftJoinAndSelect("deck.folder", "folder")
-      .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-      .where("deck.deckId = :deckId", { deckId })
-      .getOne();
+    const deck = await this.deckRepository.findDeckById(deckId);
 
     //Checking deck
     if (!deck) {
@@ -192,14 +173,11 @@ export class DeckResolver {
       };
     }
 
-    const deckCheck = await this.deckRepository.findOne({
-      relations: ["language", "user"],
-      where: {
-        deckName,
-        language: { languageId },
-        user: { id: userId },
-      },
-    });
+    const deckCheck = await this.deckRepository.checkDeck(
+      userId,
+      languageId,
+      deckName
+    );
 
     if (deckCheck) {
       return {
@@ -228,10 +206,8 @@ export class DeckResolver {
   async deleteDeck(
     @Arg("deckId", () => Int) deckId: number
   ): Promise<ConfirmationResponse> {
-    const deckRepository = getRepository(Deck);
-
     try {
-      await deckRepository.delete({ deckId: deckId });
+      await this.deckRepository.delete({ deckId: deckId });
     } catch (err) {
       return {
         errors: [
@@ -251,62 +227,10 @@ export class DeckResolver {
 
   @UseMiddleware(isAuth)
   async progressDeck(@Arg("deckId") deckId: number) {
-    const forToday = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .where("deck.deckId = :deckId", { deckId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("card.reviewDate is null").orWhere(
-            `card.reviewDate < :reviewDate`,
-            { reviewDate: new Date() }
-          );
-        })
-      )
-      .getCount();
-
-    const notStudied = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .where("deck.deckId = :deckId", { deckId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("proficiency = :v1", { v1: "fail" }).orWhere(
-            "proficiency = :v2",
-            { v2: "repeat" }
-          );
-        })
-      )
-      .getCount();
-
-    const stillLearning = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .where("card.deckDeckId = :deckId", { deckId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("proficiency = :v1", { v1: "1d" })
-            .orWhere("proficiency = :v2", { v2: "3d" })
-            .orWhere("proficiency = :v3", { v3: "7d" })
-            .orWhere("proficiency = :v4", { v4: "21d" })
-            .orWhere("proficiency = :v5", { v5: "31d" });
-        })
-      )
-      .getCount();
-
-    const mastered = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .where("deck.deckId = :deckId", { deckId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("proficiency = :v1", { v1: "90d" }).orWhere(
-            "proficiency = :v2",
-            { v2: "learned" }
-          );
-        })
-      )
-      .getCount();
+    const forToday = await this.cardRepository.countForToday(deckId);
+    const notStudied = await this.cardRepository.countNotStudied(deckId);
+    const stillLearning = await this.cardRepository.countStillLearning(deckId);
+    const mastered = await this.cardRepository.countMastered(deckId);
 
     return { forToday, notStudied, stillLearning, mastered };
   }
