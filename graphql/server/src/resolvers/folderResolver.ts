@@ -7,11 +7,12 @@ import {
   Resolver,
   Mutation,
 } from "type-graphql";
-import { Brackets, getRepository } from "typeorm";
-import { Card } from "../entities/Card";
-import { Deck } from "../entities/Deck";
+import { getCustomRepository } from "typeorm";
 import { Folder } from "../entities/Folder";
 import { isAuth } from "../middleware/isAuth";
+import { CardRepository } from "../repositories/CardRepository";
+import { DeckRepository } from "../repositories/DeckRepository";
+import { FolderRepository } from "../repositories/FolderRepository";
 import {
   ConfirmationResponse,
   FolderResponse,
@@ -21,9 +22,9 @@ import {
 
 @Resolver(Folder)
 export class FolderResolver {
-  private folderRepository = getRepository(Folder);
-  private deckRepository = getRepository(Deck);
-  private cardRepository = getRepository(Card);
+  private folderRepository = getCustomRepository(FolderRepository);
+  private deckRepository = getCustomRepository(DeckRepository);
+  private cardRepository = getCustomRepository(CardRepository);
 
   @Query(() => FolderResponse)
   @UseMiddleware(isAuth)
@@ -34,16 +35,11 @@ export class FolderResolver {
     const userId = req.session.userId;
 
     if (languageId) {
-      const folders = await this.folderRepository
-        .createQueryBuilder("folder")
-        .leftJoinAndSelect("folder.user", "user")
-        .leftJoinAndSelect("folder.language", "language")
-        .leftJoinAndSelect("folder.decks", "deck")
-        .leftJoin("deck.cards", "cards")
-        .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-        .where("user.id = :id", { id: userId })
-        .where("language.languageId = :languageId", { languageId })
-        .getMany();
+      const folders = await this.folderRepository.findByLanguage(
+        userId,
+        languageId
+      );
+
       if (!folders) {
         return {
           errors: [
@@ -95,14 +91,11 @@ export class FolderResolver {
     }
 
     //Checking for existing name
-    const folderCheck = await this.folderRepository.findOne({
-      relations: ["language", "user"],
-      where: {
-        user: { id: userId },
-        language: { languageId: languageId },
-        folderName,
-      },
-    });
+    const folderCheck = await this.folderRepository.checkFolder(
+      userId,
+      languageId,
+      folderName
+    );
 
     if (folderCheck) {
       return {
@@ -126,17 +119,11 @@ export class FolderResolver {
 
     await this.folderRepository.save(folder);
 
-    const folderSend: Folder = await this.folderRepository
-      .createQueryBuilder("folder")
-      .leftJoinAndSelect("folder.user", "user")
-      .leftJoinAndSelect("folder.language", "language")
-      .leftJoinAndSelect("folder.decks", "deck")
-      .leftJoin("deck.cards", "cards")
-      .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-      .where("user.id = :id", { id: userId })
-      .where("language.languageId = :languageId", { languageId })
-      .where("folder.folderName = :folderName", { folderName })
-      .getOneOrFail();
+    const folderSend = await this.folderRepository.findFolderByName(
+      userId,
+      languageId,
+      folderName
+    );
 
     return {
       errors: null,
@@ -166,37 +153,24 @@ export class FolderResolver {
       };
     }
 
-    const folder = await this.folderRepository
-      .createQueryBuilder("folder")
-      .leftJoinAndSelect("folder.user", "user")
-      .leftJoinAndSelect("folder.language", "language")
-      .leftJoinAndSelect("folder.decks", "deck")
-      .leftJoin("deck.cards", "cards")
-      .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-      .where("folder.folderId = :folderId", { folderId })
-      .getOneOrFail();
+    const folder = await this.folderRepository.findFolderById(folderId);
 
     if (!folder) {
       return {
         errors: [
           {
             field: "folderId",
-            message: "This deck do not exist",
+            message: "This folder do not exist",
           },
         ],
         folder: null,
       };
     }
 
-    const checkFolder: Folder | undefined = await this.folderRepository.findOne(
-      {
-        relations: ["language", "user"],
-        where: {
-          folderName,
-          language: { languageId },
-          user: { id: userId },
-        },
-      }
+    const checkFolder = await this.folderRepository.checkFolder(
+      userId,
+      languageId,
+      folderName
     );
 
     if (checkFolder) {
@@ -226,9 +200,7 @@ export class FolderResolver {
     @Arg("folderId", () => Int) folderId: number,
     @Arg("deckId", () => Int) deckId: number
   ): Promise<SingleFolderResponse> {
-    const deck = await this.deckRepository.findOneOrFail({
-      where: { deckId },
-    });
+    const deck = await this.deckRepository.findDeckById(deckId);
 
     if (!deck) {
       return {
@@ -247,15 +219,19 @@ export class FolderResolver {
     });
     await this.deckRepository.save(deck);
 
-    const folderSend: Folder = await this.folderRepository
-      .createQueryBuilder("folder")
-      .leftJoinAndSelect("folder.user", "user")
-      .leftJoinAndSelect("folder.language", "language")
-      .leftJoinAndSelect("folder.decks", "deck")
-      .leftJoin("deck.cards", "cards")
-      .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-      .where("folder.folderId = :folderId", { folderId })
-      .getOneOrFail();
+    const folderSend = await this.folderRepository.findFolderById(folderId);
+
+    if (!folderSend) {
+      return {
+        errors: [
+          {
+            field: "folderId",
+            message: "This folder do not exist",
+          },
+        ],
+        folder: null,
+      };
+    }
 
     return {
       errors: null,
@@ -269,9 +245,7 @@ export class FolderResolver {
     @Arg("folderId", () => Int) folderId: number,
     @Arg("deckId", () => Int) deckId: number
   ): Promise<SingleFolderResponse> {
-    const deck = await this.deckRepository.findOneOrFail({
-      where: { deckId },
-    });
+    const deck = await this.deckRepository.findDeckById(deckId);
 
     if (!deck) {
       return {
@@ -288,15 +262,19 @@ export class FolderResolver {
     deck.folder = null;
     await this.deckRepository.save(deck);
 
-    const folderSend: Folder = await this.folderRepository
-      .createQueryBuilder("folder")
-      .leftJoinAndSelect("folder.user", "user")
-      .leftJoinAndSelect("folder.language", "language")
-      .leftJoinAndSelect("folder.decks", "deck")
-      .leftJoin("deck.cards", "cards")
-      .loadRelationCountAndMap("deck.amountOfCards", "deck.cards")
-      .where("folder.folderId = :folderId", { folderId })
-      .getOneOrFail();
+    const folderSend = await this.folderRepository.findFolderById(folderId);
+
+    if (!folderSend) {
+      return {
+        errors: [
+          {
+            field: "folderId",
+            message: "This folder do not exist",
+          },
+        ],
+        folder: null,
+      };
+    }
 
     return {
       errors: null,
@@ -331,31 +309,16 @@ export class FolderResolver {
 
   @UseMiddleware(isAuth)
   async progressFolder(@Arg("folderId", () => Int) folderId: number) {
-    const amountOfDecks = await this.deckRepository
-      .createQueryBuilder("deck")
-      .leftJoin("deck.folder", "folder")
-      .where("folder.folderId = :folderId", { folderId })
-      .getCount();
-    const amountOfCards = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .leftJoin("deck.folder", "folder")
-      .where("folder.folderId = :folderId", { folderId })
-      .getCount();
-    const amountOfCardsLearned = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .leftJoin("deck.folder", "folder")
-      .where("folder.folderId = :folderId", { folderId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("proficiency = :v1", { v1: "90d" }).orWhere(
-            "proficiency = :v2",
-            { v2: "learned" }
-          );
-        })
-      )
-      .getCount();
+    const amountOfDecks = await this.deckRepository.countDecksForFolder(
+      folderId
+    );
+
+    const amountOfCards = await this.cardRepository.countForFolder(folderId);
+
+    const amountOfCardsLearned = await this.cardRepository.countMasteredFolder(
+      folderId
+    );
+
     return { amountOfDecks, amountOfCards, amountOfCardsLearned };
   }
 }

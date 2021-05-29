@@ -7,14 +7,16 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { Brackets, getCustomRepository, getRepository } from "typeorm";
+import { getCustomRepository, getRepository } from "typeorm";
 import { Card, ProficiencyType } from "../entities/Card";
 import { CardChecked } from "../entities/CardChecked";
 import { DayChecked } from "../entities/DayChecked";
 import { isAuth } from "../middleware/isAuth";
+import { CardCheckedRepository } from "../repositories/CardCheckedRepository";
 import { CardRepository } from "../repositories/CardRepository";
 import {
   CardsResponse,
+  ConfirmationNotification,
   ConfirmationResponse,
   MyContext,
   SingleCardResponse,
@@ -23,6 +25,7 @@ import {
 @Resolver(Card)
 export class CardResolver {
   private cardRepository = getCustomRepository(CardRepository);
+  private cardCheckedRepository = getCustomRepository(CardCheckedRepository);
 
   @Query(() => CardsResponse)
   @UseMiddleware(isAuth)
@@ -155,10 +158,7 @@ export class CardResolver {
   ): Promise<SingleCardResponse> {
     const userId = req.session.userId;
 
-    const card = await this.cardRepository.findOneOrFail({
-      relations: ["deck"],
-      where: { cardId },
-    });
+    const card = await this.cardRepository.findCardById(cardId);
 
     //Checking for existing name
     if (card.foreignWord !== foreignWord) {
@@ -208,7 +208,7 @@ export class CardResolver {
     };
   }
 
-  @Mutation(() => ConfirmationResponse)
+  @Mutation(() => ConfirmationNotification)
   @UseMiddleware(isAuth)
   async changeCardStatus(
     @Arg("cardId", () => Int) cardId: number,
@@ -216,10 +216,9 @@ export class CardResolver {
     @Arg("userGoal", () => Int) userGoal: number,
     @Arg("today") today: boolean,
     @Ctx() { req }: MyContext
-  ): Promise<ConfirmationResponse> {
+  ): Promise<ConfirmationNotification> {
     const userId = req.session.userId;
 
-    const cardCheckedRepository = getRepository(CardChecked);
     const dayCheckedRepository = getRepository(DayChecked);
 
     const card = await this.cardRepository.findCardById(cardId);
@@ -241,21 +240,15 @@ export class CardResolver {
         card: cardId,
         user: userId,
       });
-      await cardCheckedRepository.save(cardChecked);
+      await this.cardCheckedRepository.save(cardChecked);
     }
 
     let notification = null;
 
     if (today === false) {
-      const checkAmountGoal = await cardCheckedRepository
-        .createQueryBuilder("card_checked")
-        .leftJoin("card_checked.user", "user")
-        .where("user.id = :id", { id: userId })
-        .andWhere(
-          "to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt",
-          { createdAt: new Date().toISOString().split("T")[0] }
-        )
-        .getCount();
+      const checkAmountGoal = await this.cardCheckedRepository.checkAmountGoal(
+        userId
+      );
 
       if (checkAmountGoal === userGoal) {
         const dayChecked = new DayChecked();
@@ -289,12 +282,14 @@ export class CardResolver {
           },
         ],
         confirmed: false,
+        notification,
       };
     }
 
     return {
       errors: null,
       confirmed: true,
+      notification,
     };
   }
 

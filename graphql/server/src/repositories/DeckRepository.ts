@@ -4,7 +4,7 @@ import { Deck } from "../entities/Deck";
 @EntityRepository(Deck)
 export class DeckRepository extends Repository<Deck> {
   private findByUserAndLanguage() {
-    return this.createQueryBuilder()
+    return this.createQueryBuilder("deck")
       .leftJoinAndSelect("deck.user", "user")
       .leftJoinAndSelect("deck.language", "language")
       .leftJoinAndSelect("deck.folder", "folder")
@@ -30,6 +30,13 @@ export class DeckRepository extends Repository<Deck> {
       .andWhere("language.languageId = :languageId", { languageId })
       .andWhere("deck.deckName = :deckName", { deckName })
       .getOneOrFail();
+  }
+
+  countDecksForFolder(folderId: number) {
+    return this.createQueryBuilder("deck")
+      .leftJoin("deck.folder", "folder")
+      .where("folder.folderId = :folderId", { folderId })
+      .getCount();
   }
 
   checkDeck(userId: number, languageId: number, deckName: string) {

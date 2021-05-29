@@ -13,7 +13,7 @@ import {
   MyContext,
   SingleDeckResponse,
 } from "../utils/types/types";
-import { Brackets, getCustomRepository } from "typeorm";
+import { getCustomRepository } from "typeorm";
 import { isAuth } from "../middleware/isAuth";
 import { Deck } from "../entities/Deck";
 import { DeckRepository } from "../repositories/DeckRepository";

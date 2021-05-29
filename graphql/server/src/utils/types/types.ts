@@ -77,6 +77,12 @@ export class ConfirmationResponse extends FieldErrors {
 }
 
 @ObjectType()
+export class ConfirmationNotification extends ConfirmationResponse {
+  @Field(() => String, { nullable: true })
+  notification: string | null;
+}
+
+@ObjectType()
 export class AddLanguageResponse extends FieldErrors {
   @Field(() => Int, { defaultValue: 0 })
   languageId: number;

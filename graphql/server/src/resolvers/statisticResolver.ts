@@ -1,10 +1,10 @@
 import { Query, UseMiddleware, Ctx, Resolver } from "type-graphql";
-import { Brackets, getRepository } from "typeorm";
-import { Card } from "../entities/Card";
-import { CardChecked } from "../entities/CardChecked";
-import { DayChecked } from "../entities/DayChecked";
-import { User } from "../entities/User";
+import { getCustomRepository } from "typeorm";
 import { isAuth } from "../middleware/isAuth";
+import { CardCheckedRepository } from "../repositories/CardCheckedRepository";
+import { CardRepository } from "../repositories/CardRepository";
+import { DayCheckedRepository } from "../repositories/DayCheckRepository";
+import { UserRepository } from "../repositories/UserRepository";
 import {
   UserProgressResponse,
   LanguageStatistics,
@@ -17,20 +17,17 @@ import {
 
 @Resolver()
 export class StatisticResolver {
-  private userRepository = getRepository(User);
-  private cardRepository = getRepository(Card);
-  private dayCheckedRepo = getRepository(DayChecked);
-  private cardCheckedRepo = getRepository(CardChecked);
+  private userRepository = getCustomRepository(UserRepository);
+  private cardRepository = getCustomRepository(CardRepository);
+  private dayCheckedRepo = getCustomRepository(DayCheckedRepository);
+  private cardCheckedRepo = getCustomRepository(CardCheckedRepository);
 
   @Query(() => LanguageStatResponse)
   @UseMiddleware(isAuth)
   async findDecks(@Ctx() { req }: MyContext): Promise<LanguageStatResponse> {
     const userId = req.session.userId;
 
-    const user = await this.userRepository.findOne({
-      relations: ["userLanguages"],
-      where: { id: userId },
-    });
+    const user = await this.userRepository.findByIdWithLanguages(userId);
 
     if (!user) {
       return {
@@ -60,16 +57,10 @@ export class StatisticResolver {
     for (const lang of user.userLanguages) {
       amountAry.push({
         languageName: lang.languageName,
-        amount: await this.cardRepository
-          .createQueryBuilder("card")
-          .leftJoin("card.deck", "deck")
-          .leftJoin("deck.user", "user")
-          .leftJoin("deck.language", "language")
-          .where("user.id = :id", { id: userId })
-          .andWhere("language.languageId = :languageId", {
-            languageId: lang.languageId,
-          })
-          .getCount(),
+        amount: await this.cardRepository.countForLanugage(
+          userId,
+          lang.languageId
+        ),
       });
     }
 
@@ -86,27 +77,11 @@ export class StatisticResolver {
   ): Promise<UserProgressResponse> {
     const userId = req.session.userId;
 
-    const amountOfCards = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .leftJoin("deck.user", "user")
-      .where("user.id = :id", { id: userId })
-      .getCount();
+    const amountOfCards = await this.cardRepository.countForUser(userId);
 
-    const amountOfCardsLearned = await this.cardRepository
-      .createQueryBuilder("card")
-      .leftJoin("card.deck", "deck")
-      .leftJoin("deck.user", "user")
-      .where("user.id = :id", { id: userId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where("proficiency = :v1", { v1: "90d" }).orWhere(
-            "proficiency = :v2",
-            { v2: "learned" }
-          );
-        })
-      )
-      .getCount();
+    const amountOfCardsLearned = await this.cardRepository.countMasteredUser(
+      userId
+    );
 
     return {
       errors: null,
@@ -124,11 +99,7 @@ export class StatisticResolver {
     let streak = 0;
     let today = false;
 
-    const checkDays = await this.dayCheckedRepo
-      .createQueryBuilder("day_checked")
-      .leftJoin("day_checked.user", "user")
-      .where("user.id = :id", { id: userId })
-      .getMany();
+    const checkDays = await this.dayCheckedRepo.checkDays(userId);
 
     checkDays.sort(
       (a, b) =>
@@ -183,14 +154,7 @@ export class StatisticResolver {
   async getCardReviewDay(@Ctx() { req }: MyContext): Promise<CardDayResponse> {
     const userId = req.session.userId;
 
-    const amount = await this.cardCheckedRepo
-      .createQueryBuilder("card_checked")
-      .leftJoin("card_checked.user", "user")
-      .where("user.id = :id", { id: userId })
-      .andWhere("to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt", {
-        createdAt: new Date().toISOString().split("T")[0],
-      })
-      .getCount();
+    const amount = await this.cardCheckedRepo.checkAmountGoal(userId);
 
     return {
       errors: null,
@@ -211,17 +175,7 @@ export class StatisticResolver {
     let date = new Date();
 
     for (let i = 0; i < 7; i++) {
-      daysAry.unshift(
-        await this.cardCheckedRepo
-          .createQueryBuilder("card_checked")
-          .leftJoin("card_checked.user", "user")
-          .where("user.id = :id", { id: userId })
-          .andWhere(
-            "to_char(card_checked.createdAt, 'YYYY-MM-DD') = :createdAt",
-            { createdAt: date.toISOString().split("T")[0] }
-          )
-          .getCount()
-      );
+      daysAry.unshift(await this.cardCheckedRepo.checkAmountGoal(userId));
       date.setDate(date.getDate() - 1);
     }
 
