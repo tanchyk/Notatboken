@@ -18,11 +18,17 @@ import { isAuth } from "../middleware/isAuth";
 import { Deck } from "../entities/Deck";
 import { DeckRepository } from "../repositories/DeckRepository";
 import { CardRepository } from "../repositories/CardRepository";
+import { Service } from "typedi";
+import { DeckService } from "../services/DeckService";
 
+@Service()
 @Resolver(Deck)
 export class DeckResolver {
-  private deckRepository = getCustomRepository(DeckRepository);
-  private cardRepository = getCustomRepository(CardRepository);
+  constructor(
+    private readonly deckService: DeckService,
+    private deckRepository = getCustomRepository(DeckRepository),
+    private cardRepository = getCustomRepository(CardRepository)
+  ) {}
 
   @Query(() => DecksResponse)
   @UseMiddleware(isAuth)
@@ -30,30 +36,8 @@ export class DeckResolver {
     @Arg("languageId", () => Int) languageId: number,
     @Ctx() { req }: MyContext
   ): Promise<DecksResponse> {
-    const userId = req.session.userId;
-
     if (languageId) {
-      const decks = await this.deckRepository.findDecksForLanguage(
-        userId,
-        languageId
-      );
-
-      if (!decks) {
-        return {
-          errors: [
-            {
-              field: "decks",
-              message: "You have no decks",
-            },
-          ],
-          decks: null,
-        };
-      }
-
-      return {
-        errors: null,
-        decks: decks,
-      };
+      return this.deckService.getDecks(req.session.userId, languageId);
     }
 
     return {
@@ -74,8 +58,6 @@ export class DeckResolver {
     @Arg("languageId", () => Int) languageId: number,
     @Ctx() { req }: MyContext
   ): Promise<SingleDeckResponse> {
-    const userId = req.session.userId;
-
     if (deckName.length < 3 || deckName.length > 40) {
       return {
         errors: [
@@ -88,44 +70,11 @@ export class DeckResolver {
       };
     }
 
-    //Checking for existing name
-    const decksCheck = await this.deckRepository.findDeckByName(
-      userId,
+    return this.deckService.createDeck(
+      req.session.userId,
       languageId,
       deckName
     );
-
-    if (decksCheck) {
-      return {
-        errors: [
-          {
-            field: "deck",
-            message: "You have done it, right? 🙃",
-          },
-        ],
-        deck: null,
-      };
-    }
-
-    //Creating a new deck
-    const deck = new Deck();
-    Object.assign(deck, {
-      user: userId,
-      language: languageId,
-      deckName: deckName,
-    });
-    await this.deckRepository.save(deck);
-
-    const deckSend = await this.deckRepository.findDeckByName(
-      userId,
-      languageId,
-      deckName
-    );
-
-    return {
-      errors: null,
-      deck: deckSend || null,
-    };
   }
 
   @Mutation(() => SingleDeckResponse)
@@ -136,8 +85,6 @@ export class DeckResolver {
     @Arg("languageId", () => Int) languageId: number,
     @Ctx() { req }: MyContext
   ): Promise<SingleDeckResponse> {
-    const userId = req.session.userId;
-
     if (deckName.length < 3 || deckName.length > 64) {
       return {
         errors: [
@@ -150,57 +97,12 @@ export class DeckResolver {
       };
     }
 
-    const deck = await this.deckRepository.findDeckById(deckId);
-
-    //Checking deck
-    if (!deck) {
-      return {
-        errors: [
-          {
-            field: "deck",
-            message: "Invalid Deck",
-          },
-        ],
-        deck: null,
-      };
-    } else if (deck.deckName === deckName) {
-      return {
-        errors: [
-          {
-            field: "deck",
-            message: "Please, enter different name",
-          },
-        ],
-        deck: null,
-      };
-    }
-
-    const deckCheck = await this.deckRepository.findDeckByName(
-      userId,
+    return this.deckService.editDeck(
+      req.session.userId,
       languageId,
-      deckName
+      deckName,
+      deckId
     );
-
-    if (deckCheck) {
-      return {
-        errors: [
-          {
-            field: "deck",
-            message: "Ooooops, you already have this deck 🙃",
-          },
-        ],
-        deck: null,
-      };
-    }
-
-    deck.deckName = deckName;
-
-    await this.deckRepository.save(deck);
-
-    return {
-      errors: null,
-      deck,
-    };
   }
 
   @Mutation(() => ConfirmationResponse)
