@@ -7,8 +7,6 @@ import {
   UserResponse,
 } from "../utils/types/types";
 import { isAuth } from "../middleware/isAuth";
-import argon2 from "argon2";
-import { getCustomRepository } from "typeorm";
 import {
   testEmail,
   testName,
@@ -16,130 +14,21 @@ import {
   testUsername,
 } from "../middleware/validationMiddleware";
 import { CHANGE_EMAIL_PREFIX, COOKIE_NAME } from "../utils/types/constants";
-import { changeEmailConformation } from "../utils/mailer";
-import { UserRepository } from "../repositories/UserRepository";
+import { UserService } from "../services/UserService";
+import { Service } from "typedi";
 
-const cloudinary = require("cloudinary").v2;
-
+@Service()
 @Resolver(User)
 export class UserResolver {
-  private userRepository = getCustomRepository(UserRepository);
+  constructor(private readonly userService: UserService) {}
 
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth, testUsername, testEmail, testName)
-  async editUser(
+  editUser(
     @Arg("input") input: EditUserInput,
     @Ctx() { req, redis }: MyContext
   ): Promise<UserResponse> {
-    const user = await this.userRepository.findByIdWithLanguages(
-      req.session.userId
-    );
-
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "user",
-            message: "User does not exists",
-          },
-        ],
-        user: null,
-      };
-    }
-
-    //Checking if data already in database
-    const checkExisting = await this.userRepository.findUserByEmailOrUsername(
-      input.email,
-      input.username
-    );
-
-    if (
-      checkExisting &&
-      checkExisting!.username === input.username &&
-      checkExisting!.username !== user.username
-    ) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Username is already taken",
-          },
-        ],
-        user: null,
-      };
-    } else if (
-      checkExisting &&
-      checkExisting!.email === input.email &&
-      checkExisting!.email !== user.email
-    ) {
-      return {
-        errors: [
-          {
-            field: "email",
-            message: "Email is already taken",
-          },
-        ],
-        user: null,
-      };
-    }
-
-    if (input.avatarData && input.avatarData !== user.avatar) {
-      try {
-        await cloudinary.config({
-          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-          api_key: process.env.CLOUDINARY_KEY,
-          api_secret: process.env.CLOUDINARY_SECRET,
-        });
-
-        const uploadResponse = await cloudinary.uploader.upload_large(
-          input.avatarData,
-          {
-            upload_presets: "user_avatar",
-            resource_type: "image",
-            chunk_size: 5000000,
-            transformation: [
-              { width: 400, height: 400, gravity: "face", crop: "thumb" },
-            ],
-          }
-        );
-        user.avatar = uploadResponse.secure_url;
-      } catch (e) {
-        console.log("Error", e);
-      }
-    }
-
-    user.name = input.name;
-    user.username = input.username;
-
-    if (input.email !== user.email) {
-      const response = await changeEmailConformation(user, input.email, redis);
-      if (response.errors) {
-        return {
-          errors: response.errors,
-          user: null,
-        };
-      }
-    }
-
-    //Try to save, if it fails, that means username or email already in use
-    try {
-      await this.userRepository.save(user);
-    } catch (e) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Username is already in use",
-          },
-        ],
-        user: null,
-      };
-    }
-
-    return {
-      errors: null,
-      user: user,
-    };
+    return this.userService.editUser(req.session.userId, input, redis);
   }
 
   @Mutation(() => ConfirmationResponse)
@@ -164,29 +53,16 @@ export class UserResolver {
       };
     }
 
-    const user = await this.userRepository.findUserById(req.session.userId);
+    const response = await this.userService.confirmEmailChange(
+      req.session.userId,
+      email
+    );
 
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "token",
-            message: "User no longer exists",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    user.email = email;
-    await this.userRepository.save(user);
+    if (response.errors) return response;
 
     await redis.del(CHANGE_EMAIL_PREFIX + `${req.session.userId}` + token);
 
-    return {
-      errors: null,
-      confirmed: true,
-    };
+    return response;
   }
 
   @Mutation(() => ConfirmationResponse)
@@ -210,89 +86,20 @@ export class UserResolver {
       };
     }
 
-    //Try to find user on database
-    const user = await this.userRepository.findUserById(req.session.userId);
-
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "newPassword",
-            message: "User is not exists",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    //Checking password
-    if (!(await argon2.verify(user.password, oldPassword))) {
-      return {
-        errors: [
-          {
-            field: "oldPassword",
-            message: "Incorrect password",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    if (newPassword === oldPassword) {
-      return {
-        errors: [
-          {
-            field: "newPassword",
-            message: "Please, change your password",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    user.password = await argon2.hash(newPassword);
-    await this.userRepository.save(user);
-
-    return {
-      errors: null,
-      confirmed: true,
-    };
+    return this.userService.changeUserPassword(
+      req.session.userId,
+      newPassword,
+      oldPassword
+    );
   }
 
   @Mutation(() => ConfirmationResponse)
   @UseMiddleware(isAuth)
-  async editGoal(
+  editGoal(
     @Arg("userGoal", () => Int) userGoal: number,
     @Ctx() { req }: MyContext
   ): Promise<ConfirmationResponse> {
-    const user = await this.userRepository.findUserById(req.session.userId);
-
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "userGoal",
-            message: "User is not exists",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    if (
-      userGoal === 5 ||
-      userGoal === 10 ||
-      userGoal === 15 ||
-      userGoal === 20
-    ) {
-      user.userGoal = userGoal;
-      await this.userRepository.save(user);
-    }
-
-    return {
-      errors: null,
-      confirmed: true,
-    };
+    return this.userService.editUserGoal(req.session.userId, userGoal);
   }
 
   @Mutation(() => ConfirmationResponse)
@@ -301,39 +108,15 @@ export class UserResolver {
     @Arg("password") password: string,
     @Ctx() { req, res }: MyContext
   ): Promise<ConfirmationResponse> {
-    const user = await this.userRepository.findUserById(req.session.userId);
+    const response = await this.userService.deleteUser(
+      req.session.userId,
+      password
+    );
 
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "User is not exists",
-          },
-        ],
-        confirmed: false,
-      };
-    }
+    if (response.errors) return response;
 
-    //Checking password
-    if (!(await argon2.verify(user.password, password))) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "Incorrect password",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    await this.userRepository.delete({ id: req.session.userId });
     await res.clearCookie(COOKIE_NAME);
 
-    return {
-      errors: null,
-      confirmed: true,
-    };
+    return response;
   }
 }

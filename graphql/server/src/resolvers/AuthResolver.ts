@@ -30,7 +30,9 @@ import {
 } from "../middleware/validationMiddleware";
 import { UserRepository } from "../repositories/UserRepository";
 import { AuthService } from "../services/AuthService";
+import { Service } from "typedi";
 
+@Service()
 @Resolver(User)
 export class AuthResolver {
   constructor(
@@ -39,7 +41,7 @@ export class AuthResolver {
   ) {}
 
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { req }: MyContext) {
+  me(@Ctx() { req }: MyContext) {
     return this.authService.getMe(req.session.userId);
   }
 
