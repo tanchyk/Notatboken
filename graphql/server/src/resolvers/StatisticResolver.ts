@@ -3,11 +3,9 @@ import { getCustomRepository } from "typeorm";
 import { isAuth } from "../middleware/isAuth";
 import { CardCheckedRepository } from "../repositories/CardCheckedRepository";
 import { CardRepository } from "../repositories/CardRepository";
-import { DayCheckedRepository } from "../repositories/DayCheckRepository";
-import { UserRepository } from "../repositories/UserRepository";
+import { StatisticService } from "../services/StatisticService";
 import {
   UserProgressResponse,
-  LanguageStatistics,
   LanguageStatResponse,
   MyContext,
   UserStreakResponse,
@@ -17,57 +15,18 @@ import {
 
 @Resolver()
 export class StatisticResolver {
-  private userRepository = getCustomRepository(UserRepository);
-  private cardRepository = getCustomRepository(CardRepository);
-  private dayCheckedRepo = getCustomRepository(DayCheckedRepository);
-  private cardCheckedRepo = getCustomRepository(CardCheckedRepository);
+  constructor(
+    private readonly statisticService: StatisticService,
+    private cardRepository = getCustomRepository(CardRepository),
+    private cardCheckedRepo = getCustomRepository(CardCheckedRepository)
+  ) {}
 
   @Query(() => LanguageStatResponse)
   @UseMiddleware(isAuth)
-  async findDecks(@Ctx() { req }: MyContext): Promise<LanguageStatResponse> {
-    const userId = req.session.userId;
-
-    const user = await this.userRepository.findByIdWithLanguages(userId);
-
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "userId",
-            message: "User not found",
-          },
-        ],
-        statistics: null,
-      };
-    }
-
-    if (user.userLanguages.length === 0) {
-      return {
-        errors: [
-          {
-            field: "userId",
-            message: "You have no languages",
-          },
-        ],
-        statistics: null,
-      };
-    }
-    const amountAry: LanguageStatistics[] = [];
-
-    for (const lang of user.userLanguages) {
-      amountAry.push({
-        languageName: lang.languageName,
-        amount: await this.cardRepository.countForLanugage(
-          userId,
-          lang.languageId
-        ),
-      });
-    }
-
-    return {
-      errors: null,
-      statistics: amountAry,
-    };
+  findLanguageStatistic(
+    @Ctx() { req }: MyContext
+  ): Promise<LanguageStatResponse> {
+    return this.statisticService.findLanguageStatistic(req.session.userId);
   }
 
   @Query(() => UserProgressResponse)
@@ -94,59 +53,8 @@ export class StatisticResolver {
 
   @Query(() => UserStreakResponse)
   @UseMiddleware(isAuth)
-  async getUserStreak(@Ctx() { req }: MyContext): Promise<UserStreakResponse> {
-    const userId = req.session.userId;
-    let streak = 0;
-    let today = false;
-
-    const checkDays = await this.dayCheckedRepo.checkDays(userId);
-
-    checkDays.sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
-
-    if (checkDays.length === 0) {
-      return {
-        errors: null,
-        statistics: {
-          streak,
-          today,
-        },
-      };
-    }
-
-    let date = new Date();
-
-    if (
-      checkDays[checkDays.length - 1].createdAt.toISOString().split("T")[0] ===
-      date.toISOString().split("T")[0]
-    ) {
-      today = true;
-      streak++;
-      checkDays.pop();
-    }
-    date.setDate(date.getDate() - 1);
-
-    for (let i = checkDays.length - 1; i >= 0; i--) {
-      if (
-        checkDays[i].createdAt.toISOString().split("T")[0] ===
-        date.toISOString().split("T")[0]
-      ) {
-        date.setDate(date.getDate() - 1);
-        streak++;
-      } else {
-        break;
-      }
-    }
-
-    return {
-      errors: null,
-      statistics: {
-        streak,
-        today,
-      },
-    };
+  getUserStreak(@Ctx() { req }: MyContext): Promise<UserStreakResponse> {
+    return this.statisticService.getStreak(req.session.userId);
   }
 
   @Query(() => CardDayResponse)
