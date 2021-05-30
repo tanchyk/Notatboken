@@ -7,15 +7,18 @@ import { createConnection, getConnectionOptions } from "typeorm";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { MyContext } from "./utils/types/types";
-import { AuthResolver } from "./resolvers/authResolver";
+import { AuthResolver } from "./resolvers/AuthResolver";
 
 import session from "express-session";
 import connectRedis from "connect-redis";
 import Redis from "ioredis";
 import { COOKIE_NAME } from "./utils/types/constants";
-import { UserResolver } from "./resolvers/userResolver";
-import { LanguageResolver } from "./resolvers/languageResolver";
-import { DeckResolver } from "./resolvers/deckResolver";
+import { UserResolver } from "./resolvers/UserResolver";
+import { LanguageResolver } from "./resolvers/LanguageResolver";
+import { DeckResolver } from "./resolvers/DeckResolver";
+import { CardResolver } from "./resolvers/CardResolver";
+import { StatisticResolver } from "./resolvers/StatisticResolver";
+import { FolderResolver } from "./resolvers/FolderResolver";
 
 const app = async () => {
   const connOptions = await getConnectionOptions();
@@ -56,7 +59,16 @@ const app = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [AuthResolver, UserResolver, LanguageResolver, DeckResolver],
+      resolvers: [
+        AuthResolver,
+        UserResolver,
+        LanguageResolver,
+        DeckResolver,
+        CardResolver,
+        StatisticResolver,
+        FolderResolver,
+        LanguageResolver,
+      ],
       validate: false,
     }),
     context: ({ res, req }: MyContext): MyContext => ({
