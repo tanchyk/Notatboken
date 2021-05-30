@@ -89,7 +89,7 @@ export class DeckResolver {
     }
 
     //Checking for existing name
-    const decksCheck = await this.deckRepository.checkDeck(
+    const decksCheck = await this.deckRepository.findDeckByName(
       userId,
       languageId,
       deckName
@@ -116,13 +116,15 @@ export class DeckResolver {
     });
     await this.deckRepository.save(deck);
 
+    const deckSend = await this.deckRepository.findDeckByName(
+      userId,
+      languageId,
+      deckName
+    );
+
     return {
       errors: null,
-      deck: await this.deckRepository.findDeckByName(
-        userId,
-        languageId,
-        deckName
-      ),
+      deck: deckSend || null,
     };
   }
 
@@ -173,7 +175,7 @@ export class DeckResolver {
       };
     }
 
-    const deckCheck = await this.deckRepository.checkDeck(
+    const deckCheck = await this.deckRepository.findDeckByName(
       userId,
       languageId,
       deckName

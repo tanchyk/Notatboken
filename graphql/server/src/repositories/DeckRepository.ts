@@ -29,7 +29,7 @@ export class DeckRepository extends Repository<Deck> {
       .where("user.id = :id", { id: userId })
       .andWhere("language.languageId = :languageId", { languageId })
       .andWhere("deck.deckName = :deckName", { deckName })
-      .getOneOrFail();
+      .getOne();
   }
 
   countDecksForFolder(folderId: number) {
@@ -37,16 +37,5 @@ export class DeckRepository extends Repository<Deck> {
       .leftJoin("deck.folder", "folder")
       .where("folder.folderId = :folderId", { folderId })
       .getCount();
-  }
-
-  checkDeck(userId: number, languageId: number, deckName: string) {
-    return this.findOne({
-      relations: ["language", "user"],
-      where: {
-        user: { id: userId },
-        language: { languageId: languageId },
-        deckName,
-      },
-    });
   }
 }

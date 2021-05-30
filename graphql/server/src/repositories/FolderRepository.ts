@@ -23,7 +23,7 @@ export class FolderRepository extends Repository<Folder> {
       .where("user.id = :id", { id: userId })
       .where("language.languageId = :languageId", { languageId })
       .where("folder.folderName = :folderName", { folderName })
-      .getOneOrFail();
+      .getOne();
   }
 
   findByLanguage(userId: number, languageId: number) {
@@ -31,16 +31,5 @@ export class FolderRepository extends Repository<Folder> {
       .where("user.id = :id", { id: userId })
       .where("language.languageId = :languageId", { languageId })
       .getMany();
-  }
-
-  checkFolder(userId: number, languageId: number, folderName: string) {
-    return this.findOne({
-      relations: ["language", "user"],
-      where: {
-        user: { id: userId },
-        language: { languageId: languageId },
-        folderName,
-      },
-    });
   }
 }

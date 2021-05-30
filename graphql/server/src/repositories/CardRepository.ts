@@ -30,10 +30,10 @@ export class CardRepository extends Repository<Card> {
   }
 
   findCardById(cardId: number) {
-    return this.findOneOrFail({
-      relations: ["deck"],
-      where: { cardId },
-    });
+    return this.createQueryBuilder("card")
+      .leftJoin("card.deck", "deck")
+      .where("card.cardId = :cardId", { cardId })
+      .getOneOrFail();
   }
 
   findCardsForDeck(deckId: number) {

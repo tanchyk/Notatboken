@@ -91,7 +91,7 @@ export class FolderResolver {
     }
 
     //Checking for existing name
-    const folderCheck = await this.folderRepository.checkFolder(
+    const folderCheck = await this.folderRepository.findFolderByName(
       userId,
       languageId,
       folderName
@@ -127,7 +127,7 @@ export class FolderResolver {
 
     return {
       errors: null,
-      folder: folderSend,
+      folder: folderSend || null,
     };
   }
 
@@ -167,7 +167,7 @@ export class FolderResolver {
       };
     }
 
-    const checkFolder = await this.folderRepository.checkFolder(
+    const checkFolder = await this.folderRepository.findFolderByName(
       userId,
       languageId,
       folderName

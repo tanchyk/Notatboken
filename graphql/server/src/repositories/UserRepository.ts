@@ -4,9 +4,9 @@ import { User } from "../entities/User";
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
   findUserById(userId: number) {
-    return this.findOne({
-      where: { id: userId },
-    });
+    return this.createQueryBuilder("user")
+      .where("user.id = :userId", { userId })
+      .getOne();
   }
 
   findByIdWithLanguages(userId: number) {
@@ -25,15 +25,9 @@ export class UserRepository extends Repository<User> {
   }
 
   findUserByEmailOrUsername(email: string, username: string) {
-    return this.findOne({
-      where: [
-        {
-          username,
-        },
-        {
-          email,
-        },
-      ],
-    });
+    return this.createQueryBuilder("user")
+      .where("user.username = :username", { username })
+      .orWhere("user.email = :email", { email })
+      .getOne();
   }
 }
