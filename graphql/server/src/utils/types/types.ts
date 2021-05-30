@@ -45,6 +45,22 @@ export class EditUserInput {
   avatarData: string;
 }
 
+@InputType()
+export class CardInput {
+  @Field()
+  foreignWord: string;
+  @Field()
+  nativeWord: string;
+  @Field(() => Int, { nullable: true })
+  imageId: number;
+  @Field(() => Int, { nullable: true })
+  voiceId: number;
+  @Field({ nullable: true })
+  foreignContext: string;
+  @Field({ nullable: true })
+  nativeContext: string;
+}
+
 @ObjectType()
 export class FieldError {
   @Field()

@@ -7,14 +7,13 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { getCustomRepository, getRepository } from "typeorm";
+import { getCustomRepository } from "typeorm";
 import { Card, ProficiencyType } from "../entities/Card";
-import { CardChecked } from "../entities/CardChecked";
-import { DayChecked } from "../entities/DayChecked";
 import { isAuth } from "../middleware/isAuth";
-import { CardCheckedRepository } from "../repositories/CardCheckedRepository";
 import { CardRepository } from "../repositories/CardRepository";
+import { CardService } from "../services/CardService";
 import {
+  CardInput,
   CardsResponse,
   ConfirmationNotification,
   ConfirmationResponse,
@@ -24,273 +23,73 @@ import {
 
 @Resolver(Card)
 export class CardResolver {
-  private cardRepository = getCustomRepository(CardRepository);
-  private cardCheckedRepository = getCustomRepository(CardCheckedRepository);
+  constructor(
+    private readonly cardService: CardService,
+    private readonly cardRepository = getCustomRepository(CardRepository)
+  ) {}
 
   @Query(() => CardsResponse)
   @UseMiddleware(isAuth)
-  async findCards(
-    @Arg("deckId", () => Int) deckId: number
-  ): Promise<CardsResponse> {
-    const cards = await this.cardRepository.findCardsForDeck(deckId);
-
-    if (!cards) {
-      return {
-        errors: [
-          {
-            message: "This deck has no cards!",
-            field: "deckId",
-          },
-        ],
-        cards: null,
-      };
-    }
-
-    return {
-      errors: null,
-      cards,
-    };
+  findCards(@Arg("deckId", () => Int) deckId: number): Promise<CardsResponse> {
+    return this.cardService.getCardsForDeck(deckId);
   }
 
   @Query(() => CardsResponse)
   @UseMiddleware(isAuth)
-  async findCardsForReview(
+  findCardsForReview(
     @Arg("deckId", () => Int) deckId: number
   ): Promise<CardsResponse> {
-    const cards = await this.cardRepository.findCardsForReview(deckId);
-
-    if (!cards) {
-      return {
-        errors: [
-          {
-            message: "This deck has no cards!",
-            field: "deckId",
-          },
-        ],
-        cards: null,
-      };
-    }
-
-    return {
-      errors: null,
-      cards,
-    };
+    return this.cardService.getCardsForToday(deckId);
   }
 
   @Mutation(() => ConfirmationResponse)
   @UseMiddleware(isAuth)
-  async addCard(
+  addCard(
     @Arg("deckId", () => Int) deckId: number,
     @Arg("languageId", () => Int) languageId: number,
-    @Arg("foreignWord") foreignWord: string,
-    @Arg("nativeWord") nativeWord: string,
-    @Arg("imageId", () => Int) imageId: number,
-    @Arg("voiceId", () => Int) voiceId: number,
-    @Arg("foreignContext") foreignContext: string,
-    @Arg("nativeContext") nativeContext: string,
+    @Arg("input") input: CardInput,
     @Ctx() { req }: MyContext
   ): Promise<ConfirmationResponse> {
-    const userId = req.session.userId;
-
-    const card = new Card();
-
-    //Checking for existing name
-    const cardCheck = await this.cardRepository.checkCard(
-      userId,
+    return this.cardService.createCard(
+      req.session.userId,
+      deckId,
       languageId,
-      foreignWord
+      input
     );
-
-    if (cardCheck.length > 0) {
-      return {
-        errors: [
-          {
-            message: "You already have this card in your list.",
-            field: "foreignWord",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    Object.assign(card, {
-      deck: deckId,
-      foreignWord,
-      nativeWord,
-      imageId,
-      voiceId,
-      foreignContext,
-      nativeContext,
-    });
-
-    try {
-      await this.cardRepository.save(card);
-    } catch (err) {
-      return {
-        errors: [
-          {
-            message: err,
-            field: "cardId",
-          },
-        ],
-        confirmed: false,
-      };
-    }
-
-    return {
-      errors: null,
-      confirmed: true,
-    };
   }
 
   @Mutation(() => SingleCardResponse)
   @UseMiddleware(isAuth)
-  async editCard(
+  editCard(
     @Arg("cardId", () => Int) cardId: number,
     @Arg("languageId", () => Int) languageId: number,
-    @Arg("foreignWord") foreignWord: string,
-    @Arg("nativeWord") nativeWord: string,
-    @Arg("imageId", () => Int) imageId: number,
-    @Arg("voiceId", () => Int) voiceId: number,
-    @Arg("foreignContext") foreignContext: string,
-    @Arg("nativeContext") nativeContext: string,
+    @Arg("input") input: CardInput,
     @Ctx() { req }: MyContext
   ): Promise<SingleCardResponse> {
-    const userId = req.session.userId;
-
-    const card = await this.cardRepository.findCardById(cardId);
-
-    //Checking for existing name
-    if (card.foreignWord !== foreignWord) {
-      const cardCheck = await this.cardRepository.checkCard(
-        userId,
-        languageId,
-        foreignWord
-      );
-
-      if (cardCheck.length > 0) {
-        return {
-          errors: [
-            {
-              message: "You already have this card in your list.",
-              field: "foreignWord",
-            },
-          ],
-          card: null,
-        };
-      }
-    }
-
-    card.foreignWord = foreignWord;
-    card.nativeWord = nativeWord;
-    card.imageId = imageId;
-    card.voiceId = voiceId;
-    card.foreignContext = foreignContext;
-    card.nativeContext = nativeContext;
-
-    try {
-      await this.cardRepository.save(card);
-    } catch (err) {
-      return {
-        errors: [
-          {
-            message: err,
-            field: "cardId",
-          },
-        ],
-        card: null,
-      };
-    }
-
-    return {
-      errors: null,
-      card,
-    };
+    return this.cardService.changeCard(
+      req.session.userId,
+      cardId,
+      languageId,
+      input
+    );
   }
 
   @Mutation(() => ConfirmationNotification)
   @UseMiddleware(isAuth)
-  async changeCardStatus(
+  changeCardStatus(
     @Arg("cardId", () => Int) cardId: number,
     @Arg("proficiency") proficiency: ProficiencyType,
     @Arg("userGoal", () => Int) userGoal: number,
     @Arg("today") today: boolean,
     @Ctx() { req }: MyContext
   ): Promise<ConfirmationNotification> {
-    const userId = req.session.userId;
-
-    const dayCheckedRepository = getRepository(DayChecked);
-
-    const card = await this.cardRepository.findCardById(cardId);
-
-    let amountOfDays = 0;
-
-    if (proficiency === "learned") {
-      amountOfDays = 1;
-    } else if (proficiency.length === 2) {
-      amountOfDays = Number.parseInt(proficiency.charAt(0));
-    } else if (proficiency.length === 3) {
-      amountOfDays = Number.parseInt(proficiency.substring(0, 2));
-    }
-
-    //Saving Statistics
-    if (amountOfDays !== 0) {
-      const cardChecked = new CardChecked();
-      Object.assign(cardChecked, {
-        card: cardId,
-        user: userId,
-      });
-      await this.cardCheckedRepository.save(cardChecked);
-    }
-
-    let notification = null;
-
-    if (today === false) {
-      const checkAmountGoal = await this.cardCheckedRepository.checkAmountGoal(
-        userId
-      );
-
-      if (checkAmountGoal === userGoal) {
-        const dayChecked = new DayChecked();
-        Object.assign(dayChecked, {
-          user: userId,
-        });
-        await dayCheckedRepository.save(dayChecked);
-        notification = "Goal Set";
-      }
-    }
-
-    //Saving new card state
-    let date = new Date();
-    date.setDate(date.getDate() + amountOfDays);
-
-    if (proficiency === "learned") {
-      card.reviewDate = new Date(8640000000000000);
-    } else {
-      card.reviewDate = date;
-    }
-    card.proficiency = proficiency;
-
-    try {
-      await this.cardRepository.save(card);
-    } catch (err) {
-      return {
-        errors: [
-          {
-            message: err,
-            field: "cardId",
-          },
-        ],
-        confirmed: false,
-        notification,
-      };
-    }
-
-    return {
-      errors: null,
-      confirmed: true,
-      notification,
-    };
+    return this.cardService.changeStatus(
+      req.session.userId,
+      cardId,
+      proficiency,
+      userGoal,
+      today
+    );
   }
 
   @Mutation(() => ConfirmationResponse)
